@@ -1,0 +1,57 @@
+# Godot 4
+.godot/
+.import/
+*.import
+*.uid
+
+# Imported/generated resources
+*.ctex
+*.stex
+*.s3tc.ctex
+*.etc2.ctex
+*.bptc.ctex
+*.astc.ctex
+
+# Logs and diagnostics
+*.log
+logs/
+user://
+
+# Local/editor settings
+.vscode/
+.idea/
+*.tmp
+*.bak
+*.swp
+*.swo
+desktop.ini
+Thumbs.db
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+secrets/
+
+# Local exports and builds
+builds/
+exports/
+dist/
+release/
+*.pck
+*.apk
+*.aab
+*.exe
+*.dmg
+*.zip
+
+# Android export output
+android/
+*.keystore
+*.jks
+
+# Godot mono/C# artifacts, kept ignored even though this project uses GDScript
+.mono/
+*.csproj
+*.sln
