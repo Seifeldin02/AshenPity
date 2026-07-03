@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://shrinearenaashenpity"]
+
+[ext_resource type="Script" path="res://scripts/world/ShrineArena.gd" id="1_arena"]
+
+[node name="ShrineArena" type="Node2D"]
+script = ExtResource("1_arena")
+
+[node name="PropSort" type="Node2D" parent="."]
+unique_name_in_owner = true
+y_sort_enabled = true
+
+[node name="ActorSort" type="Node2D" parent="."]
+unique_name_in_owner = true
+y_sort_enabled = true
+
+[node name="ArenaCamera" type="Camera2D" parent="."]
+unique_name_in_owner = true
+position_smoothing_enabled = true
+position_smoothing_speed = 5.0
+zoom = Vector2(1, 1)
+enabled = true
