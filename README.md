@@ -80,14 +80,26 @@ tools/            local helper scripts
 
 ## Current State
 
-The project is in Stage 1 combat foundation development. The priority is game feel, visual readability, and a small polished room over broad feature count.
+Stage 1 is playable as a local prototype. The player can enter the shrine arena, fight three Shrine Guardians, die and restart, or clear the room and reach the victory screen.
+
+Implemented foundation:
+
+- Original code-drawn 2D dark shrine arena with walls, cracks, ash, torchlight, and layered props.
+- Hooded cursed wanderer player with readable mask, cloak, sword, hit flash, dodge dust, and slash arcs.
+- Mouse-facing light attack with anticipation, active frames, recovery, stamina cost, knockback, hit stop, and screen shake.
+- Stamina, health, two-charge healing flask, interruptible healing, death prompt, and pause flow.
+- Shrine Guardian enemy with patrol, chase, telegraph, attack, recovery, stagger, ash dissolve, and health UI.
+- Mobile controls that can be shown on touch devices or toggled on desktop with `M`.
+- Headless gameplay test runner for core combat logic.
 
 ## Known Limitations
 
 - Art is hand-authored prototype vector work, not final production art.
-- Audio is represented by placeholder hooks and lightweight generated feedback.
+- Audio is represented by placeholder hooks only.
 - Android export is documented but not produced in this stage.
 - Only one arena and one enemy type exist.
+- Touch controls are implemented for the prototype but still need device testing on real phones.
+- Balance is first-pass and intentionally conservative.
 
 ## Future Roadmap
 

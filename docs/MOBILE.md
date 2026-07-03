@@ -9,6 +9,8 @@ Ashen Pity is designed for mobile from the beginning instead of treating touch s
 - The arena uses a 16:9 landscape layout that leaves lower corners available for touch controls.
 - HUD elements stay near safe margins and avoid the center combat lane.
 - Touch controls can be shown on desktop with `M` for fast testing.
+- Touch buttons call the same attack, dodge, flask, and pause actions used by desktop play.
+- The right-side drag zone controls aim direction without replacing desktop mouse aim.
 
 ## Desktop Touch Testing
 
