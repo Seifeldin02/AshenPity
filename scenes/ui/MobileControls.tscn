@@ -1,0 +1,137 @@
+[gd_scene load_steps=2 format=3 uid="uid://mobileashenpity"]
+
+[ext_resource type="Script" path="res://scripts/ui/MobileControls.gd" id="1_mobile"]
+
+[node name="MobileControls" type="CanvasLayer"]
+layer = 20
+script = ExtResource("1_mobile")
+
+[node name="Root" type="Control" parent="."]
+unique_name_in_owner = true
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="MoveRing" type="Panel" parent="Root"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 76.0
+offset_top = -250.0
+offset_right = 246.0
+offset_bottom = -80.0
+modulate = Color(0.75, 0.72, 0.66, 0.22)
+
+[node name="MoveKnob" type="Panel" parent="Root/MoveRing"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -31.0
+offset_top = -31.0
+offset_right = 31.0
+offset_bottom = 31.0
+grow_horizontal = 2
+grow_vertical = 2
+modulate = Color(0.95, 0.86, 0.70, 0.42)
+
+[node name="AimRing" type="Panel" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = -85.0
+offset_top = -85.0
+offset_right = 85.0
+offset_bottom = 85.0
+modulate = Color(0.75, 0.72, 0.66, 0.16)
+
+[node name="AimKnob" type="Panel" parent="Root/AimRing"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -25.0
+offset_top = -25.0
+offset_right = 25.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+modulate = Color(0.95, 0.62, 0.34, 0.38)
+
+[node name="AttackButton" type="Button" parent="Root"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -170.0
+offset_top = -185.0
+offset_right = -82.0
+offset_bottom = -97.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Atk"
+
+[node name="DodgeButton" type="Button" parent="Root"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -270.0
+offset_top = -132.0
+offset_right = -190.0
+offset_bottom = -52.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Roll"
+
+[node name="FlaskButton" type="Button" parent="Root"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -366.0
+offset_top = -112.0
+offset_right = -292.0
+offset_bottom = -38.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Flask"
+
+[node name="PauseButton" type="Button" parent="Root"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -104.0
+offset_top = 32.0
+offset_right = -32.0
+offset_bottom = 84.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Pause"
+
+[connection signal="pressed" from="Root/AttackButton" to="." method="_on_attack_pressed"]
+[connection signal="pressed" from="Root/DodgeButton" to="." method="_on_dodge_pressed"]
+[connection signal="pressed" from="Root/FlaskButton" to="." method="_on_flask_pressed"]
+[connection signal="pressed" from="Root/PauseButton" to="." method="_on_pause_pressed"]

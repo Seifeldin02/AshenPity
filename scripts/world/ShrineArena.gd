@@ -44,6 +44,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	if InputRouter.consume_pause():
+		_toggle_pause()
 	if _screen_shake > 0.0:
 		_screen_shake = maxf(_screen_shake - delta, 0.0)
 		_shake_offset = Vector2(_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0)) * 9.0 * _screen_shake
@@ -169,8 +171,8 @@ func _spawn_combatants() -> void:
 	for pos in [Vector2(180, -145), Vector2(420, 80), Vector2(160, 225)]:
 		var guardian: Node = guardian_scene.instantiate()
 		guardian.position = pos
-		guardian.set("player_path", guardian.get_path_to(player))
 		actor_sort.add_child(guardian)
+		guardian.set("player", player)
 		guardians.append(guardian)
 		if guardian.has_signal("died"):
 			guardian.died.connect(_on_guardian_died.bind(guardian))

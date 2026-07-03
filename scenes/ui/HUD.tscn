@@ -1,0 +1,160 @@
+[gd_scene load_steps=2 format=3 uid="uid://hudashenpity"]
+
+[ext_resource type="Script" path="res://scripts/ui/HUD.gd" id="1_hud"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Bars" type="VBoxContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.025
+anchor_top = 0.035
+anchor_right = 0.295
+anchor_bottom = 0.125
+theme_override_constants/separation = 8
+
+[node name="HealthBar" type="ProgressBar" parent="Root/Bars"]
+unique_name_in_owner = true
+layout_mode = 2
+show_percentage = false
+max_value = 100.0
+value = 100.0
+
+[node name="StaminaBar" type="ProgressBar" parent="Root/Bars"]
+unique_name_in_owner = true
+layout_mode = 2
+show_percentage = false
+max_value = 100.0
+value = 100.0
+
+[node name="FlaskLabel" type="Label" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.025
+anchor_top = 0.14
+anchor_right = 0.20
+anchor_bottom = 0.18
+theme_override_font_sizes/font_size = 22
+text = "Flask 2/2"
+
+[node name="EnemyPanel" type="VBoxContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.37
+anchor_top = 0.035
+anchor_right = 0.63
+anchor_bottom = 0.105
+theme_override_constants/separation = 4
+
+[node name="EnemyLabel" type="Label" parent="Root/EnemyPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Shrine Guardian"
+horizontal_alignment = 1
+
+[node name="EnemyBar" type="ProgressBar" parent="Root/EnemyPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+show_percentage = false
+max_value = 86.0
+value = 86.0
+
+[node name="Hints" type="Label" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.35
+anchor_top = 0.88
+anchor_right = 0.65
+anchor_bottom = 0.94
+theme_override_colors/font_color = Color(0.82, 0.75, 0.64, 0.92)
+theme_override_font_sizes/font_size = 20
+text = "WASD move  |  Mouse aim  |  Click attack  |  Space dodge  |  F flask"
+horizontal_alignment = 1
+
+[node name="DeathPanel" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+process_mode = 3
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -120.0
+offset_right = 220.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DeathBox" type="VBoxContainer" parent="Root/DeathPanel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="DeathTitle" type="Label" parent="Root/DeathPanel/DeathBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "Ash Claims You"
+horizontal_alignment = 1
+
+[node name="RestartButton" type="Button" parent="Root/DeathPanel/DeathBox"]
+layout_mode = 2
+text = "Restart"
+
+[node name="TitleButton" type="Button" parent="Root/DeathPanel/DeathBox"]
+layout_mode = 2
+text = "Title"
+
+[node name="PausePanel" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+process_mode = 3
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -92.0
+offset_right = 180.0
+offset_bottom = 92.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PauseBox" type="VBoxContainer" parent="Root/PausePanel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="PauseTitle" type="Label" parent="Root/PausePanel/PauseBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="Root/PausePanel/PauseBox"]
+layout_mode = 2
+text = "Resume"
+
+[node name="PauseTitleButton" type="Button" parent="Root/PausePanel/PauseBox"]
+layout_mode = 2
+text = "Title"
+
+[connection signal="pressed" from="Root/DeathPanel/DeathBox/RestartButton" to="." method="_on_restart_pressed"]
+[connection signal="pressed" from="Root/DeathPanel/DeathBox/TitleButton" to="." method="_on_title_pressed"]
+[connection signal="pressed" from="Root/PausePanel/PauseBox/ResumeButton" to="." method="_on_resume_pressed"]
+[connection signal="pressed" from="Root/PausePanel/PauseBox/PauseTitleButton" to="." method="_on_title_pressed"]
