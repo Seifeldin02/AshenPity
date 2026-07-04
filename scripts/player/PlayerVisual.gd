@@ -33,6 +33,8 @@ func _draw() -> void:
 	var flip := -1.0 if facing.x < -0.12 else 1.0
 	var tint := Color.WHITE.lerp(Color(1.0, 0.35, 0.25), flash)
 	draw_colored_polygon(_ellipse(Vector2(0, 31), 27.0, 9.0), Color(0.02, 0.018, 0.022, 0.50))
+	if state_name == "dodge":
+		_draw_dodge_trail()
 	draw_set_transform(Vector2(0, walk_bob), 0.0, Vector2(flip, 1.0))
 	_draw_cloak(tint, breathe)
 	_draw_mask(tint, breathe)
@@ -79,6 +81,13 @@ func _draw_slash() -> void:
 	var dir_angle := facing.angle()
 	draw_arc(Vector2.ZERO, 69.0, dir_angle - 0.74, dir_angle + 0.74, 28, Color(0.95, 0.82, 0.55, 0.62 * alpha), 10.0)
 	draw_arc(Vector2.ZERO, 83.0, dir_angle - 0.50, dir_angle + 0.62, 24, Color(0.95, 0.33, 0.16, 0.28 * alpha), 5.0)
+
+
+func _draw_dodge_trail() -> void:
+	for i in 3:
+		var offset := -facing * float(i + 1) * 18.0
+		var alpha := 0.14 - float(i) * 0.035
+		draw_colored_polygon(_ellipse(offset + Vector2(0, 4), 25.0 - float(i) * 3.0, 35.0 - float(i) * 3.0), Color(0.60, 0.55, 0.50, alpha))
 
 
 func _ellipse(center: Vector2, radius_x: float, radius_y: float) -> PackedVector2Array:

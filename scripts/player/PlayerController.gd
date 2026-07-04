@@ -27,6 +27,7 @@ var invulnerable := false
 var _state_timer := 0.0
 var _regen_delay := 0.0
 var _roll_direction := Vector2.RIGHT
+var _attack_direction := Vector2.RIGHT
 var _heal_pending := false
 var _hit_targets: Array[Node] = []
 var _knockback := Vector2.ZERO
@@ -88,13 +89,13 @@ func _tick_state(delta: float, move_input: Vector2) -> void:
 			if _state_timer <= 0.0:
 				_hit_targets.clear()
 				attack_area.monitoring = true
-				_set_state(PlayerState.ATTACK_ACTIVE, 0.15)
+				_set_state(PlayerState.ATTACK_ACTIVE, GameBalance.PLAYER_ATTACK_ACTIVE_TIME)
 		PlayerState.ATTACK_ACTIVE:
-			velocity = velocity.move_toward(Vector2.ZERO, GameBalance.PLAYER_DECELERATION * delta)
+			velocity = velocity.move_toward(_attack_direction * 42.0, GameBalance.PLAYER_DECELERATION * delta)
 			_poll_attack_hits()
 			if _state_timer <= 0.0:
 				attack_area.monitoring = false
-				_set_state(PlayerState.ATTACK_RECOVERY, 0.24)
+				_set_state(PlayerState.ATTACK_RECOVERY, GameBalance.PLAYER_ATTACK_RECOVERY_TIME)
 		PlayerState.ATTACK_RECOVERY:
 			velocity = velocity.move_toward(Vector2.ZERO, GameBalance.PLAYER_DECELERATION * delta)
 			if _state_timer <= 0.0:
@@ -131,7 +132,8 @@ func _handle_actions(move_input: Vector2) -> void:
 		stamina = CombatMathUtil.spend_stamina(stamina, GameBalance.PLAYER_ATTACK_COST)
 		_regen_delay = GameBalance.PLAYER_STAMINA_REGEN_DELAY
 		stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
-		_set_state(PlayerState.ATTACK_WINDUP, 0.13)
+		_attack_direction = facing
+		_set_state(PlayerState.ATTACK_WINDUP, GameBalance.PLAYER_ATTACK_WINDUP_TIME)
 		return
 	if (Input.is_action_just_pressed("dodge") or InputRouter.consume_dodge()) and CombatMathUtil.can_spend_stamina(stamina, GameBalance.PLAYER_DODGE_COST):
 		stamina = CombatMathUtil.spend_stamina(stamina, GameBalance.PLAYER_DODGE_COST)
@@ -140,6 +142,7 @@ func _handle_actions(move_input: Vector2) -> void:
 		_roll_direction = move_input.normalized() if move_input.length() > 0.05 else facing
 		invulnerable = true
 		dust.emitting = true
+		dust.restart()
 		_set_state(PlayerState.DODGE, GameBalance.PLAYER_DODGE_TIME)
 		return
 	if (Input.is_action_just_pressed("flask") or InputRouter.consume_flask()) and flask_charges > 0 and health < GameBalance.PLAYER_MAX_HEALTH:
@@ -179,8 +182,9 @@ func _update_stamina(delta: float) -> void:
 
 
 func _update_attack_hitbox() -> void:
-	attack_area.position = facing * 58.0
-	attack_area.rotation = facing.angle()
+	var attack_facing := _attack_direction if state in [PlayerState.ATTACK_WINDUP, PlayerState.ATTACK_ACTIVE, PlayerState.ATTACK_RECOVERY] else facing
+	attack_area.position = attack_facing * 58.0
+	attack_area.rotation = attack_facing.angle()
 
 
 func _poll_attack_hits() -> void:
@@ -200,7 +204,11 @@ func _on_attack_body_entered(body: Node) -> void:
 func _update_visual() -> void:
 	var alpha := 1.0 if state == PlayerState.ATTACK_ACTIVE else (0.42 if state == PlayerState.ATTACK_RECOVERY else 0.0)
 	if visual.has_method("set_pose"):
-		visual.set_pose(facing, state_name, alpha)
+		visual.set_pose(_attack_direction if alpha > 0.0 else facing, state_name, alpha)
+
+
+func is_dodge_invulnerable() -> bool:
+	return state == PlayerState.DODGE and invulnerable
 
 
 func _set_state(new_state: PlayerState, duration: float) -> void:
