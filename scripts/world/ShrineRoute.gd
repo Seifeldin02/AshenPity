@@ -18,6 +18,17 @@ const ALTAR := Rect2(-430, -585, 860, 275)
 
 const ROOMS := [ENTRANCE, SIDE_ALCOVE, LOWER_PASSAGE, CENTRAL, UPPER_PASSAGE, ALTAR]
 
+const TEST_VISIBILITY_POINTS := [
+	Vector2(-470, 520),
+	Vector2(140, 520),
+	Vector2(-665, 430),
+	Vector2(-610, -195),
+	Vector2(610, -195),
+	Vector2(0, -35),
+	Vector2(-340, -500),
+	Vector2(340, -500)
+]
+
 const WALLS := [
 	["EntranceSouth", Vector2(-160, 616), Vector2(770, 72)],
 	["EntranceWestLower", Vector2(-565, 540), Vector2(72, 170)],
@@ -64,3 +75,9 @@ static func clamped_to_camera_limits(point: Vector2) -> Vector2:
 		clampf(point.x, float(CAMERA_LIMIT_LEFT), float(CAMERA_LIMIT_RIGHT)),
 		clampf(point.y, float(CAMERA_LIMIT_TOP), float(CAMERA_LIMIT_BOTTOM))
 	)
+
+
+static func camera_rect_at(point: Vector2, viewport_size: Vector2, zoom: Vector2) -> Rect2:
+	var center := clamped_to_camera_limits(point)
+	var size := viewport_size / zoom
+	return Rect2(center - size * 0.5, size)
