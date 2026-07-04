@@ -1,21 +1,55 @@
-[gd_scene load_steps=2 format=3 uid="uid://shrinearenaashenpity"]
+[gd_scene load_steps=3 format=3 uid="uid://shrinearenaashenpity"]
 
 [ext_resource type="Script" path="res://scripts/world/ShrineArena.gd" id="1_arena"]
+[ext_resource type="Script" path="res://scripts/world/ShrineRouteLayer.gd" id="2_layer"]
 
 [node name="ShrineArena" type="Node2D"]
 script = ExtResource("1_arena")
 
-[node name="PropSort" type="Node2D" parent="."]
+[node name="World" type="Node2D" parent="."]
 unique_name_in_owner = true
+
+[node name="Ground" type="Node2D" parent="World"]
+unique_name_in_owner = true
+z_index = 0
+script = ExtResource("2_layer")
+layer_kind = "ground"
+
+[node name="GroundDecals" type="Node2D" parent="World"]
+unique_name_in_owner = true
+z_index = 1
+script = ExtResource("2_layer")
+layer_kind = "decals"
+
+[node name="Shadows" type="Node2D" parent="World"]
+unique_name_in_owner = true
+z_index = 2
+script = ExtResource("2_layer")
+layer_kind = "shadows"
+
+[node name="ActorsAndTallProps" type="Node2D" parent="World"]
+unique_name_in_owner = true
+z_index = 10
 y_sort_enabled = true
 
-[node name="ActorSort" type="Node2D" parent="."]
+[node name="ForegroundCanopy" type="Node2D" parent="World"]
 unique_name_in_owner = true
-y_sort_enabled = true
+z_index = 20
+script = ExtResource("2_layer")
+layer_kind = "foreground"
 
-[node name="ArenaCamera" type="Camera2D" parent="."]
+[node name="Collision" type="Node2D" parent="World"]
+unique_name_in_owner = true
+visible = false
+
+[node name="ArenaCamera" type="Camera2D" parent="World"]
 unique_name_in_owner = true
 position_smoothing_enabled = true
-position_smoothing_speed = 5.0
-zoom = Vector2(1, 1)
+position_smoothing_speed = 6.5
+limit_left = -940
+limit_top = -650
+limit_right = 940
+limit_bottom = 650
+limit_smoothed = true
+zoom = Vector2(1.08, 1.08)
 enabled = true
