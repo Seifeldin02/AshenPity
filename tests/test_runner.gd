@@ -2,6 +2,7 @@ extends SceneTree
 
 const CombatMathUtil := preload("res://scripts/combat/CombatMath.gd")
 const EnemyBrainUtil := preload("res://scripts/enemies/EnemyBrain.gd")
+const Route := preload("res://scripts/world/ShrineRoute.gd")
 const GuardianScene := preload("res://scenes/enemies/ShrineGuardian.tscn")
 
 var _failures := 0
@@ -18,6 +19,9 @@ func _run() -> void:
 	_test_player_invulnerability_prevents_damage()
 	_test_enemy_state_transitions()
 	_test_movement_input_normalization()
+	_test_player_remains_inside_world_boundaries()
+	_test_dodge_invulnerability_timing()
+	_test_mouse_aim_world_position_calculation()
 	if _failures == 0:
 		print("All gameplay logic tests passed.")
 		quit(0)
@@ -61,6 +65,28 @@ func _test_movement_input_normalization() -> void:
 	var diagonal := CombatMathUtil.normalized_input(Vector2(1.0, 1.0))
 	_assert_true(diagonal.length() <= 1.001, "diagonal movement is normalized")
 	_assert_equal(CombatMathUtil.normalized_input(Vector2(0.4, 0.0)), Vector2(0.4, 0.0), "partial input is preserved")
+
+
+func _test_player_remains_inside_world_boundaries() -> void:
+	_assert_true(Route.is_inside_route(Route.PLAYER_START), "player start is inside shrine route")
+	for point in Route.TEST_VISIBILITY_POINTS:
+		_assert_true(Route.is_inside_route(point), "visibility test point is inside route: %s" % str(point))
+		var rect := Route.camera_rect_at(point, Vector2(1920, 1080), Vector2(1.08, 1.08))
+		_assert_true(rect.has_point(point), "camera covers route test point: %s" % str(point))
+	_assert_false(Route.is_inside_route(Vector2(-900, -620)), "outer void is outside route")
+
+
+func _test_dodge_invulnerability_timing() -> void:
+	_assert_true(CombatMathUtil.is_dodge_invulnerable_at(0.0, GameBalance.PLAYER_DODGE_TIME), "dodge is invulnerable at start")
+	_assert_true(CombatMathUtil.is_dodge_invulnerable_at(GameBalance.PLAYER_DODGE_TIME * 0.5, GameBalance.PLAYER_DODGE_TIME), "dodge is invulnerable during roll")
+	_assert_false(CombatMathUtil.is_dodge_invulnerable_at(GameBalance.PLAYER_DODGE_TIME + 0.01, GameBalance.PLAYER_DODGE_TIME), "dodge invulnerability ends after roll")
+
+
+func _test_mouse_aim_world_position_calculation() -> void:
+	var direction := CombatMathUtil.aim_direction_from_world(Vector2(10, 10), Vector2(10, -90))
+	_assert_true(direction.distance_to(Vector2.UP) < 0.001, "world-space mouse aim points up")
+	var fallback := CombatMathUtil.aim_direction_from_world(Vector2(4, 4), Vector2(4, 4), Vector2.LEFT)
+	_assert_true(fallback.distance_to(Vector2.LEFT) < 0.001, "zero-length aim uses fallback")
 
 
 func _assert_true(value: bool, label: String) -> void:

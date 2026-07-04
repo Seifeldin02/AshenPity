@@ -161,7 +161,7 @@ func _get_move_input() -> Vector2:
 func _update_aim() -> void:
 	var aim := InputRouter.touch_aim_vector
 	if aim.length() < 0.12:
-		aim = get_global_mouse_position() - global_position
+		aim = CombatMathUtil.aim_direction_from_world(global_position, get_global_mouse_position(), facing)
 	if aim.length() > 0.1:
 		facing = aim.normalized()
 
