@@ -27,6 +27,7 @@ This stage does not include relic pulls, pity systems, permanent upgrades, shops
 - `F`: Healing flask
 - `Escape`: Pause
 - `F1`: Debug overlay
+- `F2`: Toggle lightweight performance mode
 - `M`: Toggle mobile controls for desktop testing
 
 ## Mobile Controls
@@ -60,6 +61,7 @@ For tests:
 
 ```powershell
 godot --headless --path . -s tests/test_runner.gd
+godot --headless --path . --scene res://tests/PlaytestHarness.tscn
 ```
 
 ## Project Structure
@@ -91,6 +93,15 @@ Implemented foundation:
 - Shrine Guardian enemy with patrol, chase, telegraph, attack, recovery, stagger, ash dissolve, and health UI.
 - Mobile controls that can be shown on touch devices or toggled on desktop with `M`.
 - Headless gameplay test runner for core combat logic.
+- Deterministic playtest harness for movement, visibility, aim, attack, dodge, flask interruption, and clearing three guardians.
+
+## Refresh Rate and Diagnostics
+
+- Physics runs at 120 ticks per second.
+- V-Sync is enabled by default; the game is not hard-locked to 120 FPS.
+- The prototype targets 60/90/120 Hz displays and should use the device display refresh rate where supported.
+- Press `F1` to show FPS, display refresh rate, average frame time, p95 frame time, physics tick rate, active enemy count, player state, and performance mode.
+- Press `F2` to toggle lightweight performance mode, which currently reduces selected particle/decal load for future mobile testing.
 
 ## Shrine Route
 
@@ -109,6 +120,7 @@ The current level is a compact three-part route:
 - Touch controls are implemented for the prototype but still need device testing on real phones.
 - Balance is first-pass and intentionally conservative.
 - The route is handcrafted and compact; no procedural generation or campaign structure exists yet.
+- Headless screenshot capture is unavailable with the dummy renderer, so harness screenshot steps log a skip unless run with a display renderer.
 
 ## Future Roadmap
 

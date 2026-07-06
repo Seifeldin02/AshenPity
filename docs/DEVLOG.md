@@ -32,6 +32,49 @@
 
 - No relics, pity systems, gacha mechanics, currency, shops, bosses, extra weapons, new enemy types, save files, or persistent progression were added.
 
+## Stage 1.1B Combat Feel and Performance
+
+- GUI launch is available, but no computer-control tool was available to drive real keyboard/mouse playthroughs. Because of that, deterministic in-game harness coverage was added instead of claiming manual playtesting.
+- Kept the Stage 1.1 disappearing-entity fix intact. The root cause remains the old Y-sorted arena root drawing floor/walls while actors were under a child sort wrapper.
+- Added a runtime render-layer integrity guard in `ShrineArena.gd` so ground/decal/shadow layers stay outside Y-sort and `ActorsAndTallProps` remains the shared Y-sorted layer for characters and tall props.
+- Set project physics to 120 ticks per second and kept V-Sync enabled without hard-locking max FPS.
+- Added `PerformanceStats` for FPS, display refresh, average frame time, p95 frame time, physics tick rate, active enemy count, player state, and lightweight mode.
+- Added `F2` lightweight performance mode. It currently reduces selected particle/decal load and exists as a future mobile-performance hook.
+
+### Combat Timing Values
+
+- Player move speed: 355.
+- Player acceleration/deceleration: 2600 / 3000.
+- Light attack startup: 0.09s.
+- Light attack active window: 0.10s.
+- Light attack recovery: 0.16s.
+- Attack input buffer window: 0.11s near the end of recovery.
+- Dodge duration: 0.27s.
+- Dodge invulnerability: 0.18s.
+- Dodge recovery: 0.09s.
+- Stamina regen: 62 per second after a 0.30s delay.
+- Guardian wind-up / active / recovery: 0.52s / 0.16s / 0.68s.
+
+### Measurements
+
+- Headless deterministic harness, uncapped smoke: measured about 132 FPS, average frame time about 7.58 ms, p95 about 8.33 ms, physics 120 Hz.
+- Fixed 120 FPS harness: passed with average frame time 8.33 ms and p95 8.33 ms.
+- Fixed 60 FPS harness: passed with average frame time 16.67 ms and p95 16.67 ms.
+- Headless display reports display refresh as 0 Hz, so real monitor refresh must be verified through the in-game debug overlay during human playtesting.
+
+### Automated Test Coverage
+
+- Unit tests cover stamina spend/regeneration, 120 Hz project physics setting, dodge gating, enemy damage, invulnerability math, enemy state transitions, movement normalization, route/camera bounds, world-space aim, frame-rate-independent velocity math, and attack buffering.
+- The playtest harness drives `InputRouter`, not direct player state transitions, for route movement, visibility, aim, moving attacks, dodge direction, dodging an enemy attack, flask interruption, and defeating guardians.
+- Harness setup directly places/resets player and guardian state between scenarios. That is intentional test setup, not a simulation of normal play.
+- Headless screenshots are skipped under the dummy renderer. Visual screenshots still require a display renderer or manual capture.
+
+### Still Needs Human Playtesting
+
+- Actual keyboard/mouse feel at desktop refresh rates.
+- Whether attack buffering feels responsive rather than spammy.
+- Whether dodge invulnerability and enemy recovery feel fair under pressure from multiple guardians.
+
 ## Raylib Prototype Separation
 
 The older Raylib prototype was not reused because it was an abandoned technical experiment. This Godot project needs a clean foundation for scene composition, mobile input, combat readability, and visual atmosphere from day one.
