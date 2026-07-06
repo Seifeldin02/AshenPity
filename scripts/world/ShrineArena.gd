@@ -38,6 +38,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		_debug_visible = not _debug_visible
 		if is_instance_valid(_debug_label):
 			_debug_label.visible = _debug_visible
+	if event.is_action_pressed("toggle_performance_mode"):
+		PerformanceStats.set_lightweight_mode(not PerformanceStats.lightweight_mode)
+		_apply_performance_mode()
 	if event.is_action_pressed("pause"):
 		_toggle_pause()
 
@@ -170,6 +173,7 @@ func _spawn_combatants() -> void:
 		guardians.append(guardian)
 		if guardian.has_signal("died"):
 			guardian.died.connect(_on_guardian_died.bind(guardian))
+	_apply_performance_mode()
 
 
 func _spawn_ui() -> void:
@@ -212,6 +216,14 @@ func _on_player_died() -> void:
 		_hud.show_death_prompt()
 
 
+func _apply_performance_mode() -> void:
+	if is_instance_valid(player) and player.has_method("apply_performance_mode"):
+		player.apply_performance_mode(PerformanceStats.lightweight_mode)
+	for guardian in guardians:
+		if is_instance_valid(guardian) and guardian.has_method("apply_performance_mode"):
+			guardian.apply_performance_mode(PerformanceStats.lightweight_mode)
+
+
 func _toggle_pause() -> void:
 	if not is_instance_valid(_hud):
 		return
@@ -224,14 +236,20 @@ func _update_debug_text() -> void:
 	var enemy_state := "none"
 	if not guardians.is_empty() and is_instance_valid(guardians[0]):
 		enemy_state = str(guardians[0].get("state_name"))
-	_debug_label.text = "FPS: %d\nPlayer HP: %.0f\nStamina: %.0f\nState: %s\nAim: %s\nTouch: %s\nEnemy: %s\nGuardians: %d\nCamera: %s" % [
+	var stats := PerformanceStats.snapshot(player.get("state_name") if is_instance_valid(player) else "none")
+	_debug_label.text = "FPS: %d\nRefresh: %.0f Hz\nAvg frame: %.2f ms\nP95 frame: %.2f ms\nPhysics: %d Hz\nPerf mode: %s\nPlayer HP: %.0f\nStamina: %.0f\nState: %s\nAim: %s\nTouch: %s\nEnemy: %s\nGuardians: %d\nCamera: %s" % [
 		Engine.get_frames_per_second(),
+		stats["display_refresh_hz"],
+		stats["avg_frame_ms"],
+		stats["p95_frame_ms"],
+		stats["physics_hz"],
+		"light" if stats["lightweight_mode"] else "full",
 		player.get("health") if is_instance_valid(player) else 0.0,
 		player.get("stamina") if is_instance_valid(player) else 0.0,
 		player.get("state_name") if is_instance_valid(player) else "none",
 		str(player.get("facing").round()) if is_instance_valid(player) else "none",
 		str(InputRouter.touch_active),
 		enemy_state,
-		guardians.size(),
+		stats["active_enemies"],
 		str(camera.global_position.round())
 	]

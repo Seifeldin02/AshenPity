@@ -43,6 +43,8 @@ func _draw_decals() -> void:
 		draw_polyline(crack, Color(0.035, 0.030, 0.034, 0.78), 3.0)
 		draw_polyline(crack, Color(0.56, 0.49, 0.39, 0.12), 1.0)
 	for point in _ash:
+		if PerformanceStats.lightweight_mode and int(point.x + point.y) % 2 == 0:
+			continue
 		draw_circle(point, _rng.randf_range(1.0, 2.2), Color(0.75, 0.70, 0.62, 0.13))
 	for torch_pos in Route.TORCHES:
 		_draw_light_pool(torch_pos, 170.0)

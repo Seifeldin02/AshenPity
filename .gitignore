@@ -16,6 +16,9 @@
 *.log
 logs/
 user://
+artifacts/
+test_artifacts/
+playtest_artifacts/
 
 # Local/editor settings
 .vscode/

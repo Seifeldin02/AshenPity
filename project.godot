@@ -14,6 +14,7 @@ config/icon="res://assets/ui/icon.svg"
 
 GameBalance="*res://scripts/autoload/GameBalance.gd"
 InputRouter="*res://scripts/autoload/InputRouter.gd"
+PerformanceStats="*res://scripts/autoload/PerformanceStats.gd"
 SceneFlow="*res://scripts/autoload/SceneFlow.gd"
 
 [display]
@@ -22,9 +23,14 @@ window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/size/mode=2
 window/size/resizable=true
+window/vsync/vsync_mode=1
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=2
+
+[physics]
+
+common/physics_ticks_per_second=120
 
 [input]
 
@@ -76,6 +82,11 @@ toggle_debug={
 toggle_mobile={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":77,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+toggle_performance_mode={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194337,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 

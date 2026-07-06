@@ -195,6 +195,10 @@ func _update_visual() -> void:
 		visual.set_pose(facing, state_name, health / GameBalance.ENEMY_MAX_HEALTH)
 
 
+func apply_performance_mode(lightweight: bool) -> void:
+	ash.amount = 36 if lightweight else 72
+
+
 func _set_state(new_state: EnemyState, duration: float) -> void:
 	state = new_state
 	_state_timer = duration

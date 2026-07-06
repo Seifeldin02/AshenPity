@@ -223,6 +223,10 @@ func is_dodge_invulnerable() -> bool:
 	return state == PlayerState.DODGE and invulnerable
 
 
+func apply_performance_mode(lightweight: bool) -> void:
+	dust.amount = 10 if lightweight else 18
+
+
 func _set_state(new_state: PlayerState, duration: float) -> void:
 	if state == new_state and duration == 0.0:
 		return
