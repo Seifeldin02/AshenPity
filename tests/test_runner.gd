@@ -14,6 +14,8 @@ func _initialize() -> void:
 func _run() -> void:
 	print("Running Ashen Pity gameplay logic tests...")
 	_test_stamina_cannot_go_below_zero()
+	_test_stamina_regeneration()
+	_test_120hz_physics_configuration()
 	_test_dodge_requires_stamina()
 	_test_enemy_damage_is_applied()
 	_test_player_invulnerability_prevents_damage()
@@ -22,6 +24,8 @@ func _run() -> void:
 	_test_player_remains_inside_world_boundaries()
 	_test_dodge_invulnerability_timing()
 	_test_mouse_aim_world_position_calculation()
+	_test_frame_rate_independent_velocity()
+	_test_attack_buffering_window()
 	if _failures == 0:
 		print("All gameplay logic tests passed.")
 		quit(0)
@@ -38,6 +42,15 @@ func _test_stamina_cannot_go_below_zero() -> void:
 func _test_dodge_requires_stamina() -> void:
 	_assert_false(CombatMathUtil.can_spend_stamina(20.0, GameBalance.PLAYER_DODGE_COST), "dodge is blocked below cost")
 	_assert_true(CombatMathUtil.can_spend_stamina(GameBalance.PLAYER_DODGE_COST, GameBalance.PLAYER_DODGE_COST), "dodge is allowed at exact cost")
+
+
+func _test_stamina_regeneration() -> void:
+	_assert_equal(CombatMathUtil.regenerate_stamina(90.0, 100.0, 20.0, 1.0), 100.0, "stamina regeneration clamps to max")
+	_assert_equal(CombatMathUtil.regenerate_stamina(20.0, 100.0, 10.0, 0.5), 25.0, "stamina regeneration uses delta")
+
+
+func _test_120hz_physics_configuration() -> void:
+	_assert_equal(int(ProjectSettings.get_setting("physics/common/physics_ticks_per_second")), 120, "project physics ticks are 120 Hz")
 
 
 func _test_enemy_damage_is_applied() -> void:
@@ -87,6 +100,20 @@ func _test_mouse_aim_world_position_calculation() -> void:
 	_assert_true(direction.distance_to(Vector2.UP) < 0.001, "world-space mouse aim points up")
 	var fallback := CombatMathUtil.aim_direction_from_world(Vector2(4, 4), Vector2(4, 4), Vector2.LEFT)
 	_assert_true(fallback.distance_to(Vector2.LEFT) < 0.001, "zero-length aim uses fallback")
+
+
+func _test_frame_rate_independent_velocity() -> void:
+	var start := Vector2.ZERO
+	var target := Vector2(1000, 0)
+	var once_60 := CombatMathUtil.velocity_toward(start, target, 600.0, 1.0 / 60.0)
+	var twice_120 := CombatMathUtil.velocity_toward(start, target, 600.0, 1.0 / 120.0)
+	twice_120 = CombatMathUtil.velocity_toward(twice_120, target, 600.0, 1.0 / 120.0)
+	_assert_true(once_60.distance_to(twice_120) < 0.001, "velocity integration is equivalent at 60 and 120 Hz")
+
+
+func _test_attack_buffering_window() -> void:
+	_assert_true(CombatMathUtil.is_attack_buffer_allowed(GameBalance.PLAYER_ATTACK_BUFFER_WINDOW * 0.5, GameBalance.PLAYER_ATTACK_BUFFER_WINDOW), "attack buffering accepts late recovery input")
+	_assert_false(CombatMathUtil.is_attack_buffer_allowed(GameBalance.PLAYER_ATTACK_BUFFER_WINDOW + 0.02, GameBalance.PLAYER_ATTACK_BUFFER_WINDOW), "attack buffering rejects early recovery input")
 
 
 func _assert_true(value: bool, label: String) -> void:

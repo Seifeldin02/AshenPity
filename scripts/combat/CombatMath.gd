@@ -17,6 +17,10 @@ static func spend_stamina(current: float, cost: float) -> float:
 	return maxf(current - cost, 0.0)
 
 
+static func regenerate_stamina(current: float, maximum: float, regen_rate: float, delta: float) -> float:
+	return minf(current + maxf(regen_rate, 0.0) * maxf(delta, 0.0), maximum)
+
+
 static func apply_damage(current_health: float, damage: float, invulnerable: bool) -> float:
 	if invulnerable:
 		return current_health
@@ -32,3 +36,11 @@ static func aim_direction_from_world(actor_position: Vector2, world_target_posit
 
 static func is_dodge_invulnerable_at(elapsed: float, duration: float) -> bool:
 	return elapsed >= 0.0 and elapsed <= duration
+
+
+static func velocity_toward(current: Vector2, target: Vector2, acceleration: float, delta: float) -> Vector2:
+	return current.move_toward(target, acceleration * delta)
+
+
+static func is_attack_buffer_allowed(recovery_remaining: float, buffer_window: float) -> bool:
+	return recovery_remaining >= 0.0 and recovery_remaining <= buffer_window

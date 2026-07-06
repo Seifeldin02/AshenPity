@@ -98,7 +98,7 @@ func _tick_state(delta: float, move_input: Vector2) -> void:
 				attack_area.monitoring = false
 				_set_state(PlayerState.ATTACK_RECOVERY, GameBalance.PLAYER_ATTACK_RECOVERY_TIME)
 		PlayerState.ATTACK_RECOVERY:
-			if _action_attack_pressed() and _state_timer <= GameBalance.PLAYER_ATTACK_BUFFER_WINDOW and CombatMathUtil.can_spend_stamina(stamina, GameBalance.PLAYER_ATTACK_COST):
+			if _action_attack_pressed() and CombatMathUtil.is_attack_buffer_allowed(_state_timer, GameBalance.PLAYER_ATTACK_BUFFER_WINDOW) and CombatMathUtil.can_spend_stamina(stamina, GameBalance.PLAYER_ATTACK_COST):
 				_queued_attack = true
 			velocity = velocity.move_toward(Vector2.ZERO, GameBalance.PLAYER_DECELERATION * delta)
 			if _state_timer <= 0.0:
@@ -189,7 +189,7 @@ func _update_stamina(delta: float) -> void:
 		_regen_delay -= delta
 		return
 	if stamina < GameBalance.PLAYER_MAX_STAMINA and state not in [PlayerState.ATTACK_WINDUP, PlayerState.ATTACK_ACTIVE, PlayerState.DODGE]:
-		stamina = minf(stamina + GameBalance.PLAYER_STAMINA_REGEN * delta, GameBalance.PLAYER_MAX_STAMINA)
+		stamina = CombatMathUtil.regenerate_stamina(stamina, GameBalance.PLAYER_MAX_STAMINA, GameBalance.PLAYER_STAMINA_REGEN, delta)
 		stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
 
 
