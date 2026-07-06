@@ -102,6 +102,8 @@ func _scenario_attack_while_moving() -> void:
 	_assert_true(is_instance_valid(guardian), "guardian exists for moving attack")
 	if not is_instance_valid(guardian):
 		return
+	_isolate_guardian(guardian)
+	_reset_guardian(guardian, guardian.global_position)
 	_setup_player(guardian.global_position + Vector2(-92, 0), Vector2.RIGHT)
 	var start_health: float = guardian.get("health")
 	InputRouter.press_attack()
@@ -130,11 +132,12 @@ func _scenario_dodge_enemy_attack() -> void:
 	if not is_instance_valid(guardian):
 		_fail("guardian exists for dodge invulnerability scenario")
 		return
-	guardian.global_position = Vector2(90, 40)
+	_isolate_guardian(guardian)
+	_reset_guardian(guardian, Vector2(90, 40))
 	_setup_player(Vector2(-15, 40), Vector2.RIGHT)
-	var start_health: float = _player.get("health")
 	await _wait_for_enemy_state(guardian, "windup", 2.0)
-	await _step(0.46, Vector2.ZERO, Vector2.RIGHT)
+	await _step(maxf(GameBalance.ENEMY_WINDUP_TIME - 0.02, 0.0), Vector2.ZERO, Vector2.RIGHT)
+	var start_health: float = _player.get("health")
 	InputRouter.press_dodge()
 	await _step(0.35, Vector2.RIGHT, Vector2.RIGHT)
 	_assert_true(_player.get("health") >= start_health, "dodge avoided enemy attack damage")
@@ -146,7 +149,8 @@ func _scenario_flask_interruption() -> void:
 	if not is_instance_valid(guardian):
 		_fail("guardian exists for flask interruption scenario")
 		return
-	guardian.global_position = Vector2(96, 95)
+	_isolate_guardian(guardian)
+	_reset_guardian(guardian, Vector2(96, 95))
 	_setup_player(Vector2(0, 95), Vector2.RIGHT)
 	_player.set("health", 50.0)
 	_player.set("flask_charges", 2)
@@ -164,14 +168,14 @@ func _scenario_defeat_three_guardians() -> void:
 		if not is_instance_valid(guardian):
 			continue
 		var guard_node: Node2D = guardian
-		guardian.set("health", GameBalance.ENEMY_MAX_HEALTH)
-		guardian.set("modulate", Color.WHITE)
+		_reset_guardian(guardian, guard_node.global_position)
 		_setup_player(guard_node.global_position + Vector2(-88, 0), Vector2.RIGHT)
 		var attempts := 0
 		while is_instance_valid(guardian) and guardian.get("health") > 0.0 and attempts < 12:
 			InputRouter.press_attack()
 			await _step(0.42, Vector2.ZERO, Vector2.RIGHT)
 			attempts += 1
+		await _step(0.25, Vector2.ZERO, Vector2.RIGHT)
 		_assert_true(not is_instance_valid(guardian) or guardian.get("health") <= 0.0, "guardian defeated with player attacks")
 	await _step(0.25, Vector2.ZERO, Vector2.RIGHT)
 	_assert_true(PerformanceStats.active_enemy_count() == 0, "all guardians defeated")
@@ -220,6 +224,24 @@ func _first_living_guardian() -> Node:
 		if is_instance_valid(guardian) and guardian.get("health") > 0.0:
 			return guardian
 	return null
+
+
+func _reset_guardian(guardian: Node, position: Vector2) -> void:
+	if guardian.has_method("playtest_reset"):
+		guardian.playtest_reset(position, _player)
+	else:
+		guardian.global_position = position
+		guardian.set("health", GameBalance.ENEMY_MAX_HEALTH)
+
+
+func _isolate_guardian(active_guardian: Node) -> void:
+	var parking_spots := [Vector2(640, -205), Vector2(-650, 430), Vector2(330, -510)]
+	var index := 0
+	for guardian in _arena.get("guardians"):
+		if not is_instance_valid(guardian) or guardian == active_guardian:
+			continue
+		_reset_guardian(guardian, parking_spots[index % parking_spots.size()])
+		index += 1
 
 
 func _save_screenshot(file_name: String) -> void:

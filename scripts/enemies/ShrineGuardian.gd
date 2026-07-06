@@ -199,6 +199,28 @@ func apply_performance_mode(lightweight: bool) -> void:
 	ash.amount = 36 if lightweight else 72
 
 
+func playtest_reset(position_value: Vector2, player_ref: Node2D) -> void:
+	global_position = position_value
+	velocity = Vector2.ZERO
+	player = player_ref
+	health = GameBalance.ENEMY_MAX_HEALTH
+	facing = Vector2.LEFT
+	_attack_direction = Vector2.LEFT
+	_state_timer = 0.0
+	_stagger_hits = 0
+	_hit_targets.clear()
+	_knockback = Vector2.ZERO
+	_died_emitted = false
+	modulate = Color.WHITE
+	attack_area.monitoring = false
+	collision_shape.disabled = false
+	ash.emitting = false
+	_patrol_origin = global_position
+	_choose_patrol_target()
+	_set_state(EnemyState.PATROL, 0.0)
+	health_changed.emit(health, GameBalance.ENEMY_MAX_HEALTH)
+
+
 func _set_state(new_state: EnemyState, duration: float) -> void:
 	state = new_state
 	_state_timer = duration
