@@ -143,8 +143,8 @@ func _begin_attack() -> void:
 
 
 func _die() -> void:
-	attack_area.monitoring = false
-	collision_shape.disabled = true
+	attack_area.set_deferred("monitoring", false)
+	collision_shape.set_deferred("disabled", true)
 	ash.emitting = true
 	_set_state(EnemyState.DYING, 0.9)
 	if not _died_emitted:

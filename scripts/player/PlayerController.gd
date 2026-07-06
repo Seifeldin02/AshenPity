@@ -227,6 +227,23 @@ func apply_performance_mode(lightweight: bool) -> void:
 	dust.amount = 10 if lightweight else 18
 
 
+func playtest_reset(position_value: Vector2, aim: Vector2) -> void:
+	global_position = position_value
+	velocity = Vector2.ZERO
+	health = GameBalance.PLAYER_MAX_HEALTH
+	stamina = GameBalance.PLAYER_MAX_STAMINA
+	flask_charges = 2
+	facing = aim.normalized() if aim.length() > 0.001 else Vector2.RIGHT
+	invulnerable = false
+	_heal_pending = false
+	_queued_attack = false
+	_dead_emitted = false
+	attack_area.monitoring = false
+	dust.emitting = false
+	_set_state(PlayerState.IDLE, 0.0)
+	_emit_all()
+
+
 func _set_state(new_state: PlayerState, duration: float) -> void:
 	if state == new_state and duration == 0.0:
 		return
