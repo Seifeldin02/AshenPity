@@ -29,6 +29,7 @@ var _regen_delay := 0.0
 var _roll_direction := Vector2.RIGHT
 var _attack_direction := Vector2.RIGHT
 var _heal_pending := false
+var _queued_attack := false
 var _hit_targets: Array[Node] = []
 var _knockback := Vector2.ZERO
 var _dead_emitted := false
@@ -97,11 +98,20 @@ func _tick_state(delta: float, move_input: Vector2) -> void:
 				attack_area.monitoring = false
 				_set_state(PlayerState.ATTACK_RECOVERY, GameBalance.PLAYER_ATTACK_RECOVERY_TIME)
 		PlayerState.ATTACK_RECOVERY:
+			if _action_attack_pressed() and _state_timer <= GameBalance.PLAYER_ATTACK_BUFFER_WINDOW and CombatMathUtil.can_spend_stamina(stamina, GameBalance.PLAYER_ATTACK_COST):
+				_queued_attack = true
 			velocity = velocity.move_toward(Vector2.ZERO, GameBalance.PLAYER_DECELERATION * delta)
 			if _state_timer <= 0.0:
-				_set_state(PlayerState.IDLE, 0.0)
+				if _queued_attack and CombatMathUtil.can_spend_stamina(stamina, GameBalance.PLAYER_ATTACK_COST):
+					_queued_attack = false
+					_start_attack()
+				else:
+					_queued_attack = false
+					_set_state(PlayerState.IDLE, 0.0)
 		PlayerState.DODGE:
 			velocity = _roll_direction * GameBalance.PLAYER_DODGE_SPEED
+			if _state_timer <= GameBalance.PLAYER_DODGE_TIME - GameBalance.PLAYER_DODGE_INVULN_TIME:
+				invulnerable = false
 			if _state_timer <= 0.0:
 				invulnerable = false
 				dust.emitting = false
@@ -128,12 +138,8 @@ func _tick_state(delta: float, move_input: Vector2) -> void:
 
 
 func _handle_actions(move_input: Vector2) -> void:
-	if (Input.is_action_just_pressed("light_attack") or InputRouter.consume_attack()) and CombatMathUtil.can_spend_stamina(stamina, GameBalance.PLAYER_ATTACK_COST):
-		stamina = CombatMathUtil.spend_stamina(stamina, GameBalance.PLAYER_ATTACK_COST)
-		_regen_delay = GameBalance.PLAYER_STAMINA_REGEN_DELAY
-		stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
-		_attack_direction = facing
-		_set_state(PlayerState.ATTACK_WINDUP, GameBalance.PLAYER_ATTACK_WINDUP_TIME)
+	if _action_attack_pressed() and CombatMathUtil.can_spend_stamina(stamina, GameBalance.PLAYER_ATTACK_COST):
+		_start_attack()
 		return
 	if (Input.is_action_just_pressed("dodge") or InputRouter.consume_dodge()) and CombatMathUtil.can_spend_stamina(stamina, GameBalance.PLAYER_DODGE_COST):
 		stamina = CombatMathUtil.spend_stamina(stamina, GameBalance.PLAYER_DODGE_COST)
@@ -152,18 +158,24 @@ func _handle_actions(move_input: Vector2) -> void:
 		_set_state(PlayerState.HEAL, GameBalance.PLAYER_HEAL_TIME)
 
 
+func _action_attack_pressed() -> bool:
+	return Input.is_action_just_pressed("light_attack") or InputRouter.consume_attack()
+
+
+func _start_attack() -> void:
+	stamina = CombatMathUtil.spend_stamina(stamina, GameBalance.PLAYER_ATTACK_COST)
+	_regen_delay = GameBalance.PLAYER_STAMINA_REGEN_DELAY
+	stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
+	_attack_direction = facing
+	_set_state(PlayerState.ATTACK_WINDUP, GameBalance.PLAYER_ATTACK_WINDUP_TIME)
+
+
 func _get_move_input() -> Vector2:
-	var keyboard := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	var mixed := keyboard + InputRouter.touch_move_vector
-	return CombatMathUtil.normalized_input(mixed)
+	return InputRouter.get_move_vector()
 
 
 func _update_aim() -> void:
-	var aim := InputRouter.touch_aim_vector
-	if aim.length() < 0.12:
-		aim = CombatMathUtil.aim_direction_from_world(global_position, get_global_mouse_position(), facing)
-	if aim.length() > 0.1:
-		facing = aim.normalized()
+	facing = InputRouter.get_aim_direction(global_position, get_global_mouse_position(), facing)
 
 
 func _apply_weighted_movement(move_input: Vector2, delta: float) -> void:

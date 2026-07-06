@@ -18,6 +18,7 @@ var health := GameBalance.ENEMY_MAX_HEALTH
 var facing := Vector2.LEFT
 var state := EnemyState.PATROL
 var state_name := "patrol"
+var _attack_direction := Vector2.LEFT
 
 var _state_timer := 0.0
 var _patrol_origin := Vector2.ZERO
@@ -135,6 +136,9 @@ func _chase(delta: float) -> void:
 
 func _begin_attack() -> void:
 	velocity = Vector2.ZERO
+	if _has_player():
+		_attack_direction = (player.global_position - global_position).normalized()
+		facing = _attack_direction
 	_set_state(EnemyState.WINDUP, GameBalance.ENEMY_WINDUP_TIME)
 
 
@@ -157,7 +161,9 @@ func _has_player() -> bool:
 
 
 func _update_facing() -> void:
-	if _has_player() and state in [EnemyState.CHASE, EnemyState.WINDUP, EnemyState.ACTIVE, EnemyState.RECOVERY]:
+	if state in [EnemyState.WINDUP, EnemyState.ACTIVE, EnemyState.RECOVERY]:
+		facing = _attack_direction
+	elif _has_player() and state == EnemyState.CHASE:
 		var to_player := player.global_position - global_position
 		if to_player.length() > 0.1:
 			facing = to_player.normalized()
@@ -166,8 +172,9 @@ func _update_facing() -> void:
 
 
 func _update_attack_hitbox() -> void:
-	attack_area.position = facing * 72.0
-	attack_area.rotation = facing.angle()
+	var attack_facing := _attack_direction if state in [EnemyState.WINDUP, EnemyState.ACTIVE, EnemyState.RECOVERY] else facing
+	attack_area.position = attack_facing * 72.0
+	attack_area.rotation = attack_facing.angle()
 
 
 func _poll_attack_hits() -> void:
