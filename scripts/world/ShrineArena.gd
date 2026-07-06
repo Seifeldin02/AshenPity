@@ -25,6 +25,7 @@ var _shake_offset := Vector2.ZERO
 func _ready() -> void:
 	_rng.seed = 1312
 	y_sort_enabled = false
+	_enforce_render_layer_integrity()
 	_build_collision()
 	_build_world_props()
 	_spawn_combatants()
@@ -54,8 +55,26 @@ func _configure_camera() -> void:
 	camera.limit_top = Route.CAMERA_LIMIT_TOP
 	camera.limit_right = Route.CAMERA_LIMIT_RIGHT
 	camera.limit_bottom = Route.CAMERA_LIMIT_BOTTOM
+	camera.zoom = Vector2(1.10, 1.10)
 	camera.global_position = Route.clamped_to_camera_limits(player.global_position if is_instance_valid(player) else Vector2.ZERO)
 	camera.reset_smoothing()
+
+
+func _enforce_render_layer_integrity() -> void:
+	var ground: Node2D = %Ground
+	var decals: Node2D = %GroundDecals
+	var shadows: Node2D = %Shadows
+	var foreground: Node2D = %ForegroundCanopy
+	ground.y_sort_enabled = false
+	decals.y_sort_enabled = false
+	shadows.y_sort_enabled = false
+	foreground.y_sort_enabled = false
+	actors_and_tall_props.y_sort_enabled = true
+	ground.z_index = 0
+	decals.z_index = 1
+	shadows.z_index = 2
+	actors_and_tall_props.z_index = 10
+	foreground.z_index = 20
 
 
 func _update_camera(delta: float) -> void:
