@@ -27,7 +27,7 @@ func _draw() -> void:
 	var flip := -1.0 if facing.x < -0.1 else 1.0
 	var bob := sin(_time * 4.0) * 2.0
 	var tint := Color.WHITE.lerp(Color(1.0, 0.28, 0.18), flash)
-	draw_colored_polygon(_ellipse(Vector2(0, 38), 35.0, 11.0), Color(0.02, 0.018, 0.02, 0.58))
+	draw_colored_polygon(_ellipse(Vector2(0, 42), 44.0, 13.0), Color(0.02, 0.018, 0.02, 0.64))
 	draw_set_transform(Vector2(0, bob), 0.0, Vector2(flip, 1.0))
 	_draw_body(tint)
 	_draw_head(tint)
@@ -42,35 +42,50 @@ func _draw() -> void:
 
 
 func _draw_body(tint: Color) -> void:
+	draw_colored_polygon(PackedVector2Array([
+		Vector2(-36, -38), Vector2(-57, -6), Vector2(-45, 25), Vector2(-25, 6)
+	]), Color("#28242c").lerp(tint, 0.10))
+	draw_colored_polygon(PackedVector2Array([
+		Vector2(35, -38), Vector2(57, -5), Vector2(43, 27), Vector2(23, 7)
+	]), Color("#3a3338").lerp(tint, 0.10))
 	var armor := PackedVector2Array([
-		Vector2(0, -58), Vector2(31, -34), Vector2(28, 22),
-		Vector2(12, 57), Vector2(-13, 57), Vector2(-30, 22), Vector2(-31, -34)
+		Vector2(0, -66), Vector2(36, -42), Vector2(36, 21),
+		Vector2(18, 64), Vector2(-17, 64), Vector2(-36, 21), Vector2(-37, -42)
 	])
 	draw_colored_polygon(armor, Color("#343139").lerp(tint, 0.22))
-	draw_line(Vector2(-22, -26), Vector2(22, 30), Color("#787065").lerp(tint, 0.12), 4.0)
-	draw_line(Vector2(20, -27), Vector2(-15, 34), Color("#1b1920"), 5.0)
-	draw_circle(Vector2(-12, 4), 7.0, Color("#554436").lerp(tint, 0.12))
-	draw_circle(Vector2(14, 3), 7.0, Color("#554436").lerp(tint, 0.12))
-	draw_rect(Rect2(-24, 60, 14, 23), Color("#211f25"))
-	draw_rect(Rect2(10, 60, 14, 23), Color("#211f25"))
+	draw_colored_polygon(PackedVector2Array([Vector2(-20, -45), Vector2(20, -45), Vector2(26, -18), Vector2(0, -2), Vector2(-26, -18)]), Color("#56505a").lerp(tint, 0.15))
+	draw_colored_polygon(PackedVector2Array([Vector2(-27, -15), Vector2(0, -1), Vector2(-3, 55), Vector2(-22, 46)]), Color("#27252d").lerp(tint, 0.12))
+	draw_colored_polygon(PackedVector2Array([Vector2(27, -15), Vector2(0, -1), Vector2(4, 55), Vector2(23, 46)]), Color("#4a4448").lerp(tint, 0.12))
+	draw_line(Vector2(-27, -30), Vector2(27, 35), Color("#8a806f").lerp(tint, 0.12), 5.0)
+	draw_line(Vector2(24, -32), Vector2(-17, 40), Color("#17141a"), 5.0)
+	draw_circle(Vector2(-14, 6), 8.0, Color("#6d5641").lerp(tint, 0.12))
+	draw_circle(Vector2(15, 5), 8.0, Color("#6d5641").lerp(tint, 0.12))
+	draw_rect(Rect2(-28, 65, 15, 27), Color("#17151c"))
+	draw_rect(Rect2(13, 65, 15, 27), Color("#17151c"))
+	draw_line(Vector2(-29, 91), Vector2(-8, 91), Color("#09080d"), 4.0)
+	draw_line(Vector2(8, 91), Vector2(31, 91), Color("#09080d"), 4.0)
 
 
 func _draw_head(tint: Color) -> void:
 	var mask := PackedVector2Array([
-		Vector2(-16, -67), Vector2(15, -69), Vector2(25, -47),
-		Vector2(11, -24), Vector2(-8, -22), Vector2(-23, -45)
+		Vector2(-18, -76), Vector2(0, -84), Vector2(19, -76), Vector2(29, -50),
+		Vector2(16, -23), Vector2(0, -16), Vector2(-16, -23), Vector2(-29, -50)
 	])
 	draw_colored_polygon(mask, Color("#c5bdac").lerp(tint, 0.25))
-	draw_line(Vector2(-10, -52), Vector2(-2, -50), Color("#111016"), 3.0)
-	draw_line(Vector2(11, -53), Vector2(3, -50), Color("#111016"), 3.0)
-	draw_polyline(PackedVector2Array([Vector2(-18, -62), Vector2(-5, -72), Vector2(9, -66)]), Color("#6c645c"), 3.0)
+	draw_colored_polygon(PackedVector2Array([Vector2(-28, -61), Vector2(-43, -76), Vector2(-31, -50)]), Color("#9d9181").lerp(tint, 0.12))
+	draw_colored_polygon(PackedVector2Array([Vector2(28, -61), Vector2(44, -76), Vector2(31, -50)]), Color("#9d9181").lerp(tint, 0.12))
+	draw_line(Vector2(-12, -57), Vector2(-3, -54), Color("#111016"), 3.0)
+	draw_line(Vector2(12, -57), Vector2(3, -54), Color("#111016"), 3.0)
+	draw_line(Vector2(0, -78), Vector2(0, -19), Color("#766e65"), 2.0)
+	draw_polyline(PackedVector2Array([Vector2(-21, -70), Vector2(-7, -80), Vector2(10, -73)]), Color("#6c645c"), 3.0)
 
 
 func _draw_weapon(tint: Color) -> void:
 	var raised := -26.0 if state_name == "windup" else 0.0
-	draw_line(Vector2(-37, -25 + raised), Vector2(44, 34 + raised), Color("#5e3b2f").lerp(tint, 0.12), 8.0)
-	draw_line(Vector2(30, 22 + raised), Vector2(62, 40 + raised), Color("#b8ac94").lerp(tint, 0.14), 7.0)
-	draw_line(Vector2(32, 18 + raised), Vector2(63, 36 + raised), Color("#4f4a48"), 3.0)
+	draw_line(Vector2(-45, -33 + raised), Vector2(47, 39 + raised), Color("#5e3b2f").lerp(tint, 0.12), 9.0)
+	draw_line(Vector2(30, 25 + raised), Vector2(70, 50 + raised), Color("#b8ac94").lerp(tint, 0.14), 8.0)
+	draw_line(Vector2(32, 20 + raised), Vector2(71, 45 + raised), Color("#4f4a48"), 3.0)
+	draw_line(Vector2(-50, -36 + raised), Vector2(-31, -21 + raised), Color("#34262a"), 6.0)
 
 
 func _draw_telegraph() -> void:

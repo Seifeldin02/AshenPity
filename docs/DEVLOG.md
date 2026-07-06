@@ -43,12 +43,14 @@
 
 ### Combat Timing Values
 
-- Player move speed: 355.
-- Player acceleration/deceleration: 2600 / 3000.
+- Player move speed: 372.
+- Player acceleration/deceleration: 3200 / 3600.
 - Light attack startup: 0.09s.
 - Light attack active window: 0.10s.
 - Light attack recovery: 0.16s.
 - Attack input buffer window: 0.11s near the end of recovery.
+- Active attack forward lunge target speed: 92.
+- Dodge speed: 790.
 - Dodge duration: 0.27s.
 - Dodge invulnerability: 0.18s.
 - Dodge recovery: 0.09s.
@@ -75,6 +77,35 @@
 - Whether attack buffering feels responsive rather than spammy.
 - Whether dodge invulnerability and enemy recovery feel fair under pressure from multiple guardians.
 
+## Stage 1.1C Visual Difference and Framing Pass
+
+- Inspected the playable build before this pass. The project was clean on `feature/stage-1-1b-combat-feel-performance`, with no configured Git remote and `gh` unauthenticated.
+- The disappearing-entity root cause from Stage 1.1 remains fixed: actors are not under UI/CanvasLayer nodes, ground is outside Y-sort, and player/guardians/tall props share the `ActorsAndTallProps` Y-sorted layer.
+- The build still felt visually similar because the camera limits and screenshot points centered the old rectangular central arena, the side spaces were not prominent, and the player/enemy vector actors still read too close to placeholder silhouettes at gameplay scale.
+- One actual route bug was found: the left central pillar was placed on the diagonal approach to the left side space. The deterministic harness stopped near `(-427, -147)` when trying to reach `(-560, -145)`. Moving that pillar opened the side route while preserving cover and depth.
+- Camera framing was tightened by moving the shared route zoom to `1.20`, expanding drawn camera edge limits to include designed exterior masonry, disabling built-in Camera2D smoothing, and keeping one script-controlled camera interpolation path.
+- The playtest harness now snaps the camera after scenario teleports, so screenshots test level framing instead of recording artificial camera catch-up after a teleport.
+- The shrine route now has wider left and right side spaces, a clearer entrance, an irregular central combat area, and a more distinct northern altar platform. Exterior masonry is drawn around the route so camera edges show designed space rather than raw renderer black.
+- Player and Shrine Guardian visuals remain original code-drawn art, but the silhouettes were expanded with layered cloak/armor panels, stronger mask shapes, weapon details, and clearer shadows.
+- The HUD now displays `Stage 1.1C` and the current Git commit through `BuildInfo.gd`, so screenshots and local play sessions identify the build.
+- No relics, pity systems, currency, bosses, new weapons, new enemy types, save files, shops, procedural generation, or progression systems were added.
+
+### Stage 1.1C Verification
+
+- `godot_console --headless --path . -s tests/test_runner.gd`: passed.
+- `godot_console --headless --path . --scene res://scenes/arena/ShrineArena.tscn --quit`: passed.
+- `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
+- `godot_console --path . --fixed-fps 60 --scene res://tests/PlaytestHarness.tscn`: passed.
+- `godot_console --path . --quit-after 180`: passed.
+- Display-renderer harness artifacts generated: `entrance.png`, `central_arena.png`, `left_side_path.png`, `right_side_path.png`, `northern_altar.png`, and `combat_encounter.png` under ignored `playtest_artifacts/`.
+- Harness performance snapshot on the development PC: about 170 FPS reported, display refresh about 170 Hz, p95 frame time 8.33 ms under fixed 120 FPS simulation, physics 120 Hz.
+
+### Stage 1.1C Remaining Human Checks
+
+- Whether the darker exterior masonry around side paths reads as designed shrine space rather than leftover empty space.
+- Whether the faster movement, 92-speed attack lunge, and 790-speed dodge feel responsive under real keyboard/mouse input.
+- Whether the camera follow feels comfortable during continuous human movement instead of only deterministic test routes.
+
 ## Raylib Prototype Separation
 
 The older Raylib prototype was not reused because it was an abandoned technical experiment. This Godot project needs a clean foundation for scene composition, mobile input, combat readability, and visual atmosphere from day one.
@@ -91,6 +122,6 @@ The older Raylib prototype was not reused because it was an abandoned technical 
 
 ## Best Next Tasks After This Milestone
 
-1. Add a second weapon with a distinct stamina and timing profile.
-2. Add a second enemy that pressures healing and positioning differently.
-3. Prototype a first reward screen without permanent progression.
+1. Run a human keyboard/mouse playtest pass and tune camera speed, dodge distance, and attack lunge from direct feel.
+2. Add a small visual QA checklist for every route screenshot so darkness, player visibility, and side-space readability are reviewed consistently.
+3. Add one more automated route scenario that walks behind each pillar and confirms the player is visually layered correctly.

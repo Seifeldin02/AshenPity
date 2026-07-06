@@ -44,12 +44,12 @@ visible = false
 
 [node name="ArenaCamera" type="Camera2D" parent="World"]
 unique_name_in_owner = true
-position_smoothing_enabled = true
+position_smoothing_enabled = false
 position_smoothing_speed = 7.0
-limit_left = -940
-limit_top = -650
-limit_right = 940
-limit_bottom = 650
+limit_left = -1720
+limit_top = -1020
+limit_right = 1720
+limit_bottom = 1020
 limit_smoothed = true
-zoom = Vector2(1.1, 1.1)
+zoom = Vector2(1.2, 1.2)
 enabled = true

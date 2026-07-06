@@ -92,7 +92,7 @@ func _tick_state(delta: float, move_input: Vector2) -> void:
 				attack_area.monitoring = true
 				_set_state(PlayerState.ATTACK_ACTIVE, GameBalance.PLAYER_ATTACK_ACTIVE_TIME)
 		PlayerState.ATTACK_ACTIVE:
-			velocity = velocity.move_toward(_attack_direction * 42.0, GameBalance.PLAYER_DECELERATION * delta)
+			velocity = velocity.move_toward(_attack_direction * 92.0, GameBalance.PLAYER_DECELERATION * delta)
 			_poll_attack_hits()
 			if _state_timer <= 0.0:
 				attack_area.monitoring = false

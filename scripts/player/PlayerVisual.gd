@@ -27,12 +27,12 @@ func _draw() -> void:
 	var breathe := sin(_time * 5.0) * 2.0
 	var walk_bob := 0.0
 	if state_name == "move":
-		walk_bob = sin(_time * 12.0) * 4.0
+		walk_bob = sin(_time * 14.0) * 3.0
 	elif state_name == "dodge":
 		walk_bob = -8.0
 	var flip := -1.0 if facing.x < -0.12 else 1.0
 	var tint := Color.WHITE.lerp(Color(1.0, 0.35, 0.25), flash)
-	draw_colored_polygon(_ellipse(Vector2(0, 31), 27.0, 9.0), Color(0.02, 0.018, 0.022, 0.50))
+	draw_colored_polygon(_ellipse(Vector2(0, 34), 34.0, 11.0), Color(0.02, 0.018, 0.022, 0.58))
 	if state_name == "dodge":
 		_draw_dodge_trail()
 	draw_set_transform(Vector2(0, walk_bob), 0.0, Vector2(flip, 1.0))
@@ -45,42 +45,54 @@ func _draw() -> void:
 
 
 func _draw_cloak(tint: Color, breathe: float) -> void:
+	draw_colored_polygon(PackedVector2Array([
+		Vector2(-27, -16), Vector2(-48, 11), Vector2(-32, 31), Vector2(-15, 8)
+	]), Color("#111018").lerp(tint, 0.10))
+	draw_colored_polygon(PackedVector2Array([
+		Vector2(25, -16), Vector2(43, 12), Vector2(31, 30), Vector2(14, 7)
+	]), Color("#211c29").lerp(tint, 0.10))
 	var cloak := PackedVector2Array([
-		Vector2(0, -46 + breathe), Vector2(31, -24), Vector2(26, 24),
-		Vector2(10, 45), Vector2(-8, 46), Vector2(-28, 25), Vector2(-31, -23)
+		Vector2(0, -53 + breathe), Vector2(34, -31), Vector2(33, 20),
+		Vector2(18, 51), Vector2(2, 61), Vector2(-16, 51), Vector2(-34, 21), Vector2(-35, -30)
 	])
 	draw_colored_polygon(cloak, Color("#191821").lerp(tint, 0.18))
-	draw_polyline(PackedVector2Array([Vector2(-26, -19), Vector2(0, -46 + breathe), Vector2(28, -18)]), Color("#55505b").lerp(tint, 0.20), 5.0)
-	draw_line(Vector2(-7, -19), Vector2(-14, 36), Color("#0d0c12"), 5.0)
-	draw_line(Vector2(10, -20), Vector2(16, 34), Color("#302b35"), 4.0)
-	draw_circle(Vector2(-12, -4), 4.0, Color("#352c35").lerp(tint, 0.18))
-	draw_circle(Vector2(13, -4), 4.0, Color("#352c35").lerp(tint, 0.18))
+	draw_colored_polygon(PackedVector2Array([
+		Vector2(-3, -49 + breathe), Vector2(23, -27), Vector2(19, 43), Vector2(4, 56), Vector2(0, 3)
+	]), Color("#2b2633").lerp(tint, 0.12))
+	draw_polyline(PackedVector2Array([Vector2(-29, -23), Vector2(0, -53 + breathe), Vector2(31, -22)]), Color("#6b6470").lerp(tint, 0.20), 5.0)
+	draw_line(Vector2(-7, -22), Vector2(-16, 43), Color("#0d0c12"), 5.0)
+	draw_line(Vector2(10, -22), Vector2(18, 41), Color("#3b3341"), 4.0)
+	draw_line(Vector2(-22, 48), Vector2(18, 50), Color("#0a0910"), 4.0)
+	draw_circle(Vector2(-14, -5), 4.5, Color("#463847").lerp(tint, 0.18))
+	draw_circle(Vector2(14, -5), 4.5, Color("#463847").lerp(tint, 0.18))
 
 
 func _draw_mask(tint: Color, breathe: float) -> void:
 	var mask := PackedVector2Array([
-		Vector2(-12, -32 + breathe), Vector2(12, -32 + breathe),
-		Vector2(16, -14), Vector2(6, 0), Vector2(-6, 0), Vector2(-16, -14)
+		Vector2(-15, -38 + breathe), Vector2(0, -44 + breathe), Vector2(15, -38 + breathe),
+		Vector2(19, -17), Vector2(8, 5), Vector2(0, 10), Vector2(-8, 5), Vector2(-19, -17)
 	])
-	draw_colored_polygon(mask, Color("#d7d1c1").lerp(tint, 0.35))
-	draw_line(Vector2(-7, -20), Vector2(-1, -18), Color("#141217"), 2.0)
-	draw_line(Vector2(7, -20), Vector2(1, -18), Color("#141217"), 2.0)
-	draw_line(Vector2(0, -31), Vector2(0, -2), Color("#8a8177").lerp(tint, 0.20), 2.0)
+	draw_colored_polygon(mask, Color("#ddd7c7").lerp(tint, 0.35))
+	draw_line(Vector2(-9, -23), Vector2(-2, -21), Color("#141217"), 2.5)
+	draw_line(Vector2(9, -23), Vector2(2, -21), Color("#141217"), 2.5)
+	draw_line(Vector2(0, -39), Vector2(0, 6), Color("#948a7c").lerp(tint, 0.20), 2.0)
+	draw_line(Vector2(-11, -11), Vector2(11, -10), Color(0.95, 0.85, 0.66, 0.30), 1.5)
 
 
 func _draw_sword(tint: Color) -> void:
-	var raised := -12.0 if state_name == "attack_windup" else 0.0
+	var raised := -15.0 if state_name == "attack_windup" else 0.0
 	var side := 30.0
-	draw_line(Vector2(side - 8, -12 + raised), Vector2(side + 36, -34 + raised), Color("#c8bda6").lerp(tint, 0.25), 6.0)
-	draw_line(Vector2(side - 9, -13 + raised), Vector2(side + 19, -27 + raised), Color("#f1e7d0").lerp(tint, 0.18), 2.0)
-	draw_line(Vector2(side - 18, -6 + raised), Vector2(side - 3, -18 + raised), Color("#7c4b36"), 5.0)
+	draw_line(Vector2(side - 17, -2 + raised), Vector2(side - 2, -16 + raised), Color("#4f3740"), 8.0)
+	draw_line(Vector2(side - 3, -18 + raised), Vector2(side + 47, -43 + raised), Color("#d8cdb6").lerp(tint, 0.25), 7.0)
+	draw_line(Vector2(side - 1, -19 + raised), Vector2(side + 28, -34 + raised), Color("#fff1d5").lerp(tint, 0.18), 2.0)
+	draw_line(Vector2(side - 20, 0 + raised), Vector2(side - 1, -18 + raised), Color("#8b563c"), 5.0)
 
 
 func _draw_slash() -> void:
 	var alpha := clampf(attack_alpha, 0.0, 1.0)
 	var dir_angle := facing.angle()
-	draw_arc(Vector2.ZERO, 69.0, dir_angle - 0.74, dir_angle + 0.74, 28, Color(0.95, 0.82, 0.55, 0.62 * alpha), 10.0)
-	draw_arc(Vector2.ZERO, 83.0, dir_angle - 0.50, dir_angle + 0.62, 24, Color(0.95, 0.33, 0.16, 0.28 * alpha), 5.0)
+	draw_arc(Vector2.ZERO, 78.0, dir_angle - 0.74, dir_angle + 0.74, 30, Color(0.98, 0.86, 0.58, 0.66 * alpha), 11.0)
+	draw_arc(Vector2.ZERO, 95.0, dir_angle - 0.50, dir_angle + 0.62, 26, Color(0.95, 0.33, 0.16, 0.32 * alpha), 5.0)
 
 
 func _draw_dodge_trail() -> void:

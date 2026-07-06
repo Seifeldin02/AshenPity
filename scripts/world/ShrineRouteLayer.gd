@@ -27,13 +27,16 @@ func _draw() -> void:
 
 
 func _draw_ground() -> void:
-	draw_rect(Rect2(Vector2(Route.CAMERA_LIMIT_LEFT - 220, Route.CAMERA_LIMIT_TOP - 160), Vector2(Route.CAMERA_LIMIT_RIGHT - Route.CAMERA_LIMIT_LEFT + 440, Route.CAMERA_LIMIT_BOTTOM - Route.CAMERA_LIMIT_TOP + 320)), Color("#17141a"))
+	_draw_exterior_courtyard()
 	for room in Route.ROOMS:
 		_draw_room_floor(room)
-	_draw_room_trim(Route.ENTRANCE, Color("#37313a"))
-	_draw_room_trim(Route.SIDE_ALCOVE, Color("#302a31"))
-	_draw_room_trim(Route.CENTRAL, Color("#3b343b"))
-	_draw_room_trim(Route.ALTAR, Color("#463c40"))
+	_draw_irregular_edges()
+	_draw_room_trim(Route.ENTRANCE, Color("#413944"))
+	_draw_room_trim(Route.SIDE_ALCOVE, Color("#3b333b"))
+	_draw_room_trim(Route.LEFT_SIDE_PATH, Color("#332d36"))
+	_draw_room_trim(Route.RIGHT_SIDE_PATH, Color("#332d36"))
+	_draw_room_trim(Route.CENTRAL, Color("#493f43"))
+	_draw_room_trim(Route.ALTAR, Color("#514347"))
 	_draw_stairs()
 	_draw_landmark()
 
@@ -59,6 +62,8 @@ func _draw_shadows() -> void:
 		var center: Vector2 = obstacle[1]
 		var size: Vector2 = obstacle[2]
 		draw_colored_polygon(_ellipse(center + Vector2(0, size.y * 0.54), size.x * 0.62, 14.0), Color(0.02, 0.016, 0.020, 0.42))
+	draw_colored_polygon(PackedVector2Array([Vector2(-1030, -170), Vector2(-760, -260), Vector2(-720, 230), Vector2(-1025, 230)]), Color(0.02, 0.016, 0.02, 0.28))
+	draw_colored_polygon(PackedVector2Array([Vector2(760, -275), Vector2(1030, -190), Vector2(1025, 245), Vector2(720, 230)]), Color(0.02, 0.016, 0.02, 0.28))
 
 
 func _draw_foreground() -> void:
@@ -72,7 +77,7 @@ func _draw_room_floor(room: Rect2) -> void:
 	var end_x: float = room.end.x
 	var start_y: float = floor(room.position.y / tile) * tile
 	var end_y: float = room.end.y
-	draw_rect(room.grow(20.0), Color("#211e25"))
+	draw_rect(room.grow(20.0), Color("#252027"))
 	var y: float = start_y
 	while y < end_y:
 		var x: float = start_x
@@ -80,8 +85,9 @@ func _draw_room_floor(room: Rect2) -> void:
 			var rect := Rect2(x, y, tile, tile).intersection(room)
 			if rect.size.x > 1.0 and rect.size.y > 1.0:
 				var hash := int(abs(x * 3.0 + y * 7.0)) % 5
-				var shade := 0.145 + float(hash) * 0.008
-				draw_rect(rect, Color(shade, shade * 0.96, shade * 0.91, 1.0))
+				var shade := 0.155 + float(hash) * 0.009
+				var warm := 0.012 if room == Route.ALTAR or room == Route.SIDE_ALCOVE else 0.0
+				draw_rect(rect, Color(shade + warm, shade * 0.96, shade * 0.90, 1.0))
 				draw_rect(rect.grow(-2.0), Color(0.02, 0.018, 0.021, 0.18), false, 2.0)
 			x += tile
 		y += tile
@@ -90,6 +96,37 @@ func _draw_room_floor(room: Rect2) -> void:
 func _draw_room_trim(room: Rect2, color: Color) -> void:
 	draw_rect(room, color, false, 8.0)
 	draw_rect(room.grow(-12.0), Color(0.08, 0.07, 0.08, 0.45), false, 3.0)
+
+
+func _draw_exterior_courtyard() -> void:
+	var bounds := Rect2(Vector2(Route.CAMERA_LIMIT_LEFT - 260, Route.CAMERA_LIMIT_TOP - 180), Vector2(Route.CAMERA_LIMIT_RIGHT - Route.CAMERA_LIMIT_LEFT + 520, Route.CAMERA_LIMIT_BOTTOM - Route.CAMERA_LIMIT_TOP + 360))
+	draw_rect(bounds, Color("#151219"))
+	var tile := 120.0
+	var y := bounds.position.y
+	while y < bounds.end.y:
+		var x := bounds.position.x
+		while x < bounds.end.x:
+			var hash := int(abs(x * 5.0 + y * 11.0)) % 4
+			var shade := 0.08 + float(hash) * 0.006
+			draw_rect(Rect2(x, y, tile, tile), Color(shade, shade * 0.92, shade * 0.86, 1.0))
+			draw_rect(Rect2(x + 3, y + 3, tile - 6, tile - 6), Color(0.02, 0.018, 0.022, 0.20), false, 2.0)
+			x += tile
+		y += tile
+	for i in 18:
+		var x_pos := -1120.0 + float(i) * 132.0
+		draw_line(Vector2(x_pos, Route.CAMERA_LIMIT_TOP - 140), Vector2(x_pos + 76.0, Route.CAMERA_LIMIT_BOTTOM + 125), Color(0.04, 0.035, 0.042, 0.42), 2.0)
+
+
+func _draw_irregular_edges() -> void:
+	var left_apron := PackedVector2Array([Vector2(-955, -130), Vector2(-740, -220), Vector2(-705, 255), Vector2(-980, 220)])
+	var right_apron := PackedVector2Array([Vector2(740, -240), Vector2(960, -150), Vector2(985, 238), Vector2(705, 250)])
+	var altar_apron := PackedVector2Array([Vector2(-540, -610), Vector2(540, -610), Vector2(470, -285), Vector2(165, -245), Vector2(0, -315), Vector2(-165, -245), Vector2(-470, -285)])
+	draw_colored_polygon(left_apron, Color("#211d24"))
+	draw_colored_polygon(right_apron, Color("#211d24"))
+	draw_colored_polygon(altar_apron, Color("#241f26"))
+	draw_polyline(left_apron + PackedVector2Array([left_apron[0]]), Color("#4a4149"), 5.0)
+	draw_polyline(right_apron + PackedVector2Array([right_apron[0]]), Color("#4a4149"), 5.0)
+	draw_polyline(altar_apron + PackedVector2Array([altar_apron[0]]), Color("#56484c"), 6.0)
 
 
 func _draw_stairs() -> void:

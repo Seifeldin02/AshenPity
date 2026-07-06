@@ -58,7 +58,8 @@ func _configure_camera() -> void:
 	camera.limit_top = Route.CAMERA_LIMIT_TOP
 	camera.limit_right = Route.CAMERA_LIMIT_RIGHT
 	camera.limit_bottom = Route.CAMERA_LIMIT_BOTTOM
-	camera.zoom = Vector2(1.10, 1.10)
+	camera.zoom = Route.CAMERA_ZOOM
+	camera.position_smoothing_enabled = false
 	camera.global_position = Route.clamped_to_camera_limits(player.global_position if is_instance_valid(player) else Vector2.ZERO)
 	camera.reset_smoothing()
 
@@ -89,7 +90,14 @@ func _update_camera(delta: float) -> void:
 	camera.offset = _shake_offset
 	if is_instance_valid(player):
 		var target := Route.clamped_to_camera_limits(player.global_position)
-		camera.global_position = camera.global_position.lerp(target, minf(delta * 5.0, 1.0))
+		camera.global_position = camera.global_position.lerp(target, minf(delta * 9.0, 1.0))
+
+
+func snap_camera_to_player() -> void:
+	if not is_instance_valid(player):
+		return
+	camera.global_position = Route.clamped_to_camera_limits(player.global_position)
+	camera.reset_smoothing()
 
 
 func _build_collision() -> void:

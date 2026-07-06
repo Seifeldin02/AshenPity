@@ -82,12 +82,12 @@ tools/            local helper scripts
 
 ## Current State
 
-Stage 1.1 is playable as a local prototype. The player can enter a connected shrine route, fight three Shrine Guardians, die and restart, or clear the route and reach the victory screen.
+Stage 1.1C is playable as a local prototype. The player can enter a connected shrine route, fight three Shrine Guardians, die and restart, or clear the route and reach the victory screen. The HUD now shows the prototype version and current Git commit in the lower-right corner.
 
 Implemented foundation:
 
-- Original code-drawn 2D dark shrine route with walls, cracks, ash, torchlight, and layered props.
-- Hooded cursed wanderer player with readable mask, cloak, sword, hit flash, dodge dust, and slash arcs.
+- Original code-drawn 2D dark shrine route with side paths, walls, cracks, ash, torchlight, masonry outside the play space, and layered props.
+- Hooded cursed wanderer player with readable mask, cloak panels, sword, hit flash, dodge dust, and slash arcs.
 - Mouse-facing light attack with anticipation, active frames, recovery, stamina cost, knockback, hit stop, and screen shake.
 - Stamina, health, two-charge healing flask, interruptible healing, death prompt, and pause flow.
 - Shrine Guardian enemy with patrol, chase, telegraph, attack, recovery, stagger, ash dissolve, and health UI.
@@ -102,14 +102,29 @@ Implemented foundation:
 - The prototype targets 60/90/120 Hz displays and should use the device display refresh rate where supported.
 - Press `F1` to show FPS, display refresh rate, average frame time, p95 frame time, physics tick rate, active enemy count, player state, and performance mode.
 - Press `F2` to toggle lightweight performance mode, which currently reduces selected particle/decal load for future mobile testing.
+- Camera zoom is controlled by the shrine route constants and currently uses a tighter `1.20` zoom for more readable action framing.
 
 ## Shrine Route
 
 The current level is a compact three-part route:
 
 - Shrine Entrance Hall: start area with broken walls, torches, and a side alcove.
-- Central Shrine Arena: irregular combat space with pillars, broken walls, and a cracked ash brazier landmark.
+- Central Shrine Arena: irregular combat space with left and right side paths, pillars, broken walls, and a cracked ash brazier landmark.
 - Broken Altar Platform: northern destination with stairs, a raised-looking platform, and a broken altar.
+
+## Where To Edit Core Prototype Systems
+
+- Player movement, dodge, attack states, stamina spend, hitbox timing: `scripts/player/PlayerController.gd`.
+- Shared combat and movement values: `scripts/autoload/GameBalance.gd`.
+- Mouse/touch input abstraction: `scripts/autoload/InputRouter.gd`.
+- Shrine route bounds, walls, obstacles, torches, spawns, camera limits: `scripts/world/ShrineRoute.gd`.
+- Ground, cracks, ash, torch pools, exterior masonry, foreground treatment: `scripts/world/ShrineRouteLayer.gd`.
+- Runtime scene assembly, collision generation, Y-sorted actor/tall-prop layer, camera follow, UI spawning: `scripts/world/ShrineArena.gd`.
+- Player visual drawing: `scripts/player/PlayerVisual.gd`.
+- Shrine Guardian visual drawing: `scripts/enemies/ShrineGuardianVisual.gd`.
+- HUD layout, bars, enemy health, debug/performance overlay, build label: `scenes/ui/HUD.tscn` and `scripts/ui/HUD.gd`.
+- Build version and Git commit label: `scripts/autoload/BuildInfo.gd`.
+- Automated deterministic playtest and screenshot artifacts: `tests/playtest_harness.gd`.
 
 ## Known Limitations
 
@@ -121,6 +136,7 @@ The current level is a compact three-part route:
 - Balance is first-pass and intentionally conservative.
 - The route is handcrafted and compact; no procedural generation or campaign structure exists yet.
 - Headless screenshot capture is unavailable with the dummy renderer, so harness screenshot steps log a skip unless run with a display renderer.
+- The side-path screenshots still show dark surrounding masonry by design; they should be checked by a human to confirm it reads as shrine exterior space rather than unused empty space.
 
 ## Future Roadmap
 

@@ -19,7 +19,7 @@ func _run() -> void:
 	_artifact_dir = ProjectSettings.globalize_path("res://playtest_artifacts")
 	DirAccess.make_dir_recursive_absolute(_artifact_dir)
 	get_tree().create_timer(45.0).timeout.connect(_on_timeout)
-	_log("Stage 1.1B deterministic playtest harness started.")
+	_log("Stage 1.1C deterministic playtest harness started.")
 	InputRouter.begin_simulation()
 	_arena = ArenaScene.instantiate()
 	add_child(_arena)
@@ -72,6 +72,8 @@ func _scenario_visibility_and_screenshots() -> void:
 	var shots := {
 		"entrance": Route.PLAYER_START,
 		"central_arena": Vector2(0, -35),
+		"left_side_path": Vector2(-900, 0),
+		"right_side_path": Vector2(900, 0),
 		"northern_altar": Vector2(0, -500),
 		"combat_encounter": Vector2(-120, -40)
 	}
@@ -80,7 +82,7 @@ func _scenario_visibility_and_screenshots() -> void:
 		_setup_player(point, Vector2.RIGHT)
 		await _step(0.25, Vector2.ZERO, Vector2.RIGHT)
 		_assert_true(_player.visible and _player.is_inside_tree(), "player visible at %s" % key)
-		var camera_rect := Route.camera_rect_at(point, get_viewport().get_visible_rect().size, Vector2(1.10, 1.10))
+		var camera_rect := Route.camera_rect_at(point, get_viewport().get_visible_rect().size, Route.CAMERA_ZOOM)
 		_assert_true(camera_rect.has_point(point), "camera covers %s point" % key)
 		await _save_screenshot("%s.png" % key)
 	for guardian in _arena.get("guardians"):
@@ -217,6 +219,8 @@ func _setup_player(position: Vector2, aim: Vector2) -> void:
 		_player.set("velocity", Vector2.ZERO)
 		_player.set("facing", aim.normalized())
 	InputRouter.set_simulated_input(Vector2.ZERO, aim)
+	if _arena != null and _arena.has_method("snap_camera_to_player"):
+		_arena.snap_camera_to_player()
 
 
 func _first_living_guardian() -> Node:
@@ -265,7 +269,7 @@ func _save_screenshot(file_name: String) -> void:
 func _write_log() -> void:
 	if _artifact_dir == "":
 		return
-	var log_path := "%s/stage_1_1b_playtest.log" % _artifact_dir
+	var log_path := "%s/stage_1_1c_playtest.log" % _artifact_dir
 	var file := FileAccess.open(log_path, FileAccess.WRITE)
 	if file == null:
 		push_error("Failed to write playtest log: %s" % log_path)

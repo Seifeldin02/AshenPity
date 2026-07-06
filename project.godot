@@ -12,6 +12,7 @@ config/icon="res://assets/ui/icon.svg"
 
 [autoload]
 
+BuildInfo="*res://scripts/autoload/BuildInfo.gd"
 GameBalance="*res://scripts/autoload/GameBalance.gd"
 InputRouter="*res://scripts/autoload/InputRouter.gd"
 PerformanceStats="*res://scripts/autoload/PerformanceStats.gd"

@@ -9,6 +9,7 @@ extends CanvasLayer
 @onready var hints: Label = %Hints
 @onready var death_panel: Control = %DeathPanel
 @onready var pause_panel: Control = %PausePanel
+@onready var build_label: Label = %BuildLabel
 
 var _player: Node
 var _enemies: Array[Node] = []
@@ -19,6 +20,7 @@ func _ready() -> void:
 	death_panel.hide()
 	pause_panel.hide()
 	enemy_panel.hide()
+	build_label.text = BuildInfo.label()
 
 
 func bind(player: Node, enemies: Array[Node]) -> void:
