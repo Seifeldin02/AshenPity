@@ -26,6 +26,8 @@ func _run() -> void:
 	_test_mouse_aim_world_position_calculation()
 	_test_frame_rate_independent_velocity()
 	_test_attack_buffering_window()
+	_test_ash_brand_collect_progress()
+	_test_enemy_configs_exist()
 	if _failures == 0:
 		print("All gameplay logic tests passed.")
 		quit(0)
@@ -59,7 +61,7 @@ func _test_enemy_damage_is_applied() -> void:
 	var start_health: float = enemy.get("health")
 	enemy.call("take_damage", 20.0, Vector2.ZERO, 0.0)
 	_assert_equal(enemy.get("health"), start_health - 20.0, "enemy damage reduces health")
-	enemy.queue_free()
+	enemy.free()
 
 
 func _test_player_invulnerability_prevents_damage() -> void:
@@ -84,7 +86,7 @@ func _test_player_remains_inside_world_boundaries() -> void:
 	_assert_true(Route.is_inside_route(Route.PLAYER_START), "player start is inside shrine route")
 	for point in Route.TEST_VISIBILITY_POINTS:
 		_assert_true(Route.is_inside_route(point), "visibility test point is inside route: %s" % str(point))
-		var rect := Route.camera_rect_at(point, Vector2(1920, 1080), Vector2(1.08, 1.08))
+		var rect := Route.camera_rect_at(point, Vector2(1920, 1080), Route.CAMERA_ZOOM)
 		_assert_true(rect.has_point(point), "camera covers route test point: %s" % str(point))
 	_assert_false(Route.is_inside_route(Vector2(-900, -620)), "outer void is outside route")
 
@@ -114,6 +116,22 @@ func _test_frame_rate_independent_velocity() -> void:
 func _test_attack_buffering_window() -> void:
 	_assert_true(CombatMathUtil.is_attack_buffer_allowed(GameBalance.PLAYER_ATTACK_BUFFER_WINDOW * 0.5, GameBalance.PLAYER_ATTACK_BUFFER_WINDOW), "attack buffering accepts late recovery input")
 	_assert_false(CombatMathUtil.is_attack_buffer_allowed(GameBalance.PLAYER_ATTACK_BUFFER_WINDOW + 0.02, GameBalance.PLAYER_ATTACK_BUFFER_WINDOW), "attack buffering rejects early recovery input")
+
+
+func _test_ash_brand_collect_progress() -> void:
+	_assert_true(CombatMathUtil.is_perfect_dodge(0.04, GameBalance.PLAYER_PERFECT_DODGE_WINDOW, GameBalance.PLAYER_DODGE_TIME), "early dodge overlap is a perfect dodge")
+	_assert_false(CombatMathUtil.is_perfect_dodge(GameBalance.PLAYER_PERFECT_DODGE_WINDOW + 0.02, GameBalance.PLAYER_PERFECT_DODGE_WINDOW, GameBalance.PLAYER_DODGE_TIME), "late dodge overlap is not a perfect dodge")
+	var hits := 0
+	hits = CombatMathUtil.ash_brand_hit_progress(hits, GameBalance.ASH_BRAND_HITS_TO_COLLECT)
+	_assert_false(CombatMathUtil.is_collect_ready(hits, GameBalance.ASH_BRAND_HITS_TO_COLLECT), "one branded hit is not enough for collect")
+	hits = CombatMathUtil.ash_brand_hit_progress(hits, GameBalance.ASH_BRAND_HITS_TO_COLLECT)
+	_assert_true(CombatMathUtil.is_collect_ready(hits, GameBalance.ASH_BRAND_HITS_TO_COLLECT), "required branded hits unlock collect")
+
+
+func _test_enemy_configs_exist() -> void:
+	for key in ["guardian", "hound", "archer", "bell_bearer"]:
+		_assert_true(GameBalance.ENEMY_CONFIGS.has(key), "enemy config exists: %s" % key)
+		_assert_true(float(GameBalance.ENEMY_CONFIGS[key]["max_health"]) > 0.0, "enemy config has health: %s" % key)
 
 
 func _assert_true(value: bool, label: String) -> void:

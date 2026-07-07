@@ -4,6 +4,7 @@ var facing := Vector2.RIGHT
 var state_name := "idle"
 var flash := 0.0
 var attack_alpha := 0.0
+var attack_name := ""
 var _time := 0.0
 
 func _process(delta: float) -> void:
@@ -12,11 +13,12 @@ func _process(delta: float) -> void:
 	queue_redraw()
 
 
-func set_pose(new_facing: Vector2, new_state: String, new_attack_alpha: float) -> void:
+func set_pose(new_facing: Vector2, new_state: String, new_attack_alpha: float, new_attack_name: String = "") -> void:
 	if new_facing.length() > 0.01:
 		facing = new_facing.normalized()
 	state_name = new_state
 	attack_alpha = new_attack_alpha
+	attack_name = new_attack_name
 
 
 func trigger_flash() -> void:
@@ -30,6 +32,8 @@ func _draw() -> void:
 		walk_bob = sin(_time * 14.0) * 3.0
 	elif state_name == "dodge":
 		walk_bob = -8.0
+	elif state_name == "collect_active":
+		walk_bob = -5.0
 	var flip := -1.0 if facing.x < -0.12 else 1.0
 	var tint := Color.WHITE.lerp(Color(1.0, 0.35, 0.25), flash)
 	draw_colored_polygon(_ellipse(Vector2(0, 34), 34.0, 11.0), Color(0.02, 0.018, 0.022, 0.58))
@@ -80,7 +84,7 @@ func _draw_mask(tint: Color, breathe: float) -> void:
 
 
 func _draw_sword(tint: Color) -> void:
-	var raised := -15.0 if state_name == "attack_windup" else 0.0
+	var raised := -15.0 if state_name.ends_with("_windup") else 0.0
 	var side := 30.0
 	draw_line(Vector2(side - 17, -2 + raised), Vector2(side - 2, -16 + raised), Color("#4f3740"), 8.0)
 	draw_line(Vector2(side - 3, -18 + raised), Vector2(side + 47, -43 + raised), Color("#d8cdb6").lerp(tint, 0.25), 7.0)
@@ -91,8 +95,17 @@ func _draw_sword(tint: Color) -> void:
 func _draw_slash() -> void:
 	var alpha := clampf(attack_alpha, 0.0, 1.0)
 	var dir_angle := facing.angle()
-	draw_arc(Vector2.ZERO, 78.0, dir_angle - 0.74, dir_angle + 0.74, 30, Color(0.98, 0.86, 0.58, 0.66 * alpha), 11.0)
-	draw_arc(Vector2.ZERO, 95.0, dir_angle - 0.50, dir_angle + 0.62, 26, Color(0.95, 0.33, 0.16, 0.32 * alpha), 5.0)
+	if attack_name == "collect":
+		draw_arc(Vector2.ZERO, 96.0, dir_angle - 0.90, dir_angle + 0.90, 34, Color(1.0, 0.78, 0.38, 0.86 * alpha), 14.0)
+		draw_arc(Vector2.ZERO, 122.0, dir_angle - 0.62, dir_angle + 0.72, 30, Color(0.98, 0.22, 0.12, 0.46 * alpha), 6.0)
+		draw_line(-facing.rotated(0.24) * 70.0, facing.rotated(0.24) * 92.0, Color(0.95, 0.86, 0.58, 0.68 * alpha), 8.0)
+	elif attack_name == "heavy":
+		draw_arc(Vector2.ZERO, 92.0, dir_angle - 0.88, dir_angle + 0.88, 32, Color(1.0, 0.68, 0.32, 0.75 * alpha), 14.0)
+		draw_arc(Vector2.ZERO, 112.0, dir_angle - 0.48, dir_angle + 0.66, 28, Color(0.95, 0.18, 0.10, 0.34 * alpha), 6.0)
+	else:
+		var radius := 78.0 if attack_name != "light_3" else 96.0
+		draw_arc(Vector2.ZERO, radius, dir_angle - 0.74, dir_angle + 0.74, 30, Color(0.98, 0.86, 0.58, 0.66 * alpha), 11.0)
+		draw_arc(Vector2.ZERO, radius + 17.0, dir_angle - 0.50, dir_angle + 0.62, 26, Color(0.95, 0.33, 0.16, 0.32 * alpha), 5.0)
 
 
 func _draw_dodge_trail() -> void:

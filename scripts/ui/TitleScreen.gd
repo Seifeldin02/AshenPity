@@ -1,9 +1,11 @@
 extends Control
 
 @onready var _start_button: Button = %StartButton
+@onready var _build_label: Label = %BuildLabel
 
 func _ready() -> void:
 	_start_button.grab_focus()
+	_build_label.text = BuildInfo.label()
 
 
 func _draw() -> void:

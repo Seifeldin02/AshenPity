@@ -4,6 +4,7 @@ extends CanvasLayer
 @onready var move_knob: Control = %MoveKnob
 @onready var aim_ring: Control = %AimRing
 @onready var aim_knob: Control = %AimKnob
+@onready var collect_button: Button = %CollectButton
 
 var _move_touch := -1
 var _aim_touch := -1
@@ -17,6 +18,10 @@ func _ready() -> void:
 	InputRouter.mobile_visibility_changed.connect(_on_mobile_visibility_changed)
 	get_viewport().size_changed.connect(_update_centers)
 	_update_centers.call_deferred()
+
+
+func _process(_delta: float) -> void:
+	collect_button.visible = InputRouter.collect_available
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -82,6 +87,14 @@ func _on_mobile_visibility_changed(value: bool) -> void:
 
 func _on_attack_pressed() -> void:
 	InputRouter.press_attack()
+
+
+func _on_heavy_pressed() -> void:
+	InputRouter.press_heavy()
+
+
+func _on_collect_pressed() -> void:
+	InputRouter.press_collect()
 
 
 func _on_dodge_pressed() -> void:

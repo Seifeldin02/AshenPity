@@ -13,9 +13,12 @@ var simulated_move_vector := Vector2.ZERO
 var simulated_aim_vector := Vector2.ZERO
 
 var _attack_pressed := false
+var _heavy_pressed := false
+var _collect_pressed := false
 var _dodge_pressed := false
 var _flask_pressed := false
 var _pause_pressed := false
+var collect_available := false
 
 func _ready() -> void:
 	mobile_controls_visible = DisplayServer.is_touchscreen_available()
@@ -47,9 +50,12 @@ func end_simulation() -> void:
 	simulated_move_vector = Vector2.ZERO
 	simulated_aim_vector = Vector2.ZERO
 	_attack_pressed = false
+	_heavy_pressed = false
+	_collect_pressed = false
 	_dodge_pressed = false
 	_flask_pressed = false
 	_pause_pressed = false
+	collect_available = false
 
 
 func set_simulated_input(move_vector: Vector2, aim_vector: Vector2) -> void:
@@ -77,6 +83,14 @@ func press_attack() -> void:
 	_attack_pressed = true
 
 
+func press_heavy() -> void:
+	_heavy_pressed = true
+
+
+func press_collect() -> void:
+	_collect_pressed = true
+
+
 func press_dodge() -> void:
 	_dodge_pressed = true
 
@@ -93,8 +107,20 @@ func consume_attack() -> bool:
 	return _consume("_attack_pressed")
 
 
+func consume_heavy() -> bool:
+	return _consume("_heavy_pressed")
+
+
+func consume_collect() -> bool:
+	return _consume("_collect_pressed")
+
+
 func consume_dodge() -> bool:
 	return _consume("_dodge_pressed")
+
+
+func set_collect_available(value: bool) -> void:
+	collect_available = value
 
 
 func consume_flask() -> bool:

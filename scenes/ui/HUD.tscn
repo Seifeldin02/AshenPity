@@ -48,6 +48,18 @@ anchor_bottom = 0.18
 theme_override_font_sizes/font_size = 22
 text = "Flask 2/2"
 
+[node name="BrandLabel" type="Label" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.025
+anchor_top = 0.185
+anchor_right = 0.34
+anchor_bottom = 0.225
+theme_override_colors/font_color = Color(0.78, 0.72, 0.64, 0.82)
+theme_override_font_sizes/font_size = 20
+text = "Ash Brand: -"
+
 [node name="EnemyPanel" type="VBoxContainer" parent="Root"]
 unique_name_in_owner = true
 layout_mode = 1
@@ -81,7 +93,20 @@ anchor_right = 0.65
 anchor_bottom = 0.94
 theme_override_colors/font_color = Color(0.82, 0.75, 0.64, 0.92)
 theme_override_font_sizes/font_size = 20
-text = "WASD move  |  Mouse aim  |  Click attack  |  Space dodge  |  F flask"
+text = "WASD move  |  Mouse aim  |  Click combo  |  Right heavy  |  Space dodge  |  Q collect"
+horizontal_alignment = 1
+
+[node name="WaveLabel" type="Label" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.35
+anchor_top = 0.15
+anchor_right = 0.65
+anchor_bottom = 0.21
+theme_override_colors/font_color = Color(1, 0.78, 0.48, 0.95)
+theme_override_font_sizes/font_size = 30
+text = "Wave"
 horizontal_alignment = 1
 
 [node name="BuildLabel" type="Label" parent="Root"]
@@ -96,6 +121,48 @@ theme_override_colors/font_color = Color(0.70, 0.66, 0.58, 0.78)
 theme_override_font_sizes/font_size = 16
 text = "Stage 1.1C unknown"
 horizontal_alignment = 2
+
+[node name="TrialPanel" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+process_mode = 3
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -140.0
+offset_right = 250.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TrialBox" type="VBoxContainer" parent="Root/TrialPanel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="TrialTitle" type="Label" parent="Root/TrialPanel/TrialBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "Ash Trial Complete"
+horizontal_alignment = 1
+
+[node name="TrialSubtitle" type="Label" parent="Root/TrialPanel/TrialBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.74, 0.62, 1)
+theme_override_font_sizes/font_size = 18
+text = "No reward yet. Replay the combat sandbox."
+horizontal_alignment = 1
+
+[node name="ReplayButton" type="Button" parent="Root/TrialPanel/TrialBox"]
+layout_mode = 2
+text = "Replay Trial"
+
+[node name="TrialTitleButton" type="Button" parent="Root/TrialPanel/TrialBox"]
+layout_mode = 2
+text = "Title"
 
 [node name="DeathPanel" type="PanelContainer" parent="Root"]
 unique_name_in_owner = true
@@ -171,3 +238,5 @@ text = "Title"
 [connection signal="pressed" from="Root/DeathPanel/DeathBox/TitleButton" to="." method="_on_title_pressed"]
 [connection signal="pressed" from="Root/PausePanel/PauseBox/ResumeButton" to="." method="_on_resume_pressed"]
 [connection signal="pressed" from="Root/PausePanel/PauseBox/PauseTitleButton" to="." method="_on_title_pressed"]
+[connection signal="pressed" from="Root/TrialPanel/TrialBox/ReplayButton" to="." method="_on_replay_pressed"]
+[connection signal="pressed" from="Root/TrialPanel/TrialBox/TrialTitleButton" to="." method="_on_title_pressed"]

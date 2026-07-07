@@ -19,7 +19,7 @@ func _run() -> void:
 	_artifact_dir = ProjectSettings.globalize_path("res://playtest_artifacts")
 	DirAccess.make_dir_recursive_absolute(_artifact_dir)
 	get_tree().create_timer(45.0).timeout.connect(_on_timeout)
-	_log("Stage 1.1C deterministic playtest harness started.")
+	_log("Stage 1.3 deterministic playtest harness started.")
 	InputRouter.begin_simulation()
 	_arena = ArenaScene.instantiate()
 	add_child(_arena)
@@ -28,12 +28,14 @@ func _run() -> void:
 	_player = _arena.get("player")
 	await _scenario_route_movement()
 	await _scenario_visibility_and_screenshots()
+	await _scenario_actor_variant_screenshots()
 	_scenario_mouse_world_aim()
 	await _scenario_attack_while_moving()
+	await _scenario_heavy_attack()
 	await _scenario_dodge_directions()
-	await _scenario_dodge_enemy_attack()
+	await _scenario_ash_brand_collect()
 	await _scenario_flask_interruption()
-	await _scenario_defeat_three_guardians()
+	await _scenario_complete_ash_trial()
 	_log("Performance snapshot: %s" % JSON.stringify(PerformanceStats.snapshot(_player.get("state_name") if is_instance_valid(_player) else "none")))
 	InputRouter.end_simulation()
 	_completed = true
@@ -89,6 +91,26 @@ func _scenario_visibility_and_screenshots() -> void:
 		_assert_true(is_instance_valid(guardian) and guardian.visible, "guardian visible in actor layer")
 
 
+func _scenario_actor_variant_screenshots() -> void:
+	_log("Scenario: actor variant screenshots.")
+	var enemy: Node = _first_living_enemy()
+	if not is_instance_valid(enemy):
+		_fail("enemy exists for actor variant screenshots")
+		return
+	var variants := {
+		"ashbound_hound": "hound",
+		"reliquary_archer": "archer",
+		"bell_bearer": "bell_bearer"
+	}
+	for file_name in variants.keys():
+		_reset_enemy(enemy, Vector2(80, -60), variants[file_name])
+		_setup_player(Vector2(-80, 40), Vector2.RIGHT)
+		await _step(0.20, Vector2.ZERO, Vector2.RIGHT)
+		await _save_screenshot("%s.png" % file_name)
+	_assert_true(true, "actor variant screenshots generated")
+	_reset_enemy(enemy, Vector2(90, -60), "guardian")
+
+
 func _scenario_mouse_world_aim() -> void:
 	_log("Scenario: world aim from screen edges.")
 	var center := Vector2.ZERO
@@ -100,17 +122,32 @@ func _scenario_mouse_world_aim() -> void:
 
 func _scenario_attack_while_moving() -> void:
 	_log("Scenario: light attack while moving.")
-	var guardian: Node = _first_living_guardian()
+	var guardian: Node = _first_living_enemy()
 	_assert_true(is_instance_valid(guardian), "guardian exists for moving attack")
 	if not is_instance_valid(guardian):
 		return
-	_isolate_guardian(guardian)
-	_reset_guardian(guardian, guardian.global_position)
+	_isolate_enemy(guardian)
+	_reset_enemy(guardian, guardian.global_position, "guardian")
 	_setup_player(guardian.global_position + Vector2(-92, 0), Vector2.RIGHT)
 	var start_health: float = guardian.get("health")
 	InputRouter.press_attack()
 	await _step(0.35, Vector2.RIGHT, Vector2.RIGHT)
 	_assert_true(guardian.get("health") < start_health, "moving light attack damaged guardian")
+
+
+func _scenario_heavy_attack() -> void:
+	_log("Scenario: heavy attack damages and staggers.")
+	var guardian: Node = _first_living_enemy()
+	_assert_true(is_instance_valid(guardian), "enemy exists for heavy attack")
+	if not is_instance_valid(guardian):
+		return
+	_isolate_enemy(guardian)
+	_reset_enemy(guardian, Vector2(120, 40), "guardian")
+	_setup_player(Vector2(28, 40), Vector2.RIGHT)
+	var start_health: float = guardian.get("health")
+	InputRouter.press_heavy()
+	await _step(0.62, Vector2.ZERO, Vector2.RIGHT)
+	_assert_true(guardian.get("health") < start_health, "heavy attack damaged enemy")
 
 
 func _scenario_dodge_directions() -> void:
@@ -128,14 +165,14 @@ func _scenario_dodge_directions() -> void:
 	_assert_true(_player.global_position.y < start.y - 35.0, "stationary dodge travels with facing direction")
 
 
-func _scenario_dodge_enemy_attack() -> void:
-	_log("Scenario: dodge through enemy attack invulnerability.")
-	var guardian: Node = _first_living_guardian()
+func _scenario_ash_brand_collect() -> void:
+	_log("Scenario: perfect dodge applies Ash Brand and Collect consumes it.")
+	var guardian: Node = _first_living_enemy()
 	if not is_instance_valid(guardian):
-		_fail("guardian exists for dodge invulnerability scenario")
+		_fail("enemy exists for Ash Brand scenario")
 		return
-	_isolate_guardian(guardian)
-	_reset_guardian(guardian, Vector2(90, 40))
+	_isolate_enemy(guardian)
+	_reset_enemy(guardian, Vector2(90, 40), "guardian")
 	_setup_player(Vector2(-15, 40), Vector2.RIGHT)
 	await _wait_for_enemy_state(guardian, "windup", 2.0)
 	await _step(maxf(GameBalance.ENEMY_WINDUP_TIME - 0.02, 0.0), Vector2.ZERO, Vector2.RIGHT)
@@ -143,16 +180,28 @@ func _scenario_dodge_enemy_attack() -> void:
 	InputRouter.press_dodge()
 	await _step(0.35, Vector2.RIGHT, Vector2.RIGHT)
 	_assert_true(_player.get("health") >= start_health, "dodge avoided enemy attack damage")
+	_assert_true(guardian.get("ash_branded"), "perfect dodge applied Ash Brand")
+	_position_player_near(guardian, Vector2.RIGHT)
+	for i in range(GameBalance.ASH_BRAND_HITS_TO_COLLECT):
+		InputRouter.press_attack()
+		await _step(0.36, Vector2.ZERO, Vector2.RIGHT)
+	_assert_true(guardian.get("collect_ready"), "branded enemy is primed for Collect")
+	var before_collect: float = guardian.get("health")
+	_position_player_near(guardian, Vector2.RIGHT)
+	InputRouter.press_collect()
+	await _step(0.42, Vector2.ZERO, Vector2.RIGHT)
+	_assert_true(guardian.get("health") < before_collect, "Collect damaged branded enemy")
+	_assert_false(guardian.get("ash_branded"), "Collect consumed Ash Brand")
 
 
 func _scenario_flask_interruption() -> void:
 	_log("Scenario: flask interruption by enemy damage.")
-	var guardian: Node = _first_living_guardian()
+	var guardian: Node = _first_living_enemy()
 	if not is_instance_valid(guardian):
 		_fail("guardian exists for flask interruption scenario")
 		return
-	_isolate_guardian(guardian)
-	_reset_guardian(guardian, Vector2(96, 95))
+	_isolate_enemy(guardian)
+	_reset_enemy(guardian, Vector2(96, 95), "guardian")
 	_setup_player(Vector2(0, 95), Vector2.RIGHT)
 	_player.set("health", 50.0)
 	_player.set("flask_charges", 2)
@@ -163,24 +212,23 @@ func _scenario_flask_interruption() -> void:
 	_assert_true(_player.get("health") < 88.0, "flask did not safely complete through enemy hit")
 
 
-func _scenario_defeat_three_guardians() -> void:
-	_log("Scenario: defeat three Shrine Guardians through player attacks.")
+func _scenario_complete_ash_trial() -> void:
+	_log("Scenario: complete Ash Trial waves.")
 	_setup_player(Vector2(0, 80), Vector2.RIGHT)
-	for guardian in _arena.get("guardians").duplicate():
-		if not is_instance_valid(guardian):
+	var trial: Node = _arena.get("trial")
+	var safety := 0
+	while is_instance_valid(trial) and not trial.get("completed") and safety < 12:
+		var enemies: Array = _arena.get("guardians").duplicate()
+		if enemies.is_empty():
+			await _step(0.25, Vector2.ZERO, Vector2.RIGHT)
+			safety += 1
 			continue
-		var guard_node: Node2D = guardian
-		_reset_guardian(guardian, guard_node.global_position)
-		_setup_player(guard_node.global_position + Vector2(-88, 0), Vector2.RIGHT)
-		var attempts := 0
-		while is_instance_valid(guardian) and guardian.get("health") > 0.0 and attempts < 12:
-			InputRouter.press_attack()
-			await _step(0.42, Vector2.ZERO, Vector2.RIGHT)
-			attempts += 1
-		await _step(0.25, Vector2.ZERO, Vector2.RIGHT)
-		_assert_true(not is_instance_valid(guardian) or guardian.get("health") <= 0.0, "guardian defeated with player attacks")
-	await _step(0.25, Vector2.ZERO, Vector2.RIGHT)
-	_assert_true(PerformanceStats.active_enemy_count() == 0, "all guardians defeated")
+		for enemy in enemies:
+			if is_instance_valid(enemy) and enemy.get("health") > 0.0:
+				await _defeat_enemy_with_player(enemy)
+		await _step(0.45, Vector2.ZERO, Vector2.RIGHT)
+		safety += 1
+	_assert_true(is_instance_valid(trial) and trial.get("completed"), "Ash Trial completed")
 
 
 func _drive_toward(target: Vector2, max_seconds: float) -> void:
@@ -223,14 +271,15 @@ func _setup_player(position: Vector2, aim: Vector2) -> void:
 		_arena.snap_camera_to_player()
 
 
-func _first_living_guardian() -> Node:
+func _first_living_enemy() -> Node:
 	for guardian in _arena.get("guardians"):
 		if is_instance_valid(guardian) and guardian.get("health") > 0.0:
 			return guardian
 	return null
 
 
-func _reset_guardian(guardian: Node, position: Vector2) -> void:
+func _reset_enemy(guardian: Node, position: Vector2, kind: String = "guardian") -> void:
+	guardian.set("enemy_kind", kind)
 	if guardian.has_method("playtest_reset"):
 		guardian.playtest_reset(position, _player)
 	else:
@@ -238,14 +287,40 @@ func _reset_guardian(guardian: Node, position: Vector2) -> void:
 		guardian.set("health", GameBalance.ENEMY_MAX_HEALTH)
 
 
-func _isolate_guardian(active_guardian: Node) -> void:
+func _isolate_enemy(active_guardian: Node) -> void:
 	var parking_spots := [Vector2(640, -205), Vector2(-650, 430), Vector2(330, -510)]
 	var index := 0
 	for guardian in _arena.get("guardians"):
 		if not is_instance_valid(guardian) or guardian == active_guardian:
 			continue
-		_reset_guardian(guardian, parking_spots[index % parking_spots.size()])
+		_reset_enemy(guardian, parking_spots[index % parking_spots.size()], "guardian")
 		index += 1
+
+
+func _defeat_enemy_with_player(enemy: Node) -> void:
+	var enemy_node: Node2D = enemy
+	_setup_player(enemy_node.global_position + Vector2(-86, 0), Vector2.RIGHT)
+	var attempts := 0
+	while is_instance_valid(enemy) and enemy.get("health") > 0.0 and attempts < 28:
+		_position_player_near(enemy, Vector2.RIGHT)
+		if attempts % 2 == 1:
+			InputRouter.press_heavy()
+		else:
+			InputRouter.press_attack()
+		await _step(0.52, Vector2.ZERO, Vector2.RIGHT)
+		attempts += 1
+	await _step(0.35, Vector2.ZERO, Vector2.RIGHT)
+	_assert_true(not is_instance_valid(enemy) or enemy.get("health") <= 0.0, "enemy defeated with player attacks")
+
+
+func _position_player_near(enemy: Node, aim: Vector2) -> void:
+	if not is_instance_valid(enemy):
+		return
+	var enemy_node: Node2D = enemy
+	_player.global_position = enemy_node.global_position - aim.normalized() * 82.0
+	_player.set("velocity", Vector2.ZERO)
+	_player.set("facing", aim.normalized())
+	InputRouter.set_simulated_input(Vector2.ZERO, aim)
 
 
 func _save_screenshot(file_name: String) -> void:
@@ -269,7 +344,7 @@ func _save_screenshot(file_name: String) -> void:
 func _write_log() -> void:
 	if _artifact_dir == "":
 		return
-	var log_path := "%s/stage_1_1c_playtest.log" % _artifact_dir
+	var log_path := "%s/stage_1_3_playtest.log" % _artifact_dir
 	var file := FileAccess.open(log_path, FileAccess.WRITE)
 	if file == null:
 		push_error("Failed to write playtest log: %s" % log_path)
@@ -302,6 +377,10 @@ func _assert_true(value: bool, label: String) -> void:
 		_log("PASS: %s" % label)
 	else:
 		_fail(label)
+
+
+func _assert_false(value: bool, label: String) -> void:
+	_assert_true(not value, label)
 
 
 func _fail(label: String) -> void:

@@ -6,6 +6,8 @@ const HUD_SCENE_PATH := "res://scenes/ui/HUD.tscn"
 const MOBILE_SCENE_PATH := "res://scenes/ui/MobileControls.tscn"
 const PROP_SCRIPT := preload("res://scripts/world/ShrineProp.gd")
 const WALL_VISUAL_SCRIPT := preload("res://scripts/world/ShrineWallVisual.gd")
+const EFFECT_SCRIPT := preload("res://scripts/effects/CombatEffect.gd")
+const TRIAL_SCRIPT := preload("res://scripts/trial/AshTrial.gd")
 const Route := preload("res://scripts/world/ShrineRoute.gd")
 
 @onready var actors_and_tall_props: Node2D = %ActorsAndTallProps
@@ -14,6 +16,7 @@ const Route := preload("res://scripts/world/ShrineRoute.gd")
 
 var player: Node2D
 var guardians: Array[Node] = []
+var trial: Node
 var _rng := RandomNumberGenerator.new()
 var _debug_visible := false
 var _debug_label: Label
@@ -170,17 +173,20 @@ func _spawn_combatants() -> void:
 	actors_and_tall_props.add_child(player)
 	if player.has_signal("hit_confirmed"):
 		player.hit_confirmed.connect(_on_hit_confirmed)
+	if player.has_signal("perfect_dodge"):
+		player.perfect_dodge.connect(_on_perfect_dodge)
 	if player.has_signal("died"):
 		player.died.connect(_on_player_died)
 	var guardian_scene: PackedScene = load(GUARDIAN_SCENE_PATH)
-	for pos in Route.GUARDIAN_SPAWNS:
-		var guardian: Node = guardian_scene.instantiate()
-		guardian.position = pos
-		actors_and_tall_props.add_child(guardian)
-		guardian.set("player", player)
-		guardians.append(guardian)
-		if guardian.has_signal("died"):
-			guardian.died.connect(_on_guardian_died.bind(guardian))
+	trial = Node.new()
+	trial.name = "AshTrial"
+	trial.set_script(TRIAL_SCRIPT)
+	add_child(trial)
+	trial.configure(guardian_scene, actors_and_tall_props, player)
+	trial.enemies_changed.connect(_on_trial_enemies_changed)
+	trial.trial_completed.connect(_on_trial_completed)
+	trial.wave_started.connect(_on_trial_wave_started)
+	trial.start()
 	_apply_performance_mode()
 
 
@@ -205,18 +211,47 @@ func _spawn_ui() -> void:
 		add_child(_debug_label)
 
 
-func _on_hit_confirmed() -> void:
-	_screen_shake = 0.24
+func _on_hit_confirmed(kind: String = "light", hit_position: Vector2 = Vector2.ZERO) -> void:
+	var shake := 0.24
+	var stop := 0.035
+	var effect := "spark"
+	if kind == "heavy":
+		shake = 0.42
+		stop = 0.050
+		effect = "heavy"
+	elif kind == "collect":
+		shake = 0.78
+		stop = 0.075
+		effect = "collect"
+	_screen_shake = maxf(_screen_shake, shake)
+	if hit_position != Vector2.ZERO:
+		EFFECT_SCRIPT.spawn(actors_and_tall_props, hit_position, effect, player.get("facing") if is_instance_valid(player) else Vector2.RIGHT)
 	get_tree().paused = true
-	await get_tree().create_timer(0.035, true, false, true).timeout
+	await get_tree().create_timer(stop, true, false, true).timeout
 	get_tree().paused = false
 
 
-func _on_guardian_died(guardian: Node) -> void:
-	guardians.erase(guardian)
-	if guardians.is_empty():
-		await get_tree().create_timer(1.0).timeout
-		SceneFlow.victory()
+func _on_perfect_dodge(enemy: Node) -> void:
+	_screen_shake = maxf(_screen_shake, 0.32)
+	if is_instance_valid(enemy):
+		EFFECT_SCRIPT.spawn(actors_and_tall_props, enemy.global_position, "brand", Vector2.RIGHT, Color("#ff6a24"))
+
+
+func _on_trial_enemies_changed(enemies: Array[Node]) -> void:
+	guardians = enemies
+	if is_instance_valid(_hud) and _hud.has_method("bind_enemies"):
+		_hud.bind_enemies(guardians)
+	_apply_performance_mode()
+
+
+func _on_trial_wave_started(index: int, label: String) -> void:
+	if is_instance_valid(_hud) and _hud.has_method("show_wave"):
+		_hud.show_wave("%s / %d" % [label, index + 1])
+
+
+func _on_trial_completed() -> void:
+	if is_instance_valid(_hud) and _hud.has_method("show_trial_complete"):
+		_hud.show_trial_complete()
 
 
 func _on_player_died() -> void:
@@ -244,8 +279,14 @@ func _update_debug_text() -> void:
 	var enemy_state := "none"
 	if not guardians.is_empty() and is_instance_valid(guardians[0]):
 		enemy_state = str(guardians[0].get("state_name"))
+	var brand_state := "none"
+	if is_instance_valid(player):
+		var target = player.get("branded_enemy")
+		if is_instance_valid(target):
+			brand_state = "%s ready=%s" % [target.get("display_name"), str(player.get("collect_ready"))]
 	var stats := PerformanceStats.snapshot(player.get("state_name") if is_instance_valid(player) else "none")
-	_debug_label.text = "FPS: %d\nRefresh: %.0f Hz\nAvg frame: %.2f ms\nP95 frame: %.2f ms\nPhysics: %d Hz\nPerf mode: %s\nPlayer HP: %.0f\nStamina: %.0f\nState: %s\nAim: %s\nTouch: %s\nEnemy: %s\nGuardians: %d\nCamera: %s" % [
+	_debug_label.text = "Build: %s\nFPS: %d\nRefresh: %.0f Hz\nAvg frame: %.2f ms\nP95 frame: %.2f ms\nPhysics: %d Hz\nPerf mode: %s\nPlayer HP: %.0f\nStamina: %.0f\nState: %s\nAsh Brand: %s\nCollect: %s\nAim: %s\nTouch: %s\nEnemy: %s\nEnemies: %d\nCamera: %s" % [
+		BuildInfo.label(),
 		Engine.get_frames_per_second(),
 		stats["display_refresh_hz"],
 		stats["avg_frame_ms"],
@@ -255,6 +296,8 @@ func _update_debug_text() -> void:
 		player.get("health") if is_instance_valid(player) else 0.0,
 		player.get("stamina") if is_instance_valid(player) else 0.0,
 		player.get("state_name") if is_instance_valid(player) else "none",
+		brand_state,
+		str(player.get("collect_ready")) if is_instance_valid(player) else "false",
 		str(player.get("facing").round()) if is_instance_valid(player) else "none",
 		str(InputRouter.touch_active),
 		enemy_state,

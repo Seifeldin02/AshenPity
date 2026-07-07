@@ -44,3 +44,15 @@ static func velocity_toward(current: Vector2, target: Vector2, acceleration: flo
 
 static func is_attack_buffer_allowed(recovery_remaining: float, buffer_window: float) -> bool:
 	return recovery_remaining >= 0.0 and recovery_remaining <= buffer_window
+
+
+static func is_perfect_dodge(elapsed: float, perfect_window: float, dodge_duration: float) -> bool:
+	return elapsed >= 0.0 and elapsed <= minf(perfect_window, dodge_duration)
+
+
+static func ash_brand_hit_progress(current_hits: int, required_hits: int) -> int:
+	return clampi(current_hits + 1, 0, max(required_hits, 1))
+
+
+static func is_collect_ready(brand_hits: int, required_hits: int) -> bool:
+	return brand_hits >= max(required_hits, 1)

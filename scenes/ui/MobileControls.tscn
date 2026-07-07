@@ -86,6 +86,38 @@ grow_horizontal = 0
 grow_vertical = 0
 text = "Atk"
 
+[node name="HeavyButton" type="Button" parent="Root"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -180.0
+offset_top = -282.0
+offset_right = -86.0
+offset_bottom = -198.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Heavy"
+
+[node name="CollectButton" type="Button" parent="Root"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -294.0
+offset_top = -232.0
+offset_right = -198.0
+offset_bottom = -136.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Collect"
+
 [node name="DodgeButton" type="Button" parent="Root"]
 layout_mode = 1
 anchors_preset = -1
@@ -132,6 +164,8 @@ grow_vertical = 0
 text = "Pause"
 
 [connection signal="pressed" from="Root/AttackButton" to="." method="_on_attack_pressed"]
+[connection signal="pressed" from="Root/HeavyButton" to="." method="_on_heavy_pressed"]
+[connection signal="pressed" from="Root/CollectButton" to="." method="_on_collect_pressed"]
 [connection signal="pressed" from="Root/DodgeButton" to="." method="_on_dodge_pressed"]
 [connection signal="pressed" from="Root/FlaskButton" to="." method="_on_flask_pressed"]
 [connection signal="pressed" from="Root/PauseButton" to="." method="_on_pause_pressed"]
