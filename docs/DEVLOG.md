@@ -106,6 +106,45 @@
 - Whether the faster movement, 92-speed attack lunge, and 790-speed dodge feel responsive under real keyboard/mouse input.
 - Whether the camera follow feels comfortable during continuous human movement instead of only deterministic test routes.
 
+## Stage 1.3 Combat Identity and Presentation
+
+- Added Ash Brand as the first signature combat mechanic. A perfect dodge through an enemy attack Brands that enemy, follow-up hits prime Collect, and `Q` performs a dash-through payoff that consumes the Brand.
+- Kept the Stage 1.1 render hierarchy intact. Player and enemies still live in the world actor layer, not in UI, and ground remains outside Y-sort.
+- Added a three-hit light combo with per-hit timing, range, arc width, damage, stagger, lunge, and input buffering.
+- Added a right-click heavy attack with higher stamina cost, slower startup, stronger hit feedback, and higher stagger damage.
+- Added the Bell-Bearer as a Stage 1.3 elite sandbox enemy, not a full boss.
+- Added Ashbound Hound and Reliquary Archer variants through the existing enemy architecture so the trial has different combat pressures without adding a campaign or progression systems.
+- Added the Ash Trial wave controller in the existing shrine arena: two Guardians, then Hound plus Guardian, then Archer plus Guardian, then Bell-Bearer.
+- Added original code-drawn actor variants and stronger combat presentation: slash trails, hit sparks, Brand rings, Collect bursts, stagger flashes, death bursts, and stronger shadows.
+- Added runtime procedural audio cues for sword whoosh, hits, armor hits, stagger, perfect dodge, Ash Brand, Collect, hurt, dodge, flask, and enemy death. No external audio assets were added.
+- Added a HUD Ash Brand/Collect indicator and mobile Collect/Heavy buttons that continue to route through `InputRouter`.
+- Added Stage 1.3 deterministic playtest coverage for light attack while moving, heavy attack, perfect dodge, Ash Brand, Collect, flask interruption, actor variants, and the full Ash Trial.
+
+### Stage 1.3 Combat Timing Values
+
+- Light combo hit 1: startup 0.075s, active 0.09s, recovery 0.14s.
+- Light combo hit 2: startup 0.085s, active 0.095s, recovery 0.15s.
+- Light combo hit 3: startup 0.11s, active 0.11s, recovery 0.18s.
+- Heavy attack: startup 0.22s, active 0.14s, recovery 0.28s.
+- Collect: startup 0.05s, active 0.12s, recovery 0.16s.
+- Dodge duration: 0.27s.
+- Dodge invulnerability: 0.18s.
+- Perfect-dodge Brand window: 0.16s from dodge start.
+- Ash Brand duration: 5.0s.
+- Brand hits required for Collect: 2.
+
+### Stage 1.3 Out Of Scope
+
+- No relics, pity systems, currency, shops, permanent upgrades, save files, procedural generation, weapon selection, multiple playable characters, full boss, or long-term progression were added.
+- The Bell-Bearer is intentionally an elite combat test, not the final Pity Collector boss.
+
+### Stage 1.3 Known Limitations
+
+- The combat now has stronger automated coverage, but actual feel still requires human keyboard/mouse playtesting.
+- The enemy variants share one configurable enemy scene and controller.
+- Procedural audio proves cue timing and identity, but final sound design will need authored assets later.
+- Touch controls need real landscape phone validation.
+
 ## Raylib Prototype Separation
 
 The older Raylib prototype was not reused because it was an abandoned technical experiment. This Godot project needs a clean foundation for scene composition, mobile input, combat readability, and visual atmosphere from day one.
@@ -113,9 +152,9 @@ The older Raylib prototype was not reused because it was an abandoned technical 
 ## Current Visual and Gameplay Limitations
 
 - Prototype art is original and self-created, but not final key art.
-- Combat is intentionally limited to one player weapon and one enemy type.
+- Combat is intentionally limited to one player weapon and one configurable enemy scene with four Stage 1.3 variants.
 - The arena is handcrafted and compact.
-- Audio remains placeholder-level for this milestone.
+- Audio is procedural placeholder sound design for this milestone.
 - Touch UI needs real-device validation before Android production work.
 - Enemy formations and balance are rough first-pass values for feel testing.
 - There is no progression, relic system, boss, save data, shop, or reward economy in this milestone by design.
