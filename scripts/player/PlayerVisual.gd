@@ -1,22 +1,15 @@
 extends Node2D
 
 const SPRITE_PATHS := {
-	"idle": "res://assets/sprites/kenney/player_idle.png",
-	"run_1": "res://assets/sprites/kenney/player_run_1.png",
-	"run_2": "res://assets/sprites/kenney/player_run_2.png",
-	"attack": "res://assets/sprites/kenney/player_attack.png",
-	"dodge": "res://assets/sprites/kenney/player_dodge.png",
-	"hurt": "res://assets/sprites/kenney/player_hurt.png",
-	"dead": "res://assets/sprites/kenney/player_death.png",
-	"weapon": "res://assets/sprites/kenney/player_weapon.png",
+	"idle": "res://assets/sprites/upgrade/player_idle.png",
+	"run_1": "res://assets/sprites/upgrade/player_run_1.png",
+	"run_2": "res://assets/sprites/upgrade/player_run_2.png",
+	"attack": "res://assets/sprites/upgrade/player_attack.png",
+	"dodge": "res://assets/sprites/upgrade/player_dodge.png",
+	"hurt": "res://assets/sprites/upgrade/player_hurt.png",
+	"dead": "res://assets/sprites/upgrade/player_death.png",
+	"weapon": "res://assets/sprites/upgrade/player_weapon.png",
 }
-
-const SLASH_PATHS := [
-	"res://assets/effects/kenney/slash_01.png",
-	"res://assets/effects/kenney/slash_02.png",
-	"res://assets/effects/kenney/slash_03.png",
-	"res://assets/effects/kenney/slash_04.png",
-]
 
 var facing := Vector2.RIGHT
 var state_name := "idle"
@@ -26,13 +19,10 @@ var attack_name := ""
 
 var _time := 0.0
 var _sprites := {}
-var _slashes: Array[Texture2D] = []
 
 func _ready() -> void:
 	for key in SPRITE_PATHS:
 		_sprites[key] = _load_texture(str(SPRITE_PATHS[key]))
-	for path in SLASH_PATHS:
-		_slashes.append(_load_texture(path))
 
 
 func _process(delta: float) -> void:
@@ -64,9 +54,9 @@ func _draw() -> void:
 	if attack_alpha > 0.0:
 		_draw_slash()
 	draw_set_transform(Vector2(0, bob), 0.0, Vector2(flip, 1.0))
-	_draw_texture_centered(frame, Vector2.ZERO, Vector2(1.12, 1.12), tint)
+	_draw_texture_centered(frame, Vector2.ZERO, Vector2(1.0, 1.0), tint)
 	if state_name == "idle" or state_name == "move":
-		_draw_texture_centered(_sprites["weapon"], Vector2(22, -8), Vector2(0.62, 0.62), Color.WHITE)
+		_draw_texture_centered(_sprites["weapon"], Vector2(28, -10), Vector2(0.58, 0.58), Color.WHITE)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
@@ -95,25 +85,43 @@ func _bob_offset() -> float:
 
 
 func _draw_slash() -> void:
-	if _slashes.is_empty():
-		return
 	var alpha := clampf(attack_alpha, 0.0, 1.0)
-	var texture := _slashes[0]
-	var scale := Vector2(1.55, 1.0)
+	var radius := 70.0
+	var width := 8.0
+	var spread := 0.86
+	var reach := 64.0
+	var color := Color(1.0, 0.76, 0.34, 0.74 * alpha)
+	var core := Color(1.0, 0.96, 0.74, 0.55 * alpha)
 	if attack_name == "light_2":
-		texture = _slashes[1]
+		radius = 82.0
+		spread = 0.98
 	elif attack_name == "light_3":
-		texture = _slashes[2]
-		scale = Vector2(1.85, 1.10)
+		radius = 92.0
+		width = 9.0
+		spread = 1.12
+		reach = 74.0
 	elif attack_name == "heavy":
-		texture = _slashes[3]
-		scale = Vector2(2.1, 1.25)
+		radius = 106.0
+		width = 12.0
+		spread = 0.94
+		reach = 84.0
+		color = Color(1.0, 0.50, 0.20, 0.78 * alpha)
 	elif attack_name == "collect":
-		texture = _slashes[3]
-		scale = Vector2(2.45, 1.40)
-	draw_set_transform(facing * (70.0 if attack_name != "collect" else 88.0), facing.angle(), scale)
-	_draw_texture_centered(texture, Vector2.ZERO, Vector2.ONE, Color(1.0, 0.82, 0.48, 0.78 * alpha))
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		radius = 128.0
+		width = 13.0
+		spread = 0.58
+		reach = 98.0
+		color = Color(1.0, 0.34, 0.12, 0.84 * alpha)
+	var center := facing * reach
+	var angle := facing.angle()
+	draw_arc(center, radius, angle - spread, angle + spread, 34, Color(0.12, 0.08, 0.04, 0.20 * alpha), width + 6.0)
+	draw_arc(center, radius, angle - spread, angle + spread, 34, color, width)
+	draw_arc(center, radius - 13.0, angle - spread * 0.72, angle + spread * 0.72, 24, core, maxf(width - 4.0, 2.0))
+	for i in 4:
+		var t := float(i) / 3.0
+		var a := lerpf(angle - spread, angle + spread, t)
+		var p := center + Vector2.RIGHT.rotated(a) * (radius - 8.0)
+		draw_line(p - facing * 13.0, p + facing * 16.0, Color(1.0, 0.80, 0.45, 0.36 * alpha), 2.0)
 
 
 func _draw_dodge_afterimages(flip: float, tint: Color) -> void:

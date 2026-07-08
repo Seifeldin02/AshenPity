@@ -90,7 +90,7 @@ Per enemy kind you can change:
 
 ## Sounds
 
-Audio files live in `assets/audio/kenney/`.
+Audio files live in `assets/audio/upgrade/`.
 
 Cue mapping lives in `scripts/autoload/CombatAudio.gd` under `CUE_PATHS`.
 
@@ -98,14 +98,14 @@ To swap a sound, replace the OGG file or change the path in `CUE_PATHS`.
 
 ## Sprites
 
-Player sprites live in `assets/sprites/kenney/player_*.png`.
+Player sprites live in `assets/sprites/upgrade/player_*.png`.
 
 Enemy sprites live in:
 
-- `assets/sprites/kenney/melee_*.png`
-- `assets/sprites/kenney/hound_*.png`
-- `assets/sprites/kenney/archer_*.png`
-- `assets/sprites/kenney/elite_*.png`
+- `assets/sprites/upgrade/melee_*.png`
+- `assets/sprites/upgrade/hound_*.png`
+- `assets/sprites/upgrade/archer_*.png`
+- `assets/sprites/upgrade/elite_*.png`
 
 Sprite selection happens in:
 
@@ -114,11 +114,23 @@ Sprite selection happens in:
 
 ## VFX
 
-VFX textures live in `assets/effects/kenney/`.
+Small VFX textures live in `assets/effects/upgrade/`.
 
 Effect behavior lives in `scripts/effects/CombatEffect.gd`.
 
 Hit and perfect-dodge effect spawning happens in `scripts/world/ShrineArena.gd`.
+
+Player and enemy weapon arcs are now bounded vector drawings in `PlayerVisual.gd`, `ShrineGuardianVisual.gd`, and `CombatEffect.gd`. This avoids full-screen slash texture failures.
+
+## Map And Camera
+
+Playable route geometry, wall collision, obstacle placement, and camera zoom live in `scripts/world/ShrineRoute.gd`.
+
+Ground texture drawing and shrine floor presentation live in `scripts/world/ShrineRouteLayer.gd`.
+
+Wall, broken wall, and altar rendering live in `scripts/world/ShrineWallVisual.gd`.
+
+Stone tile textures live in `assets/environment/upgrade/`.
 
 ## Wave Setup
 

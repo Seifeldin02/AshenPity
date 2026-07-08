@@ -5,7 +5,7 @@ const CAMERA_LIMIT_LEFT := -1720
 const CAMERA_LIMIT_TOP := -1020
 const CAMERA_LIMIT_RIGHT := 1720
 const CAMERA_LIMIT_BOTTOM := 1020
-const CAMERA_ZOOM := Vector2(1.20, 1.20)
+const CAMERA_ZOOM := Vector2(1.30, 1.30)
 
 const PLAYER_START := Vector2(-360, 430)
 const GUARDIAN_SPAWNS := [Vector2(-280, -80), Vector2(310, -120), Vector2(120, 160)]
@@ -13,9 +13,9 @@ const GUARDIAN_SPAWNS := [Vector2(-280, -80), Vector2(310, -120), Vector2(120, 1
 const ENTRANCE := Rect2(-620, 270, 850, 330)
 const SIDE_ALCOVE := Rect2(-875, 340, 290, 170)
 const LOWER_PASSAGE := Rect2(-210, 145, 420, 140)
-const CENTRAL := Rect2(-760, -280, 1520, 560)
-const LEFT_SIDE_PATH := Rect2(-980, -120, 260, 310)
-const RIGHT_SIDE_PATH := Rect2(720, -155, 270, 335)
+const CENTRAL := Rect2(-820, -305, 1640, 610)
+const LEFT_SIDE_PATH := Rect2(-1060, -155, 320, 380)
+const RIGHT_SIDE_PATH := Rect2(740, -170, 320, 395)
 const UPPER_PASSAGE := Rect2(-210, -365, 420, 115)
 const ALTAR := Rect2(-520, -620, 1040, 310)
 
@@ -56,13 +56,13 @@ const WALLS := [
 ]
 
 const OBSTACLES := [
-	["PillarA", Vector2(-610, 95), Vector2(58, 82), "pillar"],
-	["PillarB", Vector2(475, -128), Vector2(58, 82), "pillar"],
-	["PillarC", Vector2(-315, 142), Vector2(58, 82), "pillar"],
-	["PillarD", Vector2(350, 122), Vector2(58, 82), "pillar"],
-	["BrokenWallA", Vector2(205, 176), Vector2(132, 38), "broken_wall"],
-	["BrokenWallB", Vector2(-570, 32), Vector2(145, 38), "broken_wall"],
-	["BrokenWallC", Vector2(785, -12), Vector2(122, 38), "broken_wall"],
+	["PillarA", Vector2(-560, -165), Vector2(58, 82), "pillar"],
+	["PillarB", Vector2(560, -165), Vector2(58, 82), "pillar"],
+	["PillarC", Vector2(-520, 185), Vector2(58, 82), "pillar"],
+	["PillarD", Vector2(520, 185), Vector2(58, 82), "pillar"],
+	["BrokenWallA", Vector2(255, 202), Vector2(155, 38), "broken_wall"],
+	["BrokenWallB", Vector2(-760, 10), Vector2(145, 38), "broken_wall"],
+	["BrokenWallC", Vector2(760, 4), Vector2(145, 38), "broken_wall"],
 	["AltarBlock", Vector2(0, -514), Vector2(250, 68), "altar"]
 ]
 

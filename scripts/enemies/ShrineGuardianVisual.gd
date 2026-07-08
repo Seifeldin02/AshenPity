@@ -2,43 +2,43 @@ extends Node2D
 
 const SPRITE_PATHS := {
 	"guardian": {
-		"idle": "res://assets/sprites/kenney/melee_idle.png",
-		"run_1": "res://assets/sprites/kenney/melee_run_1.png",
-		"run_2": "res://assets/sprites/kenney/melee_run_2.png",
-		"attack": "res://assets/sprites/kenney/melee_attack.png",
-		"hurt": "res://assets/sprites/kenney/melee_hurt.png",
-		"death": "res://assets/sprites/kenney/melee_death.png",
+		"idle": "res://assets/sprites/upgrade/melee_idle.png",
+		"run_1": "res://assets/sprites/upgrade/melee_run_1.png",
+		"run_2": "res://assets/sprites/upgrade/melee_run_2.png",
+		"attack": "res://assets/sprites/upgrade/melee_attack.png",
+		"hurt": "res://assets/sprites/upgrade/melee_hurt.png",
+		"death": "res://assets/sprites/upgrade/melee_death.png",
 	},
 	"hound": {
-		"idle": "res://assets/sprites/kenney/hound_idle.png",
-		"run_1": "res://assets/sprites/kenney/hound_run_1.png",
-		"run_2": "res://assets/sprites/kenney/hound_run_2.png",
-		"attack": "res://assets/sprites/kenney/hound_attack.png",
-		"hurt": "res://assets/sprites/kenney/hound_hurt.png",
-		"death": "res://assets/sprites/kenney/hound_death.png",
+		"idle": "res://assets/sprites/upgrade/hound_idle.png",
+		"run_1": "res://assets/sprites/upgrade/hound_run_1.png",
+		"run_2": "res://assets/sprites/upgrade/hound_run_2.png",
+		"attack": "res://assets/sprites/upgrade/hound_attack.png",
+		"hurt": "res://assets/sprites/upgrade/hound_hurt.png",
+		"death": "res://assets/sprites/upgrade/hound_death.png",
 	},
 	"archer": {
-		"idle": "res://assets/sprites/kenney/archer_idle.png",
-		"run_1": "res://assets/sprites/kenney/archer_run_1.png",
-		"run_2": "res://assets/sprites/kenney/archer_run_2.png",
-		"attack": "res://assets/sprites/kenney/archer_attack.png",
-		"hurt": "res://assets/sprites/kenney/archer_hurt.png",
-		"death": "res://assets/sprites/kenney/archer_death.png",
+		"idle": "res://assets/sprites/upgrade/archer_idle.png",
+		"run_1": "res://assets/sprites/upgrade/archer_run_1.png",
+		"run_2": "res://assets/sprites/upgrade/archer_run_2.png",
+		"attack": "res://assets/sprites/upgrade/archer_attack.png",
+		"hurt": "res://assets/sprites/upgrade/archer_hurt.png",
+		"death": "res://assets/sprites/upgrade/archer_death.png",
 	},
 	"bell_bearer": {
-		"idle": "res://assets/sprites/kenney/elite_idle.png",
-		"run_1": "res://assets/sprites/kenney/elite_run_1.png",
-		"run_2": "res://assets/sprites/kenney/elite_run_2.png",
-		"attack": "res://assets/sprites/kenney/elite_attack.png",
-		"hurt": "res://assets/sprites/kenney/elite_hurt.png",
-		"death": "res://assets/sprites/kenney/elite_death.png",
+		"idle": "res://assets/sprites/upgrade/elite_idle.png",
+		"run_1": "res://assets/sprites/upgrade/elite_run_1.png",
+		"run_2": "res://assets/sprites/upgrade/elite_run_2.png",
+		"attack": "res://assets/sprites/upgrade/elite_attack.png",
+		"hurt": "res://assets/sprites/upgrade/elite_hurt.png",
+		"death": "res://assets/sprites/upgrade/elite_death.png",
 	},
 }
 
 const EFFECT_PATHS := {
-	"slash": "res://assets/effects/kenney/slash_03.png",
-	"star": "res://assets/effects/kenney/star_06.png",
-	"smoke": "res://assets/effects/kenney/smoke_08.png",
+	"spark": "res://assets/effects/upgrade/spark.png",
+	"flame": "res://assets/effects/upgrade/flame.png",
+	"smoke": "res://assets/effects/upgrade/smoke.png",
 }
 
 var facing := Vector2.LEFT
@@ -121,10 +121,10 @@ func _select_frame() -> Texture2D:
 
 func _sprite_scale() -> Vector2:
 	if enemy_kind == "hound":
-		return Vector2(1.08, 1.08)
+		return Vector2(1.05, 1.05)
 	if enemy_kind == "bell_bearer":
-		return Vector2(1.22, 1.22)
-	return Vector2(1.10, 1.10)
+		return Vector2(1.05, 1.05)
+	return Vector2(1.0, 1.0)
 
 
 func _bob_offset() -> float:
@@ -168,16 +168,20 @@ func _draw_telegraph() -> void:
 
 
 func _draw_swing() -> void:
-	var scale := Vector2(1.65, 1.0) if enemy_kind != "bell_bearer" else Vector2(2.25, 1.25)
-	draw_set_transform(facing * (78.0 if enemy_kind != "bell_bearer" else 108.0), facing.angle(), scale)
-	_draw_texture_centered(_effects.get("slash"), Vector2.ZERO, Vector2.ONE, Color(1.0, 0.54, 0.25, 0.62))
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	var radius := 92.0 if enemy_kind != "bell_bearer" else 126.0
+	var reach := 68.0 if enemy_kind != "bell_bearer" else 98.0
+	var spread := 0.72 if enemy_kind != "bell_bearer" else 0.92
+	var center := facing * reach
+	var angle := facing.angle()
+	draw_arc(center, radius, angle - spread, angle + spread, 30, Color(0.05, 0.025, 0.018, 0.34), 13.0)
+	draw_arc(center, radius, angle - spread, angle + spread, 30, Color(1.0, 0.42, 0.18, 0.54), 7.0)
+	draw_arc(center, radius - 11.0, angle - spread * 0.66, angle + spread * 0.66, 22, Color(1.0, 0.72, 0.28, 0.30), 3.0)
 
 
 func _draw_stagger_flash() -> void:
 	for i in 3:
 		var angle := _time * 5.0 + float(i) * TAU / 3.0
-		_draw_texture(_effects.get("star"), Vector2.RIGHT.rotated(angle) * 42.0, Vector2(0.42, 0.42), Color(1.0, 0.76, 0.36, 0.75), angle)
+		_draw_texture(_effects.get("spark"), Vector2.RIGHT.rotated(angle) * 42.0, Vector2(0.42, 0.42), Color(1.0, 0.76, 0.36, 0.75), angle)
 
 
 func _draw_death_smoke() -> void:

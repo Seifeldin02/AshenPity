@@ -5,7 +5,7 @@
 - `scripts/player/PlayerController.gd`
   - Player movement, stamina, light combo, heavy attack, dodge, perfect dodge, Ash Brand targeting, Collect, flask, hurt, death, hitboxes, and combat state names.
 - `scripts/player/PlayerVisual.gd`
-  - Sprite-based player presentation using `assets/sprites/kenney/player_*.png`, attack slash textures, dodge afterimages, hit flash, and shadow.
+  - Sprite-based player presentation using `assets/sprites/upgrade/player_*.png`, bounded vector slash arcs, dodge afterimages, hit flash, and shadow.
 - `scripts/autoload/GameBalance.gd`
   - Central editable values for speed, stamina costs, combo timings, damage, stagger, knockback, dodge timing, perfect-dodge window, Ash Brand rules, enemy health, and enemy attack tuning.
 - `scripts/combat/CombatMath.gd`
@@ -16,7 +16,7 @@
 - `scripts/enemies/ShrineGuardian.gd`
   - Shared enemy controller for Shrine Guardian, Ashbound Hound, Reliquary Archer, and Bell-Bearer. Owns AI states, attacks, projectiles, Brand state, stagger, death, and enemy audio cues.
 - `scripts/enemies/ShrineGuardianVisual.gd`
-  - Sprite-based enemy visuals using `assets/sprites/kenney/melee_*`, `hound_*`, `archer_*`, and `elite_*`, plus telegraphs, Brand rings, attack slashes, stagger stars, and death smoke.
+  - Sprite-based enemy visuals using `assets/sprites/upgrade/melee_*`, `hound_*`, `archer_*`, and `elite_*`, plus telegraphs, Brand rings, bounded attack arcs, stagger sparks, and death smoke.
 - `scripts/enemies/EnemyProjectile.gd`
   - Reliquary Archer projectile movement, hit detection, player damage, and perfect-dodge interaction.
 - `scenes/enemies/ShrineGuardian.tscn`
@@ -32,20 +32,22 @@
 ## Audio And VFX
 
 - `scripts/autoload/CombatAudio.gd`
-  - Loads Kenney OGG files from `assets/audio/kenney/` and plays named cues. Procedural tones remain as fallback if files are missing.
+  - Loads curated OGG files from `assets/audio/upgrade/` and plays named cues. Procedural tones remain as fallback if files are missing.
 - `scripts/effects/CombatEffect.gd`
-  - Texture-based hit sparks, heavy impact, Collect cross-cut, Ash Brand pulse, perfect-dodge flash, and death smoke using `assets/effects/kenney/`.
+  - Bounded hit sparks, heavy impact, Collect cross-cut, Ash Brand pulse, perfect-dodge flash, and death smoke using `assets/effects/upgrade/` plus vector lines/arcs.
 
 ## Assets
 
-- `assets/sprites/kenney/`
-  - Curated, enlarged character sprite frames.
-- `assets/effects/kenney/`
-  - Curated slash, spark, smoke, star, and twirl textures.
-- `assets/audio/kenney/`
-  - Curated combat OGG sounds.
-- `assets/third_party/kenney/licenses/`
-  - CC0 license/source notes for the curated asset sources.
+- `assets/sprites/upgrade/`
+  - Current runtime player and enemy sprite frames.
+- `assets/effects/upgrade/`
+  - Current runtime spark, flame, smoke, and blood/impact textures.
+- `assets/audio/upgrade/`
+  - Current runtime combat OGG sounds.
+- `assets/environment/upgrade/`
+  - Current runtime stone floor and wall tile textures.
+- `assets/third_party/upgrade_licenses/`
+  - License/source notes for the curated public asset sources.
 
 ## Input And UI
 
@@ -59,9 +61,11 @@
 ## Level And Camera
 
 - `scripts/world/ShrineRoute.gd`
-  - Shrine route geometry, camera limits, player start, obstacles, walls, torches, props, and spawn anchors.
+  - Shrine route geometry, camera limits/zoom, player start, obstacles, walls, torches, props, and spawn anchors.
 - `scripts/world/ShrineRouteLayer.gd`
-  - Ground, cracks, ash, walls, torches, masonry, and environmental drawing.
+  - Textured ground, route shapes, cracks, ash, torch light pools, shrine landmarks, and environmental drawing.
+- `scripts/world/ShrineWallVisual.gd`
+  - Textured wall, broken wall, and altar rendering for the tall Y-sorted prop layer.
 
 ## Tests
 

@@ -115,8 +115,8 @@
 - Added the Bell-Bearer as a Stage 1.3 elite sandbox enemy, not a full boss.
 - Added Ashbound Hound and Reliquary Archer variants through the existing enemy architecture so the trial has different combat pressures without adding a campaign or progression systems.
 - Added the Ash Trial wave controller in the existing shrine arena: two Guardians, then Hound plus Guardian, then Archer plus Guardian, then Bell-Bearer.
-- Added original code-drawn actor variants and stronger combat presentation: slash trails, hit sparks, Brand rings, Collect bursts, stagger flashes, death bursts, and stronger shadows.
-- Added runtime procedural audio cues for sword whoosh, hits, armor hits, stagger, perfect dodge, Ash Brand, Collect, hurt, dodge, flask, and enemy death. No external audio assets were added.
+- Added public/free sprite-based actor variants and stronger combat presentation: bounded slash arcs, hit sparks, Brand rings, Collect bursts, stagger flashes, death bursts, and stronger shadows.
+- Added runtime OGG audio cues for sword whoosh, hits, armor hits, stagger, perfect dodge, Ash Brand, Collect, hurt, dodge, flask, and enemy death, with procedural tones kept only as fallback.
 - Added a HUD Ash Brand/Collect indicator and mobile Collect/Heavy buttons that continue to route through `InputRouter`.
 - Added Stage 1.3 deterministic playtest coverage for light attack while moving, heavy attack, perfect dodge, Ash Brand, Collect, flask interruption, actor variants, and the full Ash Trial.
 
@@ -142,7 +142,7 @@
 
 - The combat now has stronger automated coverage, but actual feel still requires human keyboard/mouse playtesting.
 - The enemy variants share one configurable enemy scene and controller.
-- Procedural audio proves cue timing and identity, but final sound design will need authored assets later.
+- The current public/free audio bank is stronger than the procedural fallback, but final sound design will still need mixing and human taste testing.
 - Touch controls need real landscape phone validation.
 
 ## Raylib Prototype Separation
@@ -151,10 +151,10 @@ The older Raylib prototype was not reused because it was an abandoned technical 
 
 ## Current Visual and Gameplay Limitations
 
-- Prototype art is original and self-created, but not final key art.
+- Prototype art uses curated public/free assets and is not final key art.
 - Combat is intentionally limited to one player weapon and one configurable enemy scene with four Stage 1.3 variants.
 - The arena is handcrafted and compact.
-- Audio is procedural placeholder sound design for this milestone.
+- Audio uses curated public/free prototype SFX and is not final mixed sound design.
 - Touch UI needs real-device validation before Android production work.
 - Enemy formations and balance are rough first-pass values for feel testing.
 - There is no progression, relic system, boss, save data, shop, or reward economy in this milestone by design.

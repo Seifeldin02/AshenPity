@@ -125,8 +125,8 @@ tools/            local helper scripts
 - Enemy projectile behavior: `scripts/enemies/EnemyProjectile.gd`.
 - Player visual drawing and slash trails: `scripts/player/PlayerVisual.gd`.
 - Enemy visual drawing and Ash Brand indicators: `scripts/enemies/ShrineGuardianVisual.gd`.
-- Procedural combat audio cues: `scripts/autoload/CombatAudio.gd`.
-- Lightweight combat VFX: `scripts/effects/CombatEffect.gd`.
+- Combat audio cue loading and fallback tones: `scripts/autoload/CombatAudio.gd`.
+- Lightweight combat VFX and bounded hit arcs: `scripts/effects/CombatEffect.gd`.
 - HUD, enemy bars, Ash Brand/Collect indicator, trial summary, and debug overlay: `scripts/ui/HUD.gd` and `scenes/ui/HUD.tscn`.
 - Shrine route layout, walls, obstacles, torches, spawns, and camera limits: `scripts/world/ShrineRoute.gd`.
 
@@ -134,8 +134,8 @@ More detail is in `docs/FILE_MAP.md` and `docs/EDITING_GUIDE.md`.
 
 ## Known Limitations
 
-- Art is original code-drawn prototype art, not final production key art.
-- Audio is original procedural placeholder audio generated at runtime, not final mixed sound design.
+- Art uses curated public/free prototype assets and is not final production key art.
+- Audio uses curated public/free prototype SFX and is not final mixed sound design.
 - The Ash Trial enemy variants share one configurable enemy controller and scene.
 - Touch controls need real landscape phone testing.
 - Balance is first-pass and must be judged through human playtesting.

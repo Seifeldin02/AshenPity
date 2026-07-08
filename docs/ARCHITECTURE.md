@@ -54,10 +54,10 @@ Gameplay scripts should read intent from `InputRouter` rather than duplicating d
 
 Rendering and feedback are separate where practical:
 
-- `scripts/player/PlayerVisual.gd` draws player silhouettes, slash trails, dodge trails, and hit flash.
+- `scripts/player/PlayerVisual.gd` draws the player sprite, bounded slash arcs, dodge trails, and hit flash.
 - `scripts/enemies/ShrineGuardianVisual.gd` draws all current enemy silhouettes and Brand indicators.
 - `scripts/effects/CombatEffect.gd` creates temporary hit, Brand, perfect-dodge, Collect, and death effects.
-- `scripts/autoload/CombatAudio.gd` creates original procedural combat audio cues at runtime.
+- `scripts/autoload/CombatAudio.gd` loads curated OGG combat cues at runtime and keeps procedural tones as fallback.
 
 ## Performance Direction
 

@@ -3,18 +3,18 @@ extends Node
 const SAMPLE_RATE := 22050
 
 const CUE_PATHS := {
-	"sword_whoosh": "res://assets/audio/kenney/sword_swing.ogg",
-	"light_hit": "res://assets/audio/kenney/hit.ogg",
-	"heavy_hit": "res://assets/audio/kenney/heavy_hit.ogg",
-	"armor_hit": "res://assets/audio/kenney/armor_hit.ogg",
-	"enemy_stagger": "res://assets/audio/kenney/heavy_hit.ogg",
-	"perfect_dodge": "res://assets/audio/kenney/dodge.ogg",
-	"ash_brand": "res://assets/audio/kenney/ash_brand.ogg",
-	"collect": "res://assets/audio/kenney/collect.ogg",
-	"player_hurt": "res://assets/audio/kenney/player_hurt.ogg",
-	"dodge": "res://assets/audio/kenney/dodge.ogg",
-	"flask": "res://assets/audio/kenney/ash_brand.ogg",
-	"enemy_death": "res://assets/audio/kenney/enemy_death.ogg",
+	"sword_whoosh": "res://assets/audio/upgrade/sword_whoosh.ogg",
+	"light_hit": "res://assets/audio/upgrade/light_hit.ogg",
+	"heavy_hit": "res://assets/audio/upgrade/heavy_hit.ogg",
+	"armor_hit": "res://assets/audio/upgrade/armor_hit.ogg",
+	"enemy_stagger": "res://assets/audio/upgrade/enemy_stagger.ogg",
+	"perfect_dodge": "res://assets/audio/upgrade/perfect_dodge.ogg",
+	"ash_brand": "res://assets/audio/upgrade/ash_brand.ogg",
+	"collect": "res://assets/audio/upgrade/collect.ogg",
+	"player_hurt": "res://assets/audio/upgrade/player_hurt.ogg",
+	"dodge": "res://assets/audio/upgrade/dodge.ogg",
+	"flask": "res://assets/audio/upgrade/flask.ogg",
+	"enemy_death": "res://assets/audio/upgrade/enemy_death.ogg",
 }
 
 var _library := {}

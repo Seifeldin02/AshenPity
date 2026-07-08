@@ -7,9 +7,11 @@ const Route := preload("res://scripts/world/ShrineRoute.gd")
 var _rng := RandomNumberGenerator.new()
 var _cracks: Array[PackedVector2Array] = []
 var _ash: Array[Vector2] = []
+var _textures := {}
 
 func _ready() -> void:
 	_rng.seed = 1717
+	_load_textures()
 	_build_marks()
 	queue_redraw()
 
@@ -62,8 +64,8 @@ func _draw_shadows() -> void:
 		var center: Vector2 = obstacle[1]
 		var size: Vector2 = obstacle[2]
 		draw_colored_polygon(_ellipse(center + Vector2(0, size.y * 0.54), size.x * 0.62, 14.0), Color(0.02, 0.016, 0.020, 0.42))
-	draw_colored_polygon(PackedVector2Array([Vector2(-1030, -170), Vector2(-760, -260), Vector2(-720, 230), Vector2(-1025, 230)]), Color(0.02, 0.016, 0.02, 0.28))
-	draw_colored_polygon(PackedVector2Array([Vector2(760, -275), Vector2(1030, -190), Vector2(1025, 245), Vector2(720, 230)]), Color(0.02, 0.016, 0.02, 0.28))
+	draw_colored_polygon(PackedVector2Array([Vector2(-1030, -170), Vector2(-760, -260), Vector2(-720, 230), Vector2(-1025, 230)]), Color(0.02, 0.016, 0.02, 0.12))
+	draw_colored_polygon(PackedVector2Array([Vector2(760, -275), Vector2(1030, -190), Vector2(1025, 245), Vector2(720, 230)]), Color(0.02, 0.016, 0.02, 0.12))
 
 
 func _draw_foreground() -> void:
@@ -77,7 +79,13 @@ func _draw_room_floor(room: Rect2) -> void:
 	var end_x: float = room.end.x
 	var start_y: float = floor(room.position.y / tile) * tile
 	var end_y: float = room.end.y
-	draw_rect(room.grow(20.0), Color("#252027"))
+	var base_tint := Color(0.70, 0.66, 0.64, 0.82)
+	if room == Route.ALTAR:
+		base_tint = Color(0.82, 0.72, 0.66, 0.90)
+	elif room == Route.SIDE_ALCOVE or room == Route.LEFT_SIDE_PATH or room == Route.RIGHT_SIDE_PATH:
+		base_tint = Color(0.58, 0.55, 0.58, 0.82)
+	draw_rect(room.grow(24.0), Color("#17151b"))
+	_draw_tiled_texture(_textures.get("floor_a"), room, base_tint)
 	var y: float = start_y
 	while y < end_y:
 		var x: float = start_x
@@ -85,10 +93,10 @@ func _draw_room_floor(room: Rect2) -> void:
 			var rect := Rect2(x, y, tile, tile).intersection(room)
 			if rect.size.x > 1.0 and rect.size.y > 1.0:
 				var hash := int(abs(x * 3.0 + y * 7.0)) % 5
-				var shade := 0.155 + float(hash) * 0.009
-				var warm := 0.012 if room == Route.ALTAR or room == Route.SIDE_ALCOVE else 0.0
-				draw_rect(rect, Color(shade + warm, shade * 0.96, shade * 0.90, 1.0))
-				draw_rect(rect.grow(-2.0), Color(0.02, 0.018, 0.021, 0.18), false, 2.0)
+				var overlay := 0.035 + float(hash) * 0.007
+				draw_rect(rect, Color(overlay, overlay * 0.92, overlay * 0.84, 0.16))
+				if hash == 0:
+					draw_rect(rect.grow(-6.0), Color(0.95, 0.78, 0.48, 0.035), false, 2.0)
 			x += tile
 		y += tile
 
@@ -107,9 +115,11 @@ func _draw_exterior_courtyard() -> void:
 		var x := bounds.position.x
 		while x < bounds.end.x:
 			var hash := int(abs(x * 5.0 + y * 11.0)) % 4
-			var shade := 0.08 + float(hash) * 0.006
+			var shade := 0.06 + float(hash) * 0.005
 			draw_rect(Rect2(x, y, tile, tile), Color(shade, shade * 0.92, shade * 0.86, 1.0))
-			draw_rect(Rect2(x + 3, y + 3, tile - 6, tile - 6), Color(0.02, 0.018, 0.022, 0.20), false, 2.0)
+			if hash == 1:
+				_draw_tiled_texture(_textures.get("floor_b"), Rect2(x, y, tile, tile), Color(0.36, 0.34, 0.36, 0.18))
+			draw_rect(Rect2(x + 3, y + 3, tile - 6, tile - 6), Color(0.02, 0.018, 0.022, 0.12), false, 2.0)
 			x += tile
 		y += tile
 	for i in 18:
@@ -118,15 +128,17 @@ func _draw_exterior_courtyard() -> void:
 
 
 func _draw_irregular_edges() -> void:
-	var left_apron := PackedVector2Array([Vector2(-955, -130), Vector2(-740, -220), Vector2(-705, 255), Vector2(-980, 220)])
-	var right_apron := PackedVector2Array([Vector2(740, -240), Vector2(960, -150), Vector2(985, 238), Vector2(705, 250)])
-	var altar_apron := PackedVector2Array([Vector2(-540, -610), Vector2(540, -610), Vector2(470, -285), Vector2(165, -245), Vector2(0, -315), Vector2(-165, -245), Vector2(-470, -285)])
-	draw_colored_polygon(left_apron, Color("#211d24"))
-	draw_colored_polygon(right_apron, Color("#211d24"))
-	draw_colored_polygon(altar_apron, Color("#241f26"))
+	var left_apron := PackedVector2Array([Vector2(-1050, -165), Vector2(-790, -250), Vector2(-700, 80), Vector2(-805, 270), Vector2(-1045, 240)])
+	var right_apron := PackedVector2Array([Vector2(790, -260), Vector2(1060, -165), Vector2(1065, 255), Vector2(815, 285), Vector2(710, 82)])
+	var altar_apron := PackedVector2Array([Vector2(-600, -620), Vector2(600, -620), Vector2(520, -275), Vector2(210, -230), Vector2(0, -325), Vector2(-210, -230), Vector2(-520, -275)])
+	draw_colored_polygon(left_apron, Color("#25232a"))
+	draw_colored_polygon(right_apron, Color("#25232a"))
+	draw_colored_polygon(altar_apron, Color("#2b252b"))
 	draw_polyline(left_apron + PackedVector2Array([left_apron[0]]), Color("#4a4149"), 5.0)
 	draw_polyline(right_apron + PackedVector2Array([right_apron[0]]), Color("#4a4149"), 5.0)
 	draw_polyline(altar_apron + PackedVector2Array([altar_apron[0]]), Color("#56484c"), 6.0)
+	draw_line(Vector2(-640, 0), Vector2(-300, 0), Color(0.78, 0.58, 0.32, 0.12), 10.0)
+	draw_line(Vector2(300, 0), Vector2(640, 0), Color(0.78, 0.58, 0.32, 0.12), 10.0)
 
 
 func _draw_stairs() -> void:
@@ -164,6 +176,27 @@ func _build_marks() -> void:
 	for i in 260:
 		var room: Rect2 = Route.ROOMS[_rng.randi_range(0, Route.ROOMS.size() - 1)]
 		_ash.append(room.position + Vector2(_rng.randf_range(0.0, room.size.x), _rng.randf_range(0.0, room.size.y)))
+
+
+func _load_textures() -> void:
+	_textures = {
+		"floor_a": _load_texture("res://assets/environment/upgrade/floor_stone_a.png"),
+		"floor_b": _load_texture("res://assets/environment/upgrade/floor_stone_b.png"),
+		"floor_c": _load_texture("res://assets/environment/upgrade/floor_stone_c.png"),
+	}
+
+
+func _draw_tiled_texture(texture: Texture2D, rect: Rect2, tint: Color) -> void:
+	if texture == null:
+		return
+	draw_texture_rect(texture, rect, true, tint)
+
+
+func _load_texture(path: String) -> Texture2D:
+	var image := Image.load_from_file(ProjectSettings.globalize_path(path))
+	if image == null:
+		return null
+	return ImageTexture.create_from_image(image)
 
 
 func _ellipse(center: Vector2, radius_x: float, radius_y: float) -> PackedVector2Array:

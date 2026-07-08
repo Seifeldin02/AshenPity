@@ -2,71 +2,87 @@
 
 ## Stage 1.3 Visual Combat Upgrade
 
-This build uses curated CC0 assets for sprites, VFX, and combat audio. No ripped commercial-game assets were added.
+This build uses curated public/free game-dev assets for the runtime sprites, tiles, VFX textures, and combat audio. No ripped commercial-game assets were added.
 
-## Character Sprites
+## Runtime Character Sprites
 
-Source: Kenney Tiny Dungeon  
-URL: https://opengameart.org/content/tiny-dungeon  
-License: CC0 1.0 Universal  
-Local license note: `assets/third_party/kenney/licenses/tiny_dungeon_license.txt`
+Source: Dungeon Crawl 32x32 Tiles  
+URL: https://opengameart.org/content/dungeon-crawl-32x32-tiles  
+License: Public domain / free use, no attribution required by the source page  
+Local license note: `assets/third_party/upgrade_licenses/crawl_tiles_license.txt`
 
 Used for:
 
-- Player hooded wanderer base sprite.
+- Modular hooded player sprite parts.
 - Shrine Guardian melee sprite.
+- Ashbound Hound sprite.
 - Reliquary Archer sprite.
 - Bell-Bearer elite sprite.
-- Player weapon sprite.
+- Small spark, flame, smoke, and blood/impact VFX textures.
 
-## Hound Sprite
+Runtime folders:
 
-Source: Tiny Creatures by Clint Bellanger, compatible with Kenney Tiny Dungeon  
-URL: https://opengameart.org/content/tiny-creatures  
-License: CC0 1.0 Universal  
-Local source note: `assets/third_party/kenney/licenses/tiny_creatures_source.txt`
+- `assets/sprites/upgrade/`
+- `assets/effects/upgrade/`
 
-Used for:
+## Runtime Environment Tiles
 
-- Ashbound Hound sprite.
-
-## Combat VFX
-
-Source: Kenney Particle Pack  
-URL: https://opengameart.org/content/particle-pack-80-sprites  
-License: CC0 1.0 Universal  
-Local license note: `assets/third_party/kenney/licenses/particle_pack_license.txt`
+Source: Top Down Dungeon Pack by Screaming Brain Studios  
+URL: https://opengameart.org/content/top-down-dungeon-pack  
+License: CC0 / Public Domain  
+Local license note: `assets/third_party/upgrade_licenses/sbs_top_down_dungeon_license.txt`
 
 Used for:
 
-- Slash arcs.
-- Hit sparks.
-- Impact stars.
-- Ash smoke.
-- Brand and Collect effects.
+- Stone floor tiles.
+- Stone and brick wall tiles.
+- Textured shrine route and wall rendering.
 
-## Combat Audio
+Runtime folder:
 
-Source: Kenney 50 RPG Sound Effects  
-URL: https://opengameart.org/content/50-rpg-sound-effects  
-License: CC0 1.0 Universal  
-Local license note: `assets/third_party/kenney/licenses/rpg_sounds_license.txt`
+- `assets/environment/upgrade/`
+
+## Runtime Sword Audio
+
+Source: 20 Sword Sound Effects by StarNinjas  
+URL: https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes  
+License: CC0  
+Local license note: `assets/third_party/upgrade_licenses/starninjas_sword_sfx_license.txt`
 
 Used for:
 
-- Sword swing.
+- Sword whoosh.
 - Light hit.
 - Heavy hit.
 - Armor hit.
+
+## Runtime RPG Audio
+
+Source: 80 CC0 RPG SFX by rubberduck  
+URL: https://opengameart.org/content/80-cc0-rpg-sfx  
+License: CC0  
+Local license note: `assets/third_party/upgrade_licenses/rubberduck_rpg_sfx_license.txt`
+
+Used for:
+
 - Dodge.
+- Perfect dodge.
 - Ash Brand.
 - Collect.
+- Flask.
+- Enemy stagger.
 - Player hurt.
 - Enemy death.
 
-## Local Asset Folders
+Runtime folder:
 
-- Curated sprites: `assets/sprites/kenney/`
-- Curated VFX textures: `assets/effects/kenney/`
-- Curated audio: `assets/audio/kenney/`
-- License notes: `assets/third_party/kenney/licenses/`
+- `assets/audio/upgrade/`
+
+## Downloaded But Not Used
+
+Source: Hero Character Sprite Sheet by Fry  
+URL: https://opengameart.org/content/hero-character-sprite-sheet  
+License: CC0  
+Local note: `assets/third_party/upgrade_licenses/hero_sheet_unused_note.txt`
+
+This sheet was downloaded for evaluation, but it is not used by the runtime build because its visual direction did not fit Ashen Pity.
