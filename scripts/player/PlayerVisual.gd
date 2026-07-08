@@ -1,15 +1,43 @@
 extends Node2D
 
+const SPRITE_PATHS := {
+	"idle": "res://assets/sprites/kenney/player_idle.png",
+	"run_1": "res://assets/sprites/kenney/player_run_1.png",
+	"run_2": "res://assets/sprites/kenney/player_run_2.png",
+	"attack": "res://assets/sprites/kenney/player_attack.png",
+	"dodge": "res://assets/sprites/kenney/player_dodge.png",
+	"hurt": "res://assets/sprites/kenney/player_hurt.png",
+	"dead": "res://assets/sprites/kenney/player_death.png",
+	"weapon": "res://assets/sprites/kenney/player_weapon.png",
+}
+
+const SLASH_PATHS := [
+	"res://assets/effects/kenney/slash_01.png",
+	"res://assets/effects/kenney/slash_02.png",
+	"res://assets/effects/kenney/slash_03.png",
+	"res://assets/effects/kenney/slash_04.png",
+]
+
 var facing := Vector2.RIGHT
 var state_name := "idle"
 var flash := 0.0
 var attack_alpha := 0.0
 var attack_name := ""
+
 var _time := 0.0
+var _sprites := {}
+var _slashes: Array[Texture2D] = []
+
+func _ready() -> void:
+	for key in SPRITE_PATHS:
+		_sprites[key] = _load_texture(str(SPRITE_PATHS[key]))
+	for path in SLASH_PATHS:
+		_slashes.append(_load_texture(path))
+
 
 func _process(delta: float) -> void:
 	_time += delta
-	flash = maxf(flash - delta * 5.0, 0.0)
+	flash = maxf(flash - delta * 7.5, 0.0)
 	queue_redraw()
 
 
@@ -26,93 +54,90 @@ func trigger_flash() -> void:
 
 
 func _draw() -> void:
-	var breathe := sin(_time * 5.0) * 2.0
-	var walk_bob := 0.0
-	if state_name == "move":
-		walk_bob = sin(_time * 14.0) * 3.0
-	elif state_name == "dodge":
-		walk_bob = -8.0
-	elif state_name == "collect_active":
-		walk_bob = -5.0
+	var frame := _select_frame()
+	var bob := _bob_offset()
 	var flip := -1.0 if facing.x < -0.12 else 1.0
-	var tint := Color.WHITE.lerp(Color(1.0, 0.35, 0.25), flash)
-	draw_colored_polygon(_ellipse(Vector2(0, 34), 34.0, 11.0), Color(0.02, 0.018, 0.022, 0.58))
+	var tint := Color.WHITE.lerp(Color(1.0, 0.34, 0.24), flash)
+	draw_colored_polygon(_ellipse(Vector2(0, 35), 35.0, 11.0), Color(0.02, 0.018, 0.022, 0.62))
 	if state_name == "dodge":
-		_draw_dodge_trail()
-	draw_set_transform(Vector2(0, walk_bob), 0.0, Vector2(flip, 1.0))
-	_draw_cloak(tint, breathe)
-	_draw_mask(tint, breathe)
-	_draw_sword(tint)
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		_draw_dodge_afterimages(flip, tint)
 	if attack_alpha > 0.0:
 		_draw_slash()
+	draw_set_transform(Vector2(0, bob), 0.0, Vector2(flip, 1.0))
+	_draw_texture_centered(frame, Vector2.ZERO, Vector2(1.12, 1.12), tint)
+	if state_name == "idle" or state_name == "move":
+		_draw_texture_centered(_sprites["weapon"], Vector2(22, -8), Vector2(0.62, 0.62), Color.WHITE)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
-func _draw_cloak(tint: Color, breathe: float) -> void:
-	draw_colored_polygon(PackedVector2Array([
-		Vector2(-27, -16), Vector2(-48, 11), Vector2(-32, 31), Vector2(-15, 8)
-	]), Color("#111018").lerp(tint, 0.10))
-	draw_colored_polygon(PackedVector2Array([
-		Vector2(25, -16), Vector2(43, 12), Vector2(31, 30), Vector2(14, 7)
-	]), Color("#211c29").lerp(tint, 0.10))
-	var cloak := PackedVector2Array([
-		Vector2(0, -53 + breathe), Vector2(34, -31), Vector2(33, 20),
-		Vector2(18, 51), Vector2(2, 61), Vector2(-16, 51), Vector2(-34, 21), Vector2(-35, -30)
-	])
-	draw_colored_polygon(cloak, Color("#191821").lerp(tint, 0.18))
-	draw_colored_polygon(PackedVector2Array([
-		Vector2(-3, -49 + breathe), Vector2(23, -27), Vector2(19, 43), Vector2(4, 56), Vector2(0, 3)
-	]), Color("#2b2633").lerp(tint, 0.12))
-	draw_polyline(PackedVector2Array([Vector2(-29, -23), Vector2(0, -53 + breathe), Vector2(31, -22)]), Color("#6b6470").lerp(tint, 0.20), 5.0)
-	draw_line(Vector2(-7, -22), Vector2(-16, 43), Color("#0d0c12"), 5.0)
-	draw_line(Vector2(10, -22), Vector2(18, 41), Color("#3b3341"), 4.0)
-	draw_line(Vector2(-22, 48), Vector2(18, 50), Color("#0a0910"), 4.0)
-	draw_circle(Vector2(-14, -5), 4.5, Color("#463847").lerp(tint, 0.18))
-	draw_circle(Vector2(14, -5), 4.5, Color("#463847").lerp(tint, 0.18))
+func _select_frame() -> Texture2D:
+	if state_name == "dead":
+		return _sprites["dead"]
+	if state_name == "hurt":
+		return _sprites["hurt"]
+	if state_name == "dodge":
+		return _sprites["dodge"]
+	if state_name.begins_with("light") or state_name.begins_with("heavy") or state_name.begins_with("collect"):
+		return _sprites["attack"]
+	if state_name == "move":
+		return _sprites["run_1"] if int(_time * 10.0) % 2 == 0 else _sprites["run_2"]
+	return _sprites["idle"]
 
 
-func _draw_mask(tint: Color, breathe: float) -> void:
-	var mask := PackedVector2Array([
-		Vector2(-15, -38 + breathe), Vector2(0, -44 + breathe), Vector2(15, -38 + breathe),
-		Vector2(19, -17), Vector2(8, 5), Vector2(0, 10), Vector2(-8, 5), Vector2(-19, -17)
-	])
-	draw_colored_polygon(mask, Color("#ddd7c7").lerp(tint, 0.35))
-	draw_line(Vector2(-9, -23), Vector2(-2, -21), Color("#141217"), 2.5)
-	draw_line(Vector2(9, -23), Vector2(2, -21), Color("#141217"), 2.5)
-	draw_line(Vector2(0, -39), Vector2(0, 6), Color("#948a7c").lerp(tint, 0.20), 2.0)
-	draw_line(Vector2(-11, -11), Vector2(11, -10), Color(0.95, 0.85, 0.66, 0.30), 1.5)
-
-
-func _draw_sword(tint: Color) -> void:
-	var raised := -15.0 if state_name.ends_with("_windup") else 0.0
-	var side := 30.0
-	draw_line(Vector2(side - 17, -2 + raised), Vector2(side - 2, -16 + raised), Color("#4f3740"), 8.0)
-	draw_line(Vector2(side - 3, -18 + raised), Vector2(side + 47, -43 + raised), Color("#d8cdb6").lerp(tint, 0.25), 7.0)
-	draw_line(Vector2(side - 1, -19 + raised), Vector2(side + 28, -34 + raised), Color("#fff1d5").lerp(tint, 0.18), 2.0)
-	draw_line(Vector2(side - 20, 0 + raised), Vector2(side - 1, -18 + raised), Color("#8b563c"), 5.0)
+func _bob_offset() -> float:
+	if state_name == "move":
+		return sin(_time * 16.0) * 3.0
+	if state_name == "dodge":
+		return -5.0
+	if state_name.begins_with("collect"):
+		return -4.0
+	return sin(_time * 5.0) * 1.5
 
 
 func _draw_slash() -> void:
+	if _slashes.is_empty():
+		return
 	var alpha := clampf(attack_alpha, 0.0, 1.0)
-	var dir_angle := facing.angle()
-	if attack_name == "collect":
-		draw_arc(Vector2.ZERO, 96.0, dir_angle - 0.90, dir_angle + 0.90, 34, Color(1.0, 0.78, 0.38, 0.86 * alpha), 14.0)
-		draw_arc(Vector2.ZERO, 122.0, dir_angle - 0.62, dir_angle + 0.72, 30, Color(0.98, 0.22, 0.12, 0.46 * alpha), 6.0)
-		draw_line(-facing.rotated(0.24) * 70.0, facing.rotated(0.24) * 92.0, Color(0.95, 0.86, 0.58, 0.68 * alpha), 8.0)
+	var texture := _slashes[0]
+	var scale := Vector2(1.55, 1.0)
+	if attack_name == "light_2":
+		texture = _slashes[1]
+	elif attack_name == "light_3":
+		texture = _slashes[2]
+		scale = Vector2(1.85, 1.10)
 	elif attack_name == "heavy":
-		draw_arc(Vector2.ZERO, 92.0, dir_angle - 0.88, dir_angle + 0.88, 32, Color(1.0, 0.68, 0.32, 0.75 * alpha), 14.0)
-		draw_arc(Vector2.ZERO, 112.0, dir_angle - 0.48, dir_angle + 0.66, 28, Color(0.95, 0.18, 0.10, 0.34 * alpha), 6.0)
-	else:
-		var radius := 78.0 if attack_name != "light_3" else 96.0
-		draw_arc(Vector2.ZERO, radius, dir_angle - 0.74, dir_angle + 0.74, 30, Color(0.98, 0.86, 0.58, 0.66 * alpha), 11.0)
-		draw_arc(Vector2.ZERO, radius + 17.0, dir_angle - 0.50, dir_angle + 0.62, 26, Color(0.95, 0.33, 0.16, 0.32 * alpha), 5.0)
+		texture = _slashes[3]
+		scale = Vector2(2.1, 1.25)
+	elif attack_name == "collect":
+		texture = _slashes[3]
+		scale = Vector2(2.45, 1.40)
+	draw_set_transform(facing * (70.0 if attack_name != "collect" else 88.0), facing.angle(), scale)
+	_draw_texture_centered(texture, Vector2.ZERO, Vector2.ONE, Color(1.0, 0.82, 0.48, 0.78 * alpha))
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
-func _draw_dodge_trail() -> void:
+func _draw_dodge_afterimages(flip: float, tint: Color) -> void:
 	for i in 3:
-		var offset := -facing * float(i + 1) * 18.0
-		var alpha := 0.14 - float(i) * 0.035
-		draw_colored_polygon(_ellipse(offset + Vector2(0, 4), 25.0 - float(i) * 3.0, 35.0 - float(i) * 3.0), Color(0.60, 0.55, 0.50, alpha))
+		var offset := -facing * float(i + 1) * 22.0
+		var alpha := 0.20 - float(i) * 0.045
+		draw_set_transform(offset + Vector2(0, 3), 0.0, Vector2(flip, 1.0) * (1.0 - float(i) * 0.08))
+		_draw_texture_centered(_sprites["dodge"], Vector2.ZERO, Vector2(1.0, 1.0), Color(tint.r, tint.g, tint.b, alpha))
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+func _draw_texture_centered(texture: Texture2D, offset: Vector2, scale_value: Vector2, tint: Color) -> void:
+	if texture == null:
+		return
+	var size := texture.get_size() * scale_value
+	draw_texture_rect(texture, Rect2(offset - size * 0.5, size), false, tint)
+
+
+func _load_texture(path: String) -> Texture2D:
+	var image := Image.load_from_file(ProjectSettings.globalize_path(path))
+	if image == null:
+		image = Image.create(8, 8, false, Image.FORMAT_RGBA8)
+		image.fill(Color(1.0, 0.0, 1.0, 1.0))
+	return ImageTexture.create_from_image(image)
 
 
 func _ellipse(center: Vector2, radius_x: float, radius_y: float) -> PackedVector2Array:

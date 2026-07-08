@@ -1,11 +1,20 @@
 extends Node2D
 
+const TEXTURE_PATHS := {
+	"spark": "res://assets/effects/kenney/spark_06.png",
+	"star": "res://assets/effects/kenney/star_06.png",
+	"smoke": "res://assets/effects/kenney/smoke_04.png",
+	"twirl": "res://assets/effects/kenney/twirl_01.png",
+	"slash": "res://assets/effects/kenney/slash_04.png",
+}
+
 var kind := "spark"
 var direction := Vector2.RIGHT
 var lifetime := 0.22
 var color := Color("#f0b15e")
 
 var _age := 0.0
+var _textures := {}
 
 static func spawn(parent: Node, position_value: Vector2, effect_kind: String, facing: Vector2 = Vector2.RIGHT, tint: Color = Color("#f0b15e")) -> Node2D:
 	var effect := Node2D.new()
@@ -16,6 +25,22 @@ static func spawn(parent: Node, position_value: Vector2, effect_kind: String, fa
 	effect.set("color", tint)
 	parent.add_child(effect)
 	return effect
+
+
+func _ready() -> void:
+	for key in TEXTURE_PATHS:
+		_textures[key] = _load_texture(str(TEXTURE_PATHS[key]))
+	match kind:
+		"heavy":
+			lifetime = 0.28
+		"collect":
+			lifetime = 0.34
+		"death":
+			lifetime = 0.55
+		"brand", "perfect":
+			lifetime = 0.32
+		_:
+			lifetime = 0.20
 
 
 func _process(delta: float) -> void:
@@ -30,45 +55,66 @@ func _draw() -> void:
 	var alpha := 1.0 - t
 	match kind:
 		"spark":
-			_draw_sparks(alpha)
+			_draw_spark(alpha)
 		"heavy":
-			_draw_burst(alpha, 70.0, Color(1.0, 0.45, 0.18, alpha * 0.65))
+			_draw_impact(alpha, 1.25)
 		"collect":
-			_draw_cross_cut(alpha)
+			_draw_collect(alpha)
 		"brand":
-			_draw_burst(alpha, 48.0, Color(1.0, 0.38, 0.16, alpha * 0.55))
+			_draw_ring(alpha, _textures.get("twirl"), 1.2, Color(1.0, 0.36, 0.12, alpha * 0.78))
 		"perfect":
-			_draw_ring(alpha, 58.0, Color(0.90, 0.84, 0.60, alpha * 0.72))
+			_draw_ring(alpha, _textures.get("star"), 0.9, Color(1.0, 0.86, 0.44, alpha * 0.82))
 		"death":
-			_draw_burst(alpha, 92.0, Color(0.60, 0.50, 0.40, alpha * 0.48))
+			_draw_death(alpha)
 		_:
-			_draw_sparks(alpha)
+			_draw_spark(alpha)
 
 
-func _draw_sparks(alpha: float) -> void:
+func _draw_spark(alpha: float) -> void:
+	for i in 5:
+		var angle := direction.angle() + lerpf(-0.85, 0.85, float(i) / 4.0)
+		var pos := Vector2.RIGHT.rotated(angle) * (15.0 + float(i % 2) * 11.0)
+		_draw_texture(_textures.get("spark"), pos, Vector2(0.46, 0.46), _with_alpha(color, alpha * 0.82), angle)
+
+
+func _draw_impact(alpha: float, scale_value: float) -> void:
+	_draw_texture(_textures.get("star"), Vector2.ZERO, Vector2(scale_value, scale_value), Color(1.0, 0.62, 0.24, alpha * 0.80), _age * 12.0)
+	_draw_texture(_textures.get("spark"), direction * 32.0, Vector2(0.72, 0.72), Color(1.0, 0.28, 0.12, alpha * 0.65), direction.angle())
+
+
+func _draw_collect(alpha: float) -> void:
+	for offset in [-0.30, 0.30]:
+		_draw_texture(_textures.get("slash"), Vector2.ZERO, Vector2(1.8, 1.0), Color(1.0, 0.78, 0.34, alpha * 0.88), direction.angle() + offset)
+	_draw_texture(_textures.get("twirl"), Vector2.ZERO, Vector2(1.4, 1.4), Color(1.0, 0.28, 0.10, alpha * 0.50), _age * 8.0)
+
+
+func _draw_ring(alpha: float, texture: Texture2D, scale_value: float, tint: Color) -> void:
+	_draw_texture(texture, Vector2.ZERO, Vector2(scale_value + (1.0 - alpha) * 0.45, scale_value + (1.0 - alpha) * 0.45), tint, _age * 5.0)
+	draw_arc(Vector2.ZERO, 54.0 + (1.0 - alpha) * 28.0, 0.0, TAU, 48, tint, 5.0)
+
+
+func _draw_death(alpha: float) -> void:
 	for i in 7:
-		var angle := direction.angle() + lerpf(-1.0, 1.0, float(i) / 6.0)
-		var length := 18.0 + float(i % 3) * 10.0
-		var start := Vector2.RIGHT.rotated(angle) * 10.0
-		var end := Vector2.RIGHT.rotated(angle) * length
-		draw_line(start, end, _with_alpha(color, alpha * 0.72), 3.0)
+		var angle := float(i) * TAU / 7.0 + _age * 1.8
+		var pos := Vector2.RIGHT.rotated(angle) * (18.0 + float(i % 3) * 18.0)
+		_draw_texture(_textures.get("smoke"), pos, Vector2(0.70, 0.70), Color(0.58, 0.50, 0.42, alpha * 0.55), angle)
 
 
-func _draw_burst(alpha: float, radius: float, tint: Color) -> void:
-	draw_circle(Vector2.ZERO, radius * (1.0 - alpha * 0.45), tint)
-	_draw_ring(alpha, radius, tint.lightened(0.35))
+func _draw_texture(texture: Texture2D, center: Vector2, scale_value: Vector2, tint: Color, rotation_value: float = 0.0) -> void:
+	if texture == null:
+		return
+	var size := texture.get_size() * scale_value
+	draw_set_transform(center, rotation_value, Vector2.ONE)
+	draw_texture_rect(texture, Rect2(-size * 0.5, size), false, tint)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
-func _draw_ring(alpha: float, radius: float, tint: Color) -> void:
-	draw_arc(Vector2.ZERO, radius * (1.0 + (1.0 - alpha) * 0.45), 0.0, TAU, 42, _with_alpha(tint, alpha), 5.0)
-
-
-func _draw_cross_cut(alpha: float) -> void:
-	var angle := direction.angle()
-	for offset in [-0.28, 0.28]:
-		var dir := Vector2.RIGHT.rotated(angle + offset)
-		draw_line(-dir * 74.0, dir * 74.0, Color(1.0, 0.78, 0.42, alpha * 0.88), 9.0)
-		draw_line(-dir * 42.0, dir * 92.0, Color(0.95, 0.24, 0.12, alpha * 0.52), 4.0)
+func _load_texture(path: String) -> Texture2D:
+	var image := Image.load_from_file(ProjectSettings.globalize_path(path))
+	if image == null:
+		image = Image.create(8, 8, false, Image.FORMAT_RGBA8)
+		image.fill(Color(1.0, 0.0, 1.0, 1.0))
+	return ImageTexture.create_from_image(image)
 
 
 func _with_alpha(source: Color, alpha: float) -> Color:
