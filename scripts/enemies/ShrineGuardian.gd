@@ -41,6 +41,7 @@ var _knockback := Vector2.ZERO
 var _died_emitted := false
 var _rng := RandomNumberGenerator.new()
 var _elite_attack_flip := false
+var _ai_time := 0.0
 
 func _ready() -> void:
 	add_to_group("enemies")
@@ -54,6 +55,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	_ai_time += delta
 	if player == null:
 		var players := get_tree().get_nodes_in_group("player")
 		if not players.is_empty():
@@ -84,6 +86,17 @@ func take_combat_hit(hit: Dictionary, source_position: Vector2 = global_position
 	var stagger := float(hit.get("stagger", 1.0))
 	var knockback_force := float(hit.get("knockback", 180.0))
 	var kind := str(hit.get("kind", "light"))
+	var hit_direction: Vector2 = hit.get("direction", (global_position - source_position).normalized())
+	var is_counter := state == EnemyState.WINDUP
+	var is_rear_hit := hit_direction.length() > 0.01 and hit_direction.normalized().dot(facing.normalized()) > 0.52
+	if is_counter:
+		damage *= GameBalance.COUNTER_HIT_DAMAGE_MULTIPLIER
+		stagger *= GameBalance.COUNTER_HIT_STAGGER_MULTIPLIER
+	if is_rear_hit:
+		damage *= GameBalance.REAR_HIT_DAMAGE_MULTIPLIER
+		stagger += GameBalance.REAR_HIT_STAGGER_BONUS
+	if state == EnemyState.RECOVERY:
+		stagger += GameBalance.RECOVERY_PUNISH_STAGGER_BONUS
 	health = maxf(health - damage, 0.0)
 	health_changed.emit(health, max_health)
 	_stagger_meter += stagger
@@ -94,7 +107,10 @@ func take_combat_hit(hit: Dictionary, source_position: Vector2 = global_position
 		brand_changed.emit(ash_branded, collect_ready)
 	if visual.has_method("trigger_flash"):
 		visual.trigger_flash()
-	_play_audio("heavy_hit" if kind == "heavy" or kind == "collect" else "light_hit", -7.0)
+	if is_counter or is_rear_hit:
+		_play_audio("armor_hit", -6.5)
+	else:
+		_play_audio("heavy_hit" if kind == "heavy" or kind == "collect" else "light_hit", -7.0)
 	if health <= 0.0:
 		_die()
 	elif _stagger_meter >= float(_config["stagger_threshold"]):
@@ -207,6 +223,12 @@ func _chase(delta: float) -> void:
 	var desired := to_player.normalized() * float(_config["move_speed"])
 	if enemy_kind == "archer" and to_player.length() < 260.0:
 		desired = -to_player.normalized() * float(_config["move_speed"])
+	elif enemy_kind == "guardian" and to_player.length() < 260.0:
+		var tangent := to_player.normalized().orthogonal() * sin(_ai_time * 4.8 + global_position.x * 0.01)
+		desired = (to_player.normalized() + tangent * 0.28).normalized() * float(_config["move_speed"])
+	elif enemy_kind == "hound" and to_player.length() < 190.0:
+		var tangent_hound := to_player.normalized().orthogonal() * signf(sin(_ai_time * 8.0 + global_position.y * 0.02))
+		desired = (to_player.normalized() * 0.85 + tangent_hound * 0.32).normalized() * float(_config["move_speed"])
 	velocity = velocity.move_toward(desired, 760.0 * delta)
 
 
@@ -321,6 +343,7 @@ func playtest_reset(position_value: Vector2, player_ref: Node2D) -> void:
 	_hit_targets.clear()
 	_knockback = Vector2.ZERO
 	_died_emitted = false
+	_ai_time = 0.0
 	modulate = Color.WHITE
 	attack_area.monitoring = false
 	collision_shape.disabled = false

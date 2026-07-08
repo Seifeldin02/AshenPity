@@ -3,7 +3,7 @@
 ## Player And Combat
 
 - `scripts/player/PlayerController.gd`
-  - Player movement, stamina, light combo, heavy attack, dodge, perfect dodge, Ash Brand targeting, Collect, flask, hurt, death, hitboxes, and combat state names.
+  - Player movement, stamina, light combo, heavy attack, dodge cancel, perfect dodge, Ash Brand targeting, Collect, flask, hurt, death, hitboxes, and combat state names.
 - `scripts/player/PlayerVisual.gd`
   - Sprite-based player presentation using `assets/sprites/upgrade/player_*.png`, bounded vector slash arcs, dodge afterimages, hit flash, and shadow.
 - `scripts/autoload/GameBalance.gd`
@@ -14,7 +14,7 @@
 ## Enemies
 
 - `scripts/enemies/ShrineGuardian.gd`
-  - Shared enemy controller for Shrine Guardian, Ashbound Hound, Reliquary Archer, and Bell-Bearer. Owns AI states, attacks, projectiles, Brand state, stagger, death, and enemy audio cues.
+  - Shared enemy controller for Shrine Guardian, Ashbound Hound, Reliquary Archer, and Bell-Bearer. Owns AI states, lateral pressure, attacks, projectiles, counter/rear-hit punish rules, Brand state, stagger, death, and enemy audio cues.
 - `scripts/enemies/ShrineGuardianVisual.gd`
   - Sprite-based enemy visuals using `assets/sprites/upgrade/melee_*`, `hound_*`, `archer_*`, and `elite_*`, plus telegraphs, Brand rings, bounded attack arcs, stagger sparks, and death smoke.
 - `scripts/enemies/EnemyProjectile.gd`
@@ -45,7 +45,7 @@
 - `assets/audio/upgrade/`
   - Current runtime combat OGG sounds.
 - `assets/environment/upgrade/`
-  - Current runtime stone floor and wall tile textures.
+  - Current runtime stone floor/wall textures plus raster torch, pillar, and broken wall prop sprites.
 - `assets/third_party/upgrade_licenses/`
   - License/source notes for the curated public asset sources.
 
@@ -63,9 +63,11 @@
 - `scripts/world/ShrineRoute.gd`
   - Shrine route geometry, camera limits/zoom, player start, obstacles, walls, torches, props, and spawn anchors.
 - `scripts/world/ShrineRouteLayer.gd`
-  - Textured ground, route shapes, cracks, ash, torch light pools, shrine landmarks, and environmental drawing.
+  - Naturalized ground slabs, texture grain, route shapes, cracks, ash, torch light pools, shrine landmarks, and environmental drawing.
 - `scripts/world/ShrineWallVisual.gd`
   - Textured wall, broken wall, and altar rendering for the tall Y-sorted prop layer.
+- `scripts/world/ShrineProp.gd`
+  - Raster torch and pillar prop drawing in the Y-sorted actor/tall-prop layer.
 
 ## Tests
 

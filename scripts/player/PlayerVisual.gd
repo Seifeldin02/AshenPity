@@ -53,8 +53,10 @@ func _draw() -> void:
 		_draw_dodge_afterimages(flip, tint)
 	if attack_alpha > 0.0:
 		_draw_slash()
-	draw_set_transform(Vector2(0, bob), 0.0, Vector2(flip, 1.0))
-	_draw_texture_centered(frame, Vector2.ZERO, Vector2(1.0, 1.0), tint)
+	var body_rotation := _body_rotation(flip)
+	var body_scale := _body_scale()
+	draw_set_transform(Vector2(0, bob), body_rotation, Vector2(flip * body_scale.x, body_scale.y))
+	_draw_texture_centered(frame, Vector2.ZERO, Vector2.ONE, tint)
 	if state_name == "idle" or state_name == "move":
 		_draw_texture_centered(_sprites["weapon"], Vector2(28, -10), Vector2(0.58, 0.58), Color.WHITE)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
@@ -76,12 +78,40 @@ func _select_frame() -> Texture2D:
 
 func _bob_offset() -> float:
 	if state_name == "move":
-		return sin(_time * 16.0) * 3.0
+		return sin(_time * 18.0) * 3.2
 	if state_name == "dodge":
 		return -5.0
 	if state_name.begins_with("collect"):
 		return -4.0
 	return sin(_time * 5.0) * 1.5
+
+
+func _body_rotation(flip: float) -> float:
+	if state_name == "move":
+		return sin(_time * 18.0) * 0.035 * flip
+	if state_name.ends_with("_windup"):
+		return -0.10 * flip
+	if state_name.ends_with("_active"):
+		return 0.08 * flip
+	if state_name.begins_with("collect"):
+		return 0.11 * flip
+	if state_name == "hurt":
+		return sin(_time * 46.0) * 0.06
+	return 0.0
+
+
+func _body_scale() -> Vector2:
+	if state_name == "move":
+		return Vector2(1.0 + abs(sin(_time * 18.0)) * 0.025, 1.0 - abs(sin(_time * 18.0)) * 0.018)
+	if state_name == "dodge":
+		return Vector2(1.12, 0.88)
+	if state_name.ends_with("_windup"):
+		return Vector2(0.96, 1.05)
+	if state_name.ends_with("_active"):
+		return Vector2(1.08, 0.96)
+	if state_name.begins_with("collect"):
+		return Vector2(1.13, 0.94)
+	return Vector2.ONE
 
 
 func _draw_slash() -> void:

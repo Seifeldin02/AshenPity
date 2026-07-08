@@ -30,6 +30,7 @@ var branded_enemy: Node
 
 var _state_timer := 0.0
 var _state_duration := 0.0
+var _elapsed_in_state := 0.0
 var _regen_delay := 0.0
 var _roll_direction := Vector2.RIGHT
 var _attack_direction := Vector2.RIGHT
@@ -99,6 +100,8 @@ func try_perfect_dodge(enemy: Node, _attack_position: Vector2) -> bool:
 		return false
 	_perfect_dodge_used = true
 	branded_enemy = enemy
+	stamina = minf(stamina + GameBalance.PLAYER_PERFECT_DODGE_STAMINA_RESTORE, GameBalance.PLAYER_MAX_STAMINA)
+	stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
 	if enemy.has_method("apply_ash_brand"):
 		enemy.apply_ash_brand(self)
 	collect_ready = enemy.get("collect_ready") if enemy != null else false
@@ -111,6 +114,7 @@ func try_perfect_dodge(enemy: Node, _attack_position: Vector2) -> bool:
 
 func _tick_state(delta: float, move_input: Vector2) -> void:
 	_state_timer -= delta
+	_elapsed_in_state = maxf(_state_duration - _state_timer, 0.0)
 	match state:
 		PlayerState.IDLE, PlayerState.MOVE:
 			_handle_actions(move_input)
@@ -130,6 +134,9 @@ func _tick_state(delta: float, move_input: Vector2) -> void:
 				attack_area.monitoring = false
 				_set_state(PlayerState.ATTACK_RECOVERY, float(_current_attack["recovery"]))
 		PlayerState.ATTACK_RECOVERY:
+			if _dodge_pressed() and _elapsed_in_state >= GameBalance.PLAYER_DODGE_CANCEL_AFTER and CombatMathUtil.can_spend_stamina(stamina, GameBalance.PLAYER_DODGE_COST):
+				_start_dodge(move_input)
+				return
 			_capture_attack_buffer()
 			velocity = velocity.move_toward(Vector2.ZERO, GameBalance.PLAYER_DECELERATION * delta)
 			if _state_timer <= 0.0:
@@ -153,6 +160,16 @@ func _tick_state(delta: float, move_input: Vector2) -> void:
 				_set_state(PlayerState.DODGE_RECOVERY, GameBalance.PLAYER_DODGE_RECOVERY)
 		PlayerState.DODGE_RECOVERY:
 			velocity = velocity.move_toward(Vector2.ZERO, GameBalance.PLAYER_DECELERATION * delta)
+			if _state_timer <= GameBalance.PLAYER_DODGE_ATTACK_BUFFER_WINDOW:
+				if _action_collect_pressed() and _can_start_collect():
+					_start_collect()
+					return
+				if _action_attack_pressed() and _can_start_light():
+					_start_light_attack()
+					return
+				if _action_heavy_pressed() and _can_start_heavy():
+					_start_heavy_attack()
+					return
 			if _state_timer <= 0.0:
 				_set_state(PlayerState.IDLE, 0.0)
 		PlayerState.COLLECT_WINDUP:
@@ -198,17 +215,8 @@ func _handle_actions(move_input: Vector2) -> void:
 	if _action_attack_pressed() and _can_start_light():
 		_start_light_attack()
 		return
-	if (Input.is_action_just_pressed("dodge") or InputRouter.consume_dodge()) and CombatMathUtil.can_spend_stamina(stamina, GameBalance.PLAYER_DODGE_COST):
-		stamina = CombatMathUtil.spend_stamina(stamina, GameBalance.PLAYER_DODGE_COST)
-		_regen_delay = GameBalance.PLAYER_STAMINA_REGEN_DELAY
-		stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
-		_roll_direction = move_input.normalized() if move_input.length() > 0.05 else facing
-		invulnerable = true
-		_perfect_dodge_used = false
-		dust.emitting = true
-		dust.restart()
-		_play_audio("dodge", -12.0)
-		_set_state(PlayerState.DODGE, GameBalance.PLAYER_DODGE_TIME)
+	if _dodge_pressed() and CombatMathUtil.can_spend_stamina(stamina, GameBalance.PLAYER_DODGE_COST):
+		_start_dodge(move_input)
 		return
 	if (Input.is_action_just_pressed("flask") or InputRouter.consume_flask()) and flask_charges > 0 and health < GameBalance.PLAYER_MAX_HEALTH:
 		flask_charges -= 1
@@ -238,6 +246,10 @@ func _action_heavy_pressed() -> bool:
 
 func _action_collect_pressed() -> bool:
 	return Input.is_action_just_pressed("collect") or InputRouter.consume_collect()
+
+
+func _dodge_pressed() -> bool:
+	return Input.is_action_just_pressed("dodge") or InputRouter.consume_dodge()
 
 
 func _can_start_light() -> bool:
@@ -271,6 +283,20 @@ func _start_heavy_attack() -> void:
 	_combo_index = 0
 	_combo_timer = 0.0
 	_start_attack(GameBalance.HEAVY_ATTACK, "heavy")
+
+
+func _start_dodge(move_input: Vector2) -> void:
+	stamina = CombatMathUtil.spend_stamina(stamina, GameBalance.PLAYER_DODGE_COST)
+	_regen_delay = GameBalance.PLAYER_STAMINA_REGEN_DELAY
+	stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
+	_roll_direction = move_input.normalized() if move_input.length() > 0.05 else facing
+	invulnerable = true
+	_perfect_dodge_used = false
+	attack_area.monitoring = false
+	dust.emitting = true
+	dust.restart()
+	_play_audio("dodge", -12.0)
+	_set_state(PlayerState.DODGE, GameBalance.PLAYER_DODGE_TIME)
 
 
 func _start_attack(attack_data: Dictionary, _kind: String) -> void:
@@ -344,6 +370,7 @@ func _on_attack_body_entered(body: Node) -> void:
 			"stagger": float(_current_attack["stagger"]),
 			"knockback": float(_current_attack["knockback"]),
 			"kind": hit_kind,
+			"direction": _attack_direction,
 			"source": self
 		}
 		body.take_combat_hit(hit, global_position)

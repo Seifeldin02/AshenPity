@@ -118,7 +118,7 @@ tools/            local helper scripts
 ## Where To Edit Core Systems
 
 - Player movement, dodge, combo, heavy, Collect, stamina, damage, and flask: `scripts/player/PlayerController.gd`.
-- Combat timing, stamina costs, damage, stagger, enemy health, and enemy tuning: `scripts/autoload/GameBalance.gd`.
+- Combat timing, dodge cancel, stamina costs, counter hits, rear hits, stagger, enemy health, and enemy tuning: `scripts/autoload/GameBalance.gd`.
 - Desktop, touch, and simulated test input: `scripts/autoload/InputRouter.gd`.
 - Ash Trial waves and enemy spawning: `scripts/trial/AshTrial.gd`.
 - Enemy behavior for Guardian, Hound, Archer, and Bell-Bearer: `scripts/enemies/ShrineGuardian.gd`.
@@ -129,6 +129,8 @@ tools/            local helper scripts
 - Lightweight combat VFX and bounded hit arcs: `scripts/effects/CombatEffect.gd`.
 - HUD, enemy bars, Ash Brand/Collect indicator, trial summary, and debug overlay: `scripts/ui/HUD.gd` and `scenes/ui/HUD.tscn`.
 - Shrine route layout, walls, obstacles, torches, spawns, and camera limits: `scripts/world/ShrineRoute.gd`.
+- Naturalized floor drawing: `scripts/world/ShrineRouteLayer.gd`.
+- Torch, pillar, wall, and broken wall prop visuals: `scripts/world/ShrineProp.gd` and `scripts/world/ShrineWallVisual.gd`.
 
 More detail is in `docs/FILE_MAP.md` and `docs/EDITING_GUIDE.md`.
 

@@ -164,3 +164,21 @@ The older Raylib prototype was not reused because it was an abandoned technical 
 1. Run a human keyboard/mouse playtest pass and tune camera speed, dodge distance, and attack lunge from direct feel.
 2. Add a small visual QA checklist for every route screenshot so darkness, player visibility, and side-space readability are reviewed consistently.
 3. Add one more automated route scenario that walks behind each pillar and confirms the player is visually layered correctly.
+
+## Stage 1.3B Naturalization and Combat Fluidity Pass
+
+- Replaced the obvious repeated floor-tile look with deterministic naturalized stone slabs, muted texture grain, and softer seams in `ShrineRouteLayer.gd`.
+- Added raster torch, pillar, and broken wall prop assets under `assets/environment/upgrade/`, then wired them into `ShrineProp.gd` and `ShrineWallVisual.gd`.
+- Added visual lean, squash, stride bob, attack anticipation, and stagger shake to player/enemy visual scripts so sprites feel less like static cards sliding across the floor.
+- Tuned movement for stronger 120 Hz feel: higher acceleration/deceleration, faster dodge, shorter dodge recovery, quicker stamina regeneration, and lower regen delay.
+- Added late attack-recovery dodge cancel and attack buffering out of dodge recovery for more fluid combat without removing all commitment.
+- Added perfect-dodge stamina restore, counter-hit damage/stagger bonus during enemy windup, rear-hit bonus for positioning, and extra stagger when punishing enemy recovery.
+- Added small lateral pressure to guardian and hound chase behavior so enemy movement is less one-dimensional.
+
+### Stage 1.3B Verification
+
+- `godot_console --headless --path . -s tests/test_runner.gd`: passed.
+- `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
+- `godot_console --path . --quit-after 3`: passed.
+- Harness snapshot on the development PC: about 171 FPS reported, display refresh about 170 Hz, p95 frame time 8.33 ms under fixed 120 FPS simulation, physics 120 Hz.
+- The harness still reports the existing ObjectDB leak warning at exit.

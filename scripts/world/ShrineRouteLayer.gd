@@ -7,12 +7,14 @@ const Route := preload("res://scripts/world/ShrineRoute.gd")
 var _rng := RandomNumberGenerator.new()
 var _cracks: Array[PackedVector2Array] = []
 var _ash: Array[Vector2] = []
+var _floor_cells: Array[Dictionary] = []
 var _textures := {}
 
 func _ready() -> void:
 	_rng.seed = 1717
 	_load_textures()
 	_build_marks()
+	_build_floor_cells()
 	queue_redraw()
 
 
@@ -74,31 +76,24 @@ func _draw_foreground() -> void:
 
 
 func _draw_room_floor(room: Rect2) -> void:
-	var tile := 80.0
-	var start_x: float = floor(room.position.x / tile) * tile
-	var end_x: float = room.end.x
-	var start_y: float = floor(room.position.y / tile) * tile
-	var end_y: float = room.end.y
 	var base_tint := Color(0.70, 0.66, 0.64, 0.82)
 	if room == Route.ALTAR:
 		base_tint = Color(0.82, 0.72, 0.66, 0.90)
 	elif room == Route.SIDE_ALCOVE or room == Route.LEFT_SIDE_PATH or room == Route.RIGHT_SIDE_PATH:
 		base_tint = Color(0.58, 0.55, 0.58, 0.82)
 	draw_rect(room.grow(24.0), Color("#17151b"))
-	_draw_tiled_texture(_textures.get("floor_a"), room, base_tint)
-	var y: float = start_y
-	while y < end_y:
-		var x: float = start_x
-		while x < end_x:
-			var rect := Rect2(x, y, tile, tile).intersection(room)
-			if rect.size.x > 1.0 and rect.size.y > 1.0:
-				var hash := int(abs(x * 3.0 + y * 7.0)) % 5
-				var overlay := 0.035 + float(hash) * 0.007
-				draw_rect(rect, Color(overlay, overlay * 0.92, overlay * 0.84, 0.16))
-				if hash == 0:
-					draw_rect(rect.grow(-6.0), Color(0.95, 0.78, 0.48, 0.035), false, 2.0)
-			x += tile
-		y += tile
+	_draw_tiled_texture(_textures.get("floor_a"), room, Color(base_tint.r, base_tint.g, base_tint.b, 0.28))
+	for cell in _floor_cells:
+		if cell["room"] != room:
+			continue
+		var rect: Rect2 = cell["rect"]
+		draw_rect(rect, cell["color"])
+		draw_rect(rect.grow(-2.0), Color(0.02, 0.018, 0.020, 0.075), false, 1.0)
+		if bool(cell["worn"]):
+			_draw_tiled_texture(_textures.get("floor_c"), rect, Color(0.72, 0.68, 0.60, 0.055))
+	for i in 3:
+		var band_y := room.position.y + room.size.y * (0.28 + float(i) * 0.20)
+		draw_line(Vector2(room.position.x + 25, band_y), Vector2(room.end.x - 25, band_y + sin(float(i) * 1.8) * 18.0), Color(0.50, 0.42, 0.32, 0.022), 18.0)
 
 
 func _draw_room_trim(room: Rect2, color: Color) -> void:
@@ -176,6 +171,36 @@ func _build_marks() -> void:
 	for i in 260:
 		var room: Rect2 = Route.ROOMS[_rng.randi_range(0, Route.ROOMS.size() - 1)]
 		_ash.append(room.position + Vector2(_rng.randf_range(0.0, room.size.x), _rng.randf_range(0.0, room.size.y)))
+
+
+func _build_floor_cells() -> void:
+	_floor_cells.clear()
+	var floor_rng := RandomNumberGenerator.new()
+	floor_rng.seed = 42111
+	for room in Route.ROOMS:
+		var y: float = room.position.y
+		while y < room.end.y - 12.0:
+			var row_height: float = floor_rng.randf_range(68.0, 118.0)
+			var x: float = room.position.x
+			while x < room.end.x - 12.0:
+				var width: float = floor_rng.randf_range(72.0, 132.0)
+				var jitter := Vector2(floor_rng.randf_range(-7.0, 7.0), floor_rng.randf_range(-5.0, 5.0))
+				var rect := Rect2(Vector2(x, y) + jitter, Vector2(width, row_height)).intersection(room.grow(-8.0))
+				if rect.size.x > 20.0 and rect.size.y > 20.0:
+					var shade: float = floor_rng.randf_range(0.19, 0.255)
+					var warm: float = floor_rng.randf_range(-0.006, 0.010)
+					if room == Route.ALTAR:
+						warm += 0.010
+					elif room == Route.SIDE_ALCOVE or room == Route.LEFT_SIDE_PATH or room == Route.RIGHT_SIDE_PATH:
+						shade *= 0.88
+					_floor_cells.append({
+						"room": room,
+						"rect": rect,
+						"color": Color(shade + warm, shade * floor_rng.randf_range(0.92, 0.98), shade * floor_rng.randf_range(0.86, 0.94), 0.46),
+						"worn": floor_rng.randf() < 0.18
+					})
+				x += width + floor_rng.randf_range(-8.0, 12.0)
+			y += row_height + floor_rng.randf_range(-8.0, 12.0)
 
 
 func _load_textures() -> void:

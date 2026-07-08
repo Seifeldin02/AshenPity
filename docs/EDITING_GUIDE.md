@@ -27,6 +27,10 @@ Each hit has:
 
 Input buffering is controlled by `PLAYER_ATTACK_BUFFER_WINDOW`.
 
+Late attack-recovery dodge cancel is controlled by `PLAYER_DODGE_CANCEL_AFTER`.
+
+Attack-after-dodge feel is controlled by `PLAYER_DODGE_ATTACK_BUFFER_WINDOW`.
+
 ## Attack Damage And Impact
 
 Edit `scripts/autoload/GameBalance.gd`:
@@ -40,8 +44,15 @@ Edit `scripts/autoload/GameBalance.gd`:
 - `COLLECT_ATTACK.damage`
 - `COLLECT_ATTACK.stagger`
 - `COLLECT_ATTACK.knockback`
+- `COUNTER_HIT_DAMAGE_MULTIPLIER`
+- `COUNTER_HIT_STAGGER_MULTIPLIER`
+- `REAR_HIT_DAMAGE_MULTIPLIER`
+- `REAR_HIT_STAGGER_BONUS`
+- `RECOVERY_PUNISH_STAGGER_BONUS`
 
 Hit stop, screen shake, and hit VFX are triggered in `scripts/world/ShrineArena.gd` in `_on_hit_confirmed`.
+
+Counter-hit and rear-hit punish rules are applied in `scripts/enemies/ShrineGuardian.gd`.
 
 ## Dodge Timing
 
@@ -52,6 +63,9 @@ Edit `scripts/autoload/GameBalance.gd`:
 - `PLAYER_DODGE_INVULN_TIME`
 - `PLAYER_DODGE_RECOVERY`
 - `PLAYER_DODGE_COST`
+- `PLAYER_DODGE_CANCEL_AFTER`
+- `PLAYER_DODGE_ATTACK_BUFFER_WINDOW`
+- `PLAYER_PERFECT_DODGE_STAMINA_RESTORE`
 
 The dodge state implementation is in `scripts/player/PlayerController.gd`.
 
@@ -131,6 +145,10 @@ Ground texture drawing and shrine floor presentation live in `scripts/world/Shri
 Wall, broken wall, and altar rendering live in `scripts/world/ShrineWallVisual.gd`.
 
 Stone tile textures live in `assets/environment/upgrade/`.
+
+Torch, pillar, and broken wall raster props also live in `assets/environment/upgrade/`.
+
+Natural floor slab generation lives in `scripts/world/ShrineRouteLayer.gd` in `_build_floor_cells`.
 
 ## Wave Setup
 

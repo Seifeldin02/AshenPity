@@ -42,6 +42,10 @@ Runtime folder:
 
 - `assets/environment/upgrade/`
 
+## Original Runtime Prop Rasters
+
+The torch brazier, broken pillar, and broken wall chunk PNGs in `assets/environment/upgrade/` were generated inside this repository for Ashen Pity. They are original prototype assets and do not come from commercial game rips.
+
 ## Runtime Sword Audio
 
 Source: 20 Sword Sound Effects by StarNinjas  

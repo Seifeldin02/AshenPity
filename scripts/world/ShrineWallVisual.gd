@@ -5,10 +5,12 @@ extends Node2D
 
 var _wall_texture: Texture2D
 var _brick_texture: Texture2D
+var _broken_wall_texture: Texture2D
 
 func _ready() -> void:
 	_wall_texture = _load_texture("res://assets/environment/upgrade/wall_stone_a.png")
 	_brick_texture = _load_texture("res://assets/environment/upgrade/wall_brick.png")
+	_broken_wall_texture = _load_texture("res://assets/environment/upgrade/broken_wall_chunk.png")
 
 
 func _draw() -> void:
@@ -37,6 +39,10 @@ func _draw_wall() -> void:
 
 
 func _draw_broken_wall() -> void:
+	if _broken_wall_texture != null:
+		var scale := Vector2(size.x / maxf(_broken_wall_texture.get_width(), 1.0), size.y / maxf(_broken_wall_texture.get_height(), 1.0)) * 1.18
+		_draw_texture_centered(_broken_wall_texture, Vector2.ZERO, scale, Color.WHITE)
+		return
 	draw_colored_polygon(_ellipse(Vector2(0, 27), size.x * 0.52, 10.0), Color(0.02, 0.016, 0.02, 0.38))
 	var left := Rect2(-size.x * 0.5, -size.y * 0.5, size.x * 0.43, size.y)
 	var right := Rect2(size.x * 0.06, -size.y * 0.42, size.x * 0.43, size.y * 0.86)
@@ -68,6 +74,11 @@ func _load_texture(path: String) -> Texture2D:
 	if image == null:
 		return null
 	return ImageTexture.create_from_image(image)
+
+
+func _draw_texture_centered(texture: Texture2D, offset: Vector2, scale_value: Vector2, tint: Color) -> void:
+	var size_value := texture.get_size() * scale_value
+	draw_texture_rect(texture, Rect2(offset - size_value * 0.5, size_value), false, tint)
 
 
 func _ellipse(center: Vector2, radius_x: float, radius_y: float) -> PackedVector2Array:

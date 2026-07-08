@@ -2,9 +2,9 @@ extends Node
 
 const PLAYER_MAX_HEALTH := 100.0
 const PLAYER_MAX_STAMINA := 100.0
-const PLAYER_MOVE_SPEED := 372.0
-const PLAYER_ACCELERATION := 3200.0
-const PLAYER_DECELERATION := 3600.0
+const PLAYER_MOVE_SPEED := 398.0
+const PLAYER_ACCELERATION := 4300.0
+const PLAYER_DECELERATION := 4700.0
 const PLAYER_ATTACK_COST := 18.0
 const PLAYER_HEAVY_COST := 34.0
 const PLAYER_COLLECT_COST := 22.0
@@ -24,18 +24,26 @@ const PLAYER_HEAVY_RECOVERY_TIME := 0.26
 const PLAYER_COLLECT_WINDUP_TIME := 0.05
 const PLAYER_COLLECT_ACTIVE_TIME := 0.16
 const PLAYER_COLLECT_RECOVERY_TIME := 0.12
-const PLAYER_ATTACK_BUFFER_WINDOW := 0.11
+const PLAYER_ATTACK_BUFFER_WINDOW := 0.13
 const PLAYER_HEAVY_BUFFER_WINDOW := 0.10
-const PLAYER_DODGE_SPEED := 790.0
-const PLAYER_DODGE_TIME := 0.27
-const PLAYER_DODGE_INVULN_TIME := 0.18
+const PLAYER_DODGE_SPEED := 900.0
+const PLAYER_DODGE_TIME := 0.245
+const PLAYER_DODGE_INVULN_TIME := 0.155
 const PLAYER_PERFECT_DODGE_WINDOW := 0.16
-const PLAYER_DODGE_RECOVERY := 0.09
+const PLAYER_DODGE_RECOVERY := 0.065
+const PLAYER_DODGE_CANCEL_AFTER := 0.055
+const PLAYER_DODGE_ATTACK_BUFFER_WINDOW := 0.045
+const PLAYER_PERFECT_DODGE_STAMINA_RESTORE := 18.0
 const PLAYER_HEAL_AMOUNT := 38.0
 const PLAYER_HEAL_TIME := 0.75
-const PLAYER_STAMINA_REGEN := 62.0
-const PLAYER_STAMINA_REGEN_DELAY := 0.30
+const PLAYER_STAMINA_REGEN := 78.0
+const PLAYER_STAMINA_REGEN_DELAY := 0.24
 const PLAYER_HURT_TIME := 0.22
+const COUNTER_HIT_DAMAGE_MULTIPLIER := 1.22
+const COUNTER_HIT_STAGGER_MULTIPLIER := 1.45
+const REAR_HIT_DAMAGE_MULTIPLIER := 1.16
+const REAR_HIT_STAGGER_BONUS := 0.55
+const RECOVERY_PUNISH_STAGGER_BONUS := 0.35
 
 const ENEMY_MAX_HEALTH := 86.0
 const HOUND_MAX_HEALTH := 58.0
@@ -61,7 +69,7 @@ const LIGHT_COMBO := [
 		"name": "light_1",
 		"windup": 0.07,
 		"active": 0.09,
-		"recovery": 0.13,
+		"recovery": 0.115,
 		"damage": 20.0,
 		"stagger": 1.0,
 		"stamina": 14.0,
@@ -75,7 +83,7 @@ const LIGHT_COMBO := [
 		"name": "light_2",
 		"windup": 0.08,
 		"active": 0.10,
-		"recovery": 0.15,
+		"recovery": 0.13,
 		"damage": 24.0,
 		"stagger": 1.15,
 		"stamina": 16.0,
@@ -89,7 +97,7 @@ const LIGHT_COMBO := [
 		"name": "light_3",
 		"windup": 0.10,
 		"active": 0.12,
-		"recovery": 0.21,
+		"recovery": 0.18,
 		"damage": 34.0,
 		"stagger": 1.55,
 		"stamina": 20.0,
@@ -97,7 +105,7 @@ const LIGHT_COMBO := [
 		"range": 78.0,
 		"width": 108.0,
 		"height": 56.0,
-		"lunge": 190.0
+		"lunge": 215.0
 	}
 ]
 
@@ -105,7 +113,7 @@ const HEAVY_ATTACK := {
 	"name": "heavy",
 	"windup": 0.22,
 	"active": 0.16,
-	"recovery": 0.27,
+	"recovery": 0.24,
 	"damage": 52.0,
 	"stagger": 3.0,
 	"stamina": PLAYER_HEAVY_COST,
@@ -113,7 +121,7 @@ const HEAVY_ATTACK := {
 	"range": 86.0,
 	"width": 116.0,
 	"height": 70.0,
-	"lunge": 105.0
+	"lunge": 135.0
 }
 
 const COLLECT_ATTACK := {

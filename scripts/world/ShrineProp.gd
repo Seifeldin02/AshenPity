@@ -2,6 +2,15 @@ extends Node2D
 
 @export var kind := "pillar"
 
+var _textures := {}
+
+func _ready() -> void:
+	_textures = {
+		"pillar": _load_texture("res://assets/environment/upgrade/broken_pillar.png"),
+		"torch": _load_texture("res://assets/environment/upgrade/torch_brazier.png"),
+	}
+
+
 func _draw() -> void:
 	if kind == "torch":
 		_draw_torch()
@@ -10,7 +19,10 @@ func _draw() -> void:
 
 
 func _draw_pillar() -> void:
-	draw_colored_polygon(_ellipse_points(Vector2(0, 156), 43.0, 13.0), Color(0.03, 0.025, 0.03, 0.55))
+	var texture: Texture2D = _textures.get("pillar")
+	if texture != null:
+		_draw_texture_centered(texture, Vector2(0, 36), Vector2.ONE, Color.WHITE)
+		return
 	var outer := PackedVector2Array([
 		Vector2(-25, -12), Vector2(-12, -26), Vector2(18, -26), Vector2(31, -12),
 		Vector2(24, 103), Vector2(0, 114), Vector2(-26, 103)
@@ -28,13 +40,22 @@ func _draw_pillar() -> void:
 
 
 func _draw_torch() -> void:
-	draw_colored_polygon(_ellipse_points(Vector2(0, 65), 31.0, 8.0), Color(0.03, 0.025, 0.03, 0.55))
-	draw_circle(Vector2.ZERO, 56.0, Color(0.95, 0.42, 0.15, 0.10))
-	draw_colored_polygon(PackedVector2Array([Vector2(-18, 7), Vector2(18, 7), Vector2(10, 60), Vector2(-10, 60)]), Color("#363238"))
-	draw_rect(Rect2(-26, -4, 52, 18), Color("#61544a"))
-	draw_colored_polygon(PackedVector2Array([Vector2(0, -50), Vector2(14, -19), Vector2(2, 4), Vector2(-10, -19)]), Color("#e2a24d"))
-	draw_colored_polygon(PackedVector2Array([Vector2(-12, -30), Vector2(2, -12), Vector2(-5, 5), Vector2(-17, -13)]), Color("#b94f2d"))
-	draw_colored_polygon(PackedVector2Array([Vector2(9, -28), Vector2(18, -12), Vector2(7, 5), Vector2(2, -12)]), Color("#ffd283"))
+	var texture: Texture2D = _textures.get("torch")
+	if texture != null:
+		_draw_texture_centered(texture, Vector2.ZERO, Vector2(0.82, 0.82), Color.WHITE)
+		return
+
+
+func _draw_texture_centered(texture: Texture2D, offset: Vector2, scale_value: Vector2, tint: Color) -> void:
+	var size := texture.get_size() * scale_value
+	draw_texture_rect(texture, Rect2(offset - size * 0.5, size), false, tint)
+
+
+func _load_texture(path: String) -> Texture2D:
+	var image := Image.load_from_file(ProjectSettings.globalize_path(path))
+	if image == null:
+		return null
+	return ImageTexture.create_from_image(image)
 
 
 func _ellipse_points(center: Vector2, radius_x: float, radius_y: float) -> PackedVector2Array:

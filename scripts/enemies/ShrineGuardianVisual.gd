@@ -93,8 +93,9 @@ func _draw() -> void:
 		_draw_brand()
 	if state_name == "windup":
 		_draw_telegraph()
-	draw_set_transform(Vector2(0, bob), 0.0, Vector2(flip, 1.0))
-	_draw_texture_centered(sprite, Vector2.ZERO, _sprite_scale(), tint)
+	var scale_value := _sprite_scale() * _body_scale()
+	draw_set_transform(Vector2(0, bob), _body_rotation(flip), Vector2(flip * scale_value.x, scale_value.y))
+	_draw_texture_centered(sprite, Vector2.ZERO, Vector2.ONE, tint)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	if state_name == "active":
 		_draw_swing()
@@ -129,12 +130,39 @@ func _sprite_scale() -> Vector2:
 
 func _bob_offset() -> float:
 	if state_name == "chase" or state_name == "patrol":
-		return sin(_time * 13.0) * (3.0 if enemy_kind != "bell_bearer" else 2.0)
+		var pace := 18.0 if enemy_kind == "hound" else 12.0
+		return sin(_time * pace) * (3.0 if enemy_kind != "bell_bearer" else 2.0)
 	if state_name == "stagger":
 		return sin(_time * 40.0) * 3.0
 	if state_name == "windup":
 		return -3.0
 	return sin(_time * 4.0) * 1.5
+
+
+func _body_rotation(flip: float) -> float:
+	if state_name == "chase" or state_name == "patrol":
+		var pace := 18.0 if enemy_kind == "hound" else 12.0
+		return sin(_time * pace) * (0.040 if enemy_kind == "hound" else 0.024) * flip
+	if state_name == "windup":
+		return -0.10 * flip
+	if state_name == "active":
+		return 0.12 * flip
+	if state_name == "stagger":
+		return sin(_time * 42.0) * 0.09
+	return 0.0
+
+
+func _body_scale() -> Vector2:
+	if state_name == "chase" or state_name == "patrol":
+		var stride: float = abs(sin(_time * (18.0 if enemy_kind == "hound" else 12.0)))
+		return Vector2(1.0 + stride * 0.025, 1.0 - stride * 0.020)
+	if state_name == "windup":
+		return Vector2(0.96, 1.06)
+	if state_name == "active":
+		return Vector2(1.08, 0.95)
+	if state_name == "stagger":
+		return Vector2(1.05, 0.96)
+	return Vector2.ONE
 
 
 func _draw_shadow() -> void:
