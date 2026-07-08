@@ -1,52 +1,72 @@
 # Asset Credits
 
-## Stage 1.3 Asset Policy
+## Stage 1.3 Visual Combat Upgrade
 
-No external art, sprite, font, or audio assets were added for Stage 1.3.
+This build uses curated CC0 assets for sprites, VFX, and combat audio. No ripped commercial-game assets were added.
 
-All current character visuals, enemy visuals, environment drawing, combat effects, and UI shapes are original project-authored code-drawn assets made inside this repository.
+## Character Sprites
 
-## Visual Assets
+Source: Kenney Tiny Dungeon  
+URL: https://opengameart.org/content/tiny-dungeon  
+License: CC0 1.0 Universal  
+Local license note: `assets/third_party/kenney/licenses/tiny_dungeon_license.txt`
 
-- Player hooded wanderer: original vector-style drawing in `scripts/player/PlayerVisual.gd`.
-- Shrine Guardian: original vector-style drawing in `scripts/enemies/ShrineGuardianVisual.gd`.
-- Ashbound Hound: original vector-style drawing in `scripts/enemies/ShrineGuardianVisual.gd`.
-- Reliquary Archer: original vector-style drawing in `scripts/enemies/ShrineGuardianVisual.gd`.
-- Bell-Bearer: original vector-style drawing in `scripts/enemies/ShrineGuardianVisual.gd`.
-- Shrine environment, floor, cracks, ash, walls, torch pools, and props: original code-drawn world art in `scripts/world/ShrineRouteLayer.gd`.
-- Combat effects: original code-drawn temporary effects in `scripts/effects/CombatEffect.gd`.
+Used for:
 
-## Audio Assets
+- Player hooded wanderer base sprite.
+- Shrine Guardian melee sprite.
+- Reliquary Archer sprite.
+- Bell-Bearer elite sprite.
+- Player weapon sprite.
 
-Stage 1.3 uses runtime procedural audio generated in `scripts/autoload/CombatAudio.gd`.
+## Hound Sprite
 
-Procedural cues currently include:
+Source: Tiny Creatures by Clint Bellanger, compatible with Kenney Tiny Dungeon  
+URL: https://opengameart.org/content/tiny-creatures  
+License: CC0 1.0 Universal  
+Local source note: `assets/third_party/kenney/licenses/tiny_creatures_source.txt`
 
-- sword whoosh
-- light hit
-- heavy hit
-- armor hit
-- enemy stagger
-- perfect dodge
-- Ash Brand applied
-- Collect execution
-- player hurt
-- dodge
-- flask use
-- enemy death
+Used for:
 
-No third-party audio files are present.
+- Ashbound Hound sprite.
 
-## Fonts
+## Combat VFX
 
-The project uses Godot's default UI font.
+Source: Kenney Particle Pack  
+URL: https://opengameart.org/content/particle-pack-80-sprites  
+License: CC0 1.0 Universal  
+Local license note: `assets/third_party/kenney/licenses/particle_pack_license.txt`
 
-## Future External Assets
+Used for:
 
-If external assets are added later:
+- Slash arcs.
+- Hit sparks.
+- Impact stars.
+- Ash smoke.
+- Brand and Collect effects.
 
-- Use only original, CC0, CC-BY, or clearly commercial-use licensed assets.
-- Place third-party files under `assets/third_party/`.
-- Include the original license text and source URL.
-- Update this document in the same commit.
-- Do not add copyrighted sprites, ripped assets, screenshots, recognizable commercial characters, or unverified downloads.
+## Combat Audio
+
+Source: Kenney 50 RPG Sound Effects  
+URL: https://opengameart.org/content/50-rpg-sound-effects  
+License: CC0 1.0 Universal  
+Local license note: `assets/third_party/kenney/licenses/rpg_sounds_license.txt`
+
+Used for:
+
+- Sword swing.
+- Light hit.
+- Heavy hit.
+- Armor hit.
+- Dodge.
+- Ash Brand.
+- Collect.
+- Player hurt.
+- Enemy death.
+
+## Local Asset Folders
+
+- Curated sprites: `assets/sprites/kenney/`
+- Curated VFX textures: `assets/effects/kenney/`
+- Curated audio: `assets/audio/kenney/`
+- License notes: `assets/third_party/kenney/licenses/`
