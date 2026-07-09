@@ -6,13 +6,20 @@ signal enemies_changed(enemies: Array[Node])
 
 const WAVES := [
 	{
-		"label": "Stage 1 - Entrance Lesson",
+		"label": "Stage 1 - Pilgrim Court",
 		"spawns": [
-			{"kind": "guardian", "pos": Vector2(-210, 150)}
+			{"kind": "guardian", "pos": Vector2(140, 850)}
 		]
 	},
 	{
-		"label": "Stage 2 - Central Shrine",
+		"label": "Stage 2 - Entrance Lesson",
+		"spawns": [
+			{"kind": "guardian", "pos": Vector2(-210, 150)},
+			{"kind": "hound", "pos": Vector2(85, 390)}
+		]
+	},
+	{
+		"label": "Stage 3 - Central Shrine",
 		"spawns": [
 			{"kind": "guardian", "pos": Vector2(-320, -85)},
 			{"kind": "guardian", "pos": Vector2(310, -100)},
@@ -20,32 +27,37 @@ const WAVES := [
 		]
 	},
 	{
-		"label": "Stage 3 - Ossuary Pressure",
+		"label": "Stage 4 - Deep Ossuary",
 		"spawns": [
-			{"kind": "hound", "pos": Vector2(-1240, -420)},
-			{"kind": "guardian", "pos": Vector2(-1030, -305)},
-			{"kind": "archer", "pos": Vector2(-1285, -535)}
+			{"kind": "hound", "pos": Vector2(-1880, -430)},
+			{"kind": "hound", "pos": Vector2(-1720, -245)},
+			{"kind": "guardian", "pos": Vector2(-1240, -420)},
+			{"kind": "archer", "pos": Vector2(-2020, -555)}
 		]
 	},
 	{
-		"label": "Stage 4 - Reliquary Crossfire",
+		"label": "Stage 5 - Reliquary Crossfire",
 		"spawns": [
 			{"kind": "archer", "pos": Vector2(1050, -520)},
+			{"kind": "archer", "pos": Vector2(1900, -525)},
 			{"kind": "archer", "pos": Vector2(1310, -330)},
-			{"kind": "guardian", "pos": Vector2(1155, -250)}
+			{"kind": "guardian", "pos": Vector2(1770, -265)}
 		]
 	},
 	{
-		"label": "Stage 5 - Bell Gate",
+		"label": "Stage 6 - Bell Gate",
 		"spawns": [
 			{"kind": "bell_bearer", "pos": Vector2(0, -830)},
-			{"kind": "hound", "pos": Vector2(-380, -820)}
+			{"kind": "hound", "pos": Vector2(-380, -820)},
+			{"kind": "archer", "pos": Vector2(410, -880)}
 		]
 	},
 	{
 		"label": "Final - Ashen Judicator",
 		"spawns": [
-			{"kind": "ashen_judicator", "pos": Vector2(0, -1295)}
+			{"kind": "ashen_judicator", "pos": Vector2(0, -1295)},
+			{"kind": "guardian", "pos": Vector2(-315, -1170)},
+			{"kind": "guardian", "pos": Vector2(315, -1170)}
 		]
 	}
 ]

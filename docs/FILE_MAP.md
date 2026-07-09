@@ -25,7 +25,7 @@
 ## Ash Trial
 
 - `scripts/trial/AshTrial.gd`
-  - Six-stage Ash Trial setup, spawn points, enemy kind selection, wave transitions, final Judicator encounter, trial completion, and replay reset.
+  - Seven-stage Ash Trial setup, spawn points, enemy kind selection, wave transitions, final Judicator encounter, trial completion, and replay reset.
 - `scripts/world/ShrineArena.gd`
   - Runtime assembly for the shrine scene, player/trial/HUD/mobile controls, camera follow, hit stop, screen shake, hit VFX, perfect-dodge VFX, and debug overlay.
 

@@ -219,6 +219,10 @@ func _on_hit_confirmed(kind: String = "light", hit_position: Vector2 = Vector2.Z
 		shake = 0.42
 		stop = 0.050
 		effect = "heavy"
+	elif kind == "parry":
+		shake = 0.62
+		stop = 0.070
+		effect = "brand"
 	elif kind == "collect":
 		shake = 0.78
 		stop = 0.075

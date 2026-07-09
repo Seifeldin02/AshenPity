@@ -143,6 +143,8 @@ func _test_parry_timing_window() -> void:
 	var active_end := GameBalance.PLAYER_PARRY_STARTUP + GameBalance.PLAYER_PARRY_ACTIVE
 	_assert_true(startup > 0.0 and active_end < 0.25, "parry active window is fast and readable")
 	_assert_true(GameBalance.PLAYER_PARRY_COST > 0.0, "parry spends stamina")
+	_assert_true(GameBalance.PLAYER_PARRY_COLLECT_DAMAGE_MULTIPLIER > 1.0, "parry-primed Collect has a damage payoff")
+	_assert_true(GameBalance.PLAYER_PARRY_COLLECT_STAGGER_BONUS > 0.0, "parry-primed Collect has a stagger payoff")
 
 
 func _test_enemy_configs_exist() -> void:

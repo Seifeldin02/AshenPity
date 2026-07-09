@@ -47,6 +47,7 @@ var _knockback := Vector2.ZERO
 var _dead_emitted := false
 var _perfect_dodge_used := false
 var _parry_success := false
+var _parry_collect_bonus := false
 var _collect_target: Node
 
 func _ready() -> void:
@@ -106,6 +107,7 @@ func try_perfect_dodge(enemy: Node, _attack_position: Vector2) -> bool:
 		return false
 	_perfect_dodge_used = true
 	branded_enemy = enemy
+	_parry_collect_bonus = false
 	stamina = minf(stamina + GameBalance.PLAYER_PERFECT_DODGE_STAMINA_RESTORE, GameBalance.PLAYER_MAX_STAMINA)
 	stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
 	if enemy.has_method("apply_ash_brand"):
@@ -364,7 +366,11 @@ func _start_attack(attack_data: Dictionary, _kind: String) -> void:
 func _start_collect() -> void:
 	_heavy_chain_count = 0
 	_collect_target = branded_enemy
-	_current_attack = GameBalance.COLLECT_ATTACK
+	_current_attack = GameBalance.COLLECT_ATTACK.duplicate()
+	if _parry_collect_bonus:
+		_current_attack["damage"] = float(_current_attack["damage"]) * GameBalance.PLAYER_PARRY_COLLECT_DAMAGE_MULTIPLIER
+		_current_attack["stagger"] = float(_current_attack["stagger"]) + GameBalance.PLAYER_PARRY_COLLECT_STAGGER_BONUS
+		_current_attack["knockback"] = float(_current_attack["knockback"]) + GameBalance.PLAYER_PARRY_COLLECT_KNOCKBACK_BONUS
 	stamina = CombatMathUtil.spend_stamina(stamina, float(GameBalance.COLLECT_ATTACK["stamina"]))
 	_regen_delay = GameBalance.PLAYER_STAMINA_REGEN_DELAY
 	stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
@@ -431,6 +437,7 @@ func _on_attack_body_entered(body: Node) -> void:
 			body.consume_ash_brand()
 			branded_enemy = null
 			collect_ready = false
+			_parry_collect_bonus = false
 		hit_confirmed.emit(hit_kind, body.global_position)
 	elif body.has_method("take_damage"):
 		_hit_targets.append(body)
@@ -457,9 +464,17 @@ func try_parry(enemy: Node, hit_position: Vector2) -> bool:
 	_parry_success = true
 	stamina = minf(stamina + GameBalance.PLAYER_PARRY_STAMINA_RESTORE, GameBalance.PLAYER_MAX_STAMINA)
 	stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
-	if is_instance_valid(enemy) and enemy.has_method("receive_parry"):
-		enemy.receive_parry(self, hit_position)
-	_play_audio("enemy_stagger", -5.0)
+	if is_instance_valid(enemy):
+		branded_enemy = enemy
+		collect_ready = true
+		_parry_collect_bonus = true
+		InputRouter.set_collect_available(true)
+		if enemy.has_method("receive_parry"):
+			enemy.receive_parry(self, hit_position)
+		if enemy.has_method("prime_parry_collect"):
+			enemy.prime_parry_collect(self)
+		ash_brand_changed.emit(enemy, true)
+	_play_audio("collect", -5.0)
 	hit_confirmed.emit("parry", hit_position)
 	return true
 
@@ -474,6 +489,7 @@ func _update_collect_status() -> void:
 		collect_ready = branded_enemy.is_collect_ready()
 	else:
 		collect_ready = false
+		_parry_collect_bonus = false
 		if not is_instance_valid(branded_enemy):
 			branded_enemy = null
 	InputRouter.set_collect_available(collect_ready)
@@ -501,6 +517,7 @@ func playtest_reset(position_value: Vector2, aim: Vector2) -> void:
 	_queued_light = false
 	_queued_heavy = false
 	_dead_emitted = false
+	_parry_collect_bonus = false
 	_combo_index = 0
 	_combo_timer = 0.0
 	branded_enemy = null

@@ -9,7 +9,7 @@ This repository is the real Godot foundation for the project. The older Raylib t
 Version 0.5 is a shrine expansion combat sandbox. The build label is:
 
 ```text
-Ashen Pity - Shrine Expansion v0.5.0
+Ashen Pity - Shrine Expansion v0.5.1
 ```
 
 Current scope:
@@ -19,7 +19,7 @@ Current scope:
 - Fast mouse-aimed movement, dodge, parry, light combo, heavy attack, flask, and death/restart.
 - Ash Brand: a perfect dodge through an enemy attack marks that enemy.
 - Collect: landing follow-up hits on a Branded enemy opens a `Q` dash-through payoff.
-- One repeatable six-stage Ash Trial through the expanded shrine route.
+- One repeatable seven-stage Ash Trial through the expanded shrine route.
 - Enemy variants for the trial: Shrine Guardian, Ashbound Hound, Reliquary Archer, Bell-Bearer elite, and Ashen Judicator final encounter.
 - Minimal Ash Trial Complete summary with replay.
 - Desktop controls and mobile-oriented controls using the same input router.
@@ -96,9 +96,10 @@ godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn
 The current level is an expanded but still compact shrine route:
 
 - Shrine Entrance Hall: start area with broken walls, torches, and a side alcove.
+- Pilgrim Court: lower approach where the trial starts with more breathing room and side cover.
 - Central Shrine Arena: irregular combat space with side paths, pillars, broken walls, and a cracked ash brazier landmark.
-- West Ossuary: side chamber with bone debris and pressure from fast enemies.
-- East Reliquary: side chamber with ranged crossfire and shelf props.
+- West Ossuary and Deep Crypt: side chambers with bone debris and pressure from fast enemies.
+- East Reliquary and Deep Chapel: side chambers with ranged crossfire and shelf props.
 - North Nave: transition area before the final gate.
 - Broken Altar and Sanctum: raised-looking destination and Ashen Judicator final encounter.
 
@@ -144,6 +145,7 @@ More detail is in `docs/FILE_MAP.md` and `docs/EDITING_GUIDE.md`.
 - Art uses curated public/free prototype assets and is not final production key art.
 - Audio uses curated public/free prototype SFX and is not final mixed sound design.
 - The Ash Trial enemy variants share one configurable enemy controller and scene.
+- Parry now immediately primes Collect and gives that Collect extra damage, stagger, and knockback, but this still needs real human feel testing.
 - Touch controls need real landscape phone testing.
 - Balance is first-pass and must be judged through human playtesting.
 - The Ashen Judicator is a first-pass final encounter, not production boss design.

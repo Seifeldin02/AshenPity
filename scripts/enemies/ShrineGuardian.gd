@@ -134,6 +134,17 @@ func apply_ash_brand(_source: Node) -> void:
 	brand_changed.emit(ash_branded, collect_ready)
 
 
+func prime_parry_collect(_source: Node) -> void:
+	if state in [EnemyState.DYING, EnemyState.DEAD]:
+		return
+	ash_branded = true
+	collect_ready = true
+	_brand_hits = GameBalance.ASH_BRAND_HITS_TO_COLLECT
+	_brand_timer = GameBalance.ASH_BRAND_DURATION + GameBalance.PLAYER_PARRY_BRAND_DURATION_BONUS
+	_play_audio("ash_brand", -3.5)
+	brand_changed.emit(ash_branded, collect_ready)
+
+
 func consume_ash_brand() -> void:
 	ash_branded = false
 	collect_ready = false

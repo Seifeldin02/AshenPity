@@ -18,7 +18,7 @@ func _ready() -> void:
 func _run() -> void:
 	_artifact_dir = ProjectSettings.globalize_path("res://playtest_artifacts")
 	DirAccess.make_dir_recursive_absolute(_artifact_dir)
-	get_tree().create_timer(75.0).timeout.connect(_on_timeout)
+	get_tree().create_timer(120.0).timeout.connect(_on_timeout)
 	_log("Stage 0.5 deterministic playtest harness started.")
 	InputRouter.begin_simulation()
 	_arena = ArenaScene.instantiate()
@@ -52,20 +52,32 @@ func _run() -> void:
 func _scenario_route_movement() -> void:
 	_log("Scenario: movement through route waypoints.")
 	var waypoints := [
+		Vector2(0, 900),
+		Vector2(0, 690),
+		Vector2(0, 505),
+		Vector2(-330, 420),
 		Vector2(-660, 430),
 		Vector2(-330, 420),
 		Vector2(0, 225),
 		Vector2(0, -20),
 		Vector2(-290, -225),
-		Vector2(-560, -145),
-		Vector2(-290, -225),
+		Vector2(-730, -360),
+		Vector2(-1240, -420),
+		Vector2(-1900, -430),
+		Vector2(-1240, -420),
 		Vector2(0, -35),
-		Vector2(0, -330),
-		Vector2(330, -500)
+		Vector2(730, -360),
+		Vector2(1240, -425),
+		Vector2(1900, -430),
+		Vector2(1240, -425),
+		Vector2(730, -360),
+		Vector2(260, -520),
+		Vector2(0, -850),
+		Vector2(0, -1320)
 	]
 	_setup_player(Route.PLAYER_START, Vector2.RIGHT)
 	for waypoint in waypoints:
-		await _drive_toward(waypoint, 2.2)
+		await _drive_toward(waypoint, 3.6)
 		_assert_true(_player.global_position.distance_to(waypoint) < 130.0, "player moved near waypoint %s, reached %s" % [str(waypoint), str(_player.global_position.round())])
 		_assert_true(Route.is_inside_route(_player.global_position), "player remains inside route near %s" % str(waypoint))
 
@@ -184,6 +196,11 @@ func _scenario_parry_interrupts_attack() -> void:
 	await _step(0.34, Vector2.ZERO, Vector2.RIGHT)
 	_assert_true(_player.get("health") >= start_health, "parry prevented incoming attack damage")
 	_assert_true(guardian.get("health") < enemy_start_health or guardian.get("state_name") == "stagger", "parry staggered or damaged enemy")
+	_assert_true(guardian.get("collect_ready") and _player.get("collect_ready"), "parry immediately primed Collect")
+	var before_collect: float = guardian.get("health")
+	InputRouter.press_collect()
+	await _step(0.42, Vector2.ZERO, Vector2.RIGHT)
+	_assert_true(guardian.get("health") < before_collect, "parry-primed Collect converted into immediate damage")
 
 
 func _scenario_ash_brand_collect() -> void:

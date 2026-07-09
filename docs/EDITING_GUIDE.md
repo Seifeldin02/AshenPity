@@ -87,6 +87,10 @@ Edit `scripts/autoload/GameBalance.gd`:
 - `PLAYER_PARRY_DAMAGE`
 - `PLAYER_PARRY_STAGGER`
 - `PLAYER_PARRY_KNOCKBACK`
+- `PLAYER_PARRY_BRAND_DURATION_BONUS`
+- `PLAYER_PARRY_COLLECT_DAMAGE_MULTIPLIER`
+- `PLAYER_PARRY_COLLECT_STAGGER_BONUS`
+- `PLAYER_PARRY_COLLECT_KNOCKBACK_BONUS`
 - `BOSS_PARRY_STAGGER_RESIST`
 
 Player-side timing lives in `scripts/player/PlayerController.gd`.
@@ -181,12 +185,13 @@ Edit `scripts/trial/AshTrial.gd`.
 
 Current stages:
 
-- Stage 1: one `guardian`
-- Stage 2: two `guardian`, one `hound`
-- Stage 3: one `hound`, one `guardian`, one `archer`
-- Stage 4: two `archer`, one `guardian`
-- Stage 5: one `bell_bearer`, one `hound`
-- Final: one `ashen_judicator`
+- Stage 1: one `guardian` in the Pilgrim Court
+- Stage 2: one `guardian`, one `hound` in the entrance route
+- Stage 3: two `guardian`, one `hound` in the central shrine
+- Stage 4: two `hound`, one `guardian`, one `archer` in the deep ossuary
+- Stage 5: three `archer`, one `guardian` in the reliquary side route
+- Stage 6: one `bell_bearer`, one `hound`, one `archer` at the Bell Gate
+- Final: one `ashen_judicator`, two `guardian` in the sanctum
 
 Keep new encounters inside the shrine route until the core combat survives human playtesting.
 

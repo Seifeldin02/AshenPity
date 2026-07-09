@@ -206,3 +206,17 @@ The older Raylib prototype was not reused because it was an abandoned technical 
 - Whether parry timing feels fair during real keyboard/mouse combat.
 - Whether the Judicator's lunge, slam, and toll attacks are readable enough without becoming easy.
 - Whether the expanded route has the right density of fights versus movement.
+
+## v0.5.1 Response Pass
+
+- The previous v0.5 pass still did not make parry feel important enough. Parry now immediately primes Collect, extends the Brand duration, restores stamina, damages/staggers the enemy, and gives the next Collect extra damage, stagger, and knockback.
+- The shrine route was pushed farther than the v0.5 version: the player now starts in a lower Pilgrim Court, can route into deeper west/east side spaces, and the camera limits/visibility test points cover those added rooms.
+- The Ash Trial is now seven stages instead of six: lower court, entrance pressure, central shrine, deep ossuary, reliquary crossfire, Bell Gate, and final Judicator sanctum.
+- The deterministic playtest harness now verifies movement through the added rooms and checks that a successful parry can convert directly into immediate Collect damage.
+
+### v0.5.1 Verification
+
+- `godot_console --headless --path . -s tests/test_runner.gd`: passed.
+- `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
+- Harness snapshot on the development PC: 170 FPS reported, display refresh about 170 Hz, p95 frame time 8.33 ms under fixed 120 FPS simulation, physics 120 Hz.
+- The playtest harness still reports the existing ObjectDB leak warning at process exit.

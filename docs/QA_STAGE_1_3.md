@@ -1,12 +1,13 @@
-# QA v0.5 Shrine Expansion
+# QA v0.5.1 Shrine Expansion
 
 ## What Changed
 
 - Added parry on `E` and the mobile Parry button.
+- v0.5.1 made successful parries immediately prime Collect, with extra Collect damage, stagger, and knockback.
 - Added heavy attack chain stamina scaling so repeated heavies become expensive instead of being the default winning strategy.
-- Expanded the Ash Trial from four waves to six stages across the shrine route.
+- Expanded the Ash Trial from four waves to seven stages across the shrine route.
 - Added the Ashen Judicator final encounter with sweep, lunge, slam, and toll projectile patterns.
-- Expanded the shrine route with west ossuary, east reliquary, north nave, and final sanctum spaces while leaving the first room as a safer tutorial space.
+- Expanded the shrine route with the Pilgrim Court, west ossuary, deep crypt, east reliquary, deep chapel, north nave, and final sanctum spaces while leaving the first room as a safer tutorial space.
 - Added generated Judicator sprite variants and generated raster shrine props for stairs, brazier, sealed door, bone debris, and reliquary shelves.
 - Replaced the previous small placeholder actor sprites with a darker Dungeon Crawl based hooded player and four distinct enemy silhouettes.
 - Replaced the weak combat cue bank with StarNinjas sword impacts and rubberduck RPG sounds.
@@ -27,9 +28,9 @@ godot_console --path . --quit-after 5
 
 ## Automated Coverage
 
-The logic tests cover stamina, dodge gating, 120 Hz physics, enemy damage, invulnerability, movement normalization, route/camera bounds, aim direction, frame-rate independence, attack buffering, perfect-dodge timing, heavy anti-spam cost scaling, parry timing values, Ash Brand progress, and enemy configs.
+The logic tests cover stamina, dodge gating, 120 Hz physics, enemy damage, invulnerability, movement normalization, route/camera bounds, aim direction, frame-rate independence, attack buffering, perfect-dodge timing, heavy anti-spam cost scaling, parry timing values, parry-primed Collect payoff values, Ash Brand progress, and enemy configs.
 
-The playtest harness uses `InputRouter` and exercises route movement, visibility screenshots, actor variants including Ashen Judicator, screen-edge aim, moving light attacks, heavy attacks, dodge direction, parry, perfect dodge, Ash Brand, Collect, flask interruption, and clearing the six-stage Ash Trial.
+The playtest harness uses `InputRouter` and exercises route movement through the lower court and deep side rooms, visibility screenshots, actor variants including Ashen Judicator, screen-edge aim, moving light attacks, heavy attacks, dodge direction, parry, immediate parry-primed Collect damage, perfect dodge, Ash Brand, Collect, flask interruption, and clearing the seven-stage Ash Trial.
 
 Latest local results:
 

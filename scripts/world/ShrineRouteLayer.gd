@@ -36,13 +36,17 @@ func _draw_ground() -> void:
 		_draw_room_floor(room)
 	_draw_irregular_edges()
 	_draw_room_trim(Route.ENTRANCE, Color("#413944"))
+	_draw_room_trim(Route.PILGRIM_COURT, Color("#3d3636"))
+	_draw_room_trim(Route.SOUTH_STEPS, Color("#463c3a"))
 	_draw_room_trim(Route.SIDE_ALCOVE, Color("#3b333b"))
 	_draw_room_trim(Route.LEFT_SIDE_PATH, Color("#332d36"))
 	_draw_room_trim(Route.RIGHT_SIDE_PATH, Color("#332d36"))
 	_draw_room_trim(Route.CENTRAL, Color("#493f43"))
 	_draw_room_trim(Route.ALTAR, Color("#514347"))
 	_draw_room_trim(Route.WEST_OSSUARY, Color("#3b3431"))
+	_draw_room_trim(Route.WEST_DEEP_CRYPT, Color("#322c2b"))
 	_draw_room_trim(Route.EAST_RELIQUARY, Color("#3c3740"))
+	_draw_room_trim(Route.EAST_DEEP_CHAPEL, Color("#393540"))
 	_draw_room_trim(Route.NORTH_NAVE, Color("#403940"))
 	_draw_room_trim(Route.BOSS_SANCTUM, Color("#4a3537"))
 	_draw_stairs()
@@ -84,11 +88,13 @@ func _draw_room_floor(room: Rect2) -> void:
 	var base_tint := Color(0.70, 0.66, 0.64, 0.82)
 	if room == Route.ALTAR:
 		base_tint = Color(0.82, 0.72, 0.66, 0.90)
+	elif room == Route.PILGRIM_COURT or room == Route.SOUTH_STEPS:
+		base_tint = Color(0.62, 0.53, 0.49, 0.86)
 	elif room == Route.SIDE_ALCOVE or room == Route.LEFT_SIDE_PATH or room == Route.RIGHT_SIDE_PATH:
 		base_tint = Color(0.58, 0.55, 0.58, 0.82)
-	elif room == Route.WEST_OSSUARY:
+	elif room == Route.WEST_OSSUARY or room == Route.WEST_DEEP_CRYPT:
 		base_tint = Color(0.60, 0.55, 0.49, 0.86)
-	elif room == Route.EAST_RELIQUARY:
+	elif room == Route.EAST_RELIQUARY or room == Route.EAST_DEEP_CHAPEL:
 		base_tint = Color(0.64, 0.60, 0.66, 0.84)
 	elif room == Route.BOSS_SANCTUM:
 		base_tint = Color(0.76, 0.56, 0.54, 0.90)
@@ -148,6 +154,7 @@ func _draw_irregular_edges() -> void:
 
 
 func _draw_stairs() -> void:
+	_draw_texture_centered(_textures.get("stairs"), Vector2(0, 690), Vector2(1.1, 0.54), Color(0.86, 0.78, 0.72, 0.82))
 	_draw_texture_centered(_textures.get("stairs"), Vector2(0, -360), Vector2(1.18, 0.72), Color(0.95, 0.90, 0.86, 0.90))
 	_draw_texture_centered(_textures.get("stairs"), Vector2(0, -1125), Vector2(1.35, 0.78), Color(0.95, 0.84, 0.78, 0.92))
 
@@ -159,10 +166,15 @@ func _draw_landmark() -> void:
 func _draw_room_landmarks() -> void:
 	_draw_texture_centered(_textures.get("bone_debris"), Vector2(-1260, -410), Vector2(1.0, 1.0), Color(0.90, 0.84, 0.78, 0.78))
 	_draw_texture_centered(_textures.get("bone_debris"), Vector2(-1040, -540), Vector2(0.78, 0.78), Color(0.80, 0.76, 0.70, 0.62))
+	_draw_texture_centered(_textures.get("bone_debris"), Vector2(-1960, -440), Vector2(1.15, 1.15), Color(0.88, 0.80, 0.72, 0.80))
+	_draw_texture_centered(_textures.get("bone_debris"), Vector2(-1710, -250), Vector2(0.86, 0.86), Color(0.82, 0.76, 0.68, 0.72))
 	_draw_texture_centered(_textures.get("reliquary"), Vector2(1095, -470), Vector2(1.05, 1.05), Color(0.84, 0.80, 0.88, 0.86))
 	_draw_texture_centered(_textures.get("reliquary"), Vector2(1325, -305), Vector2(0.90, 0.90), Color(0.82, 0.78, 0.86, 0.82))
+	_draw_texture_centered(_textures.get("reliquary"), Vector2(1815, -480), Vector2(1.12, 1.12), Color(0.82, 0.78, 0.88, 0.86))
+	_draw_texture_centered(_textures.get("reliquary"), Vector2(2020, -305), Vector2(0.92, 0.92), Color(0.78, 0.74, 0.84, 0.78))
 	_draw_texture_centered(_textures.get("sealed_door"), Vector2(0, -1405), Vector2(1.35, 1.15), Color(0.90, 0.78, 0.72, 0.92))
 	_draw_texture_centered(_textures.get("brazier"), Vector2(0, -1260), Vector2(0.92, 0.92), Color(1.0, 0.88, 0.78, 0.88))
+	_draw_texture_centered(_textures.get("brazier"), Vector2(0, 900), Vector2(0.82, 0.82), Color(1.0, 0.86, 0.72, 0.80))
 
 
 func _draw_light_pool(center: Vector2, radius: float) -> void:
@@ -206,8 +218,10 @@ func _build_floor_cells() -> void:
 						warm += 0.010
 					elif room == Route.SIDE_ALCOVE or room == Route.LEFT_SIDE_PATH or room == Route.RIGHT_SIDE_PATH:
 						shade *= 0.88
-					elif room == Route.WEST_OSSUARY:
+					elif room == Route.WEST_OSSUARY or room == Route.WEST_DEEP_CRYPT:
 						shade *= 0.86
+					elif room == Route.PILGRIM_COURT:
+						warm += 0.012
 					elif room == Route.BOSS_SANCTUM:
 						warm += 0.018
 					_floor_cells.append({
