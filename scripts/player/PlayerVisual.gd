@@ -1,14 +1,14 @@
 extends Node2D
 
 const SPRITE_PATHS := {
-	"idle": "res://assets/sprites/simple_souls/player_idle.png",
-	"run_1": "res://assets/sprites/simple_souls/player_run_1.png",
-	"run_2": "res://assets/sprites/simple_souls/player_run_2.png",
-	"attack": "res://assets/sprites/simple_souls/player_attack.png",
-	"dodge": "res://assets/sprites/simple_souls/player_dodge.png",
-	"hurt": "res://assets/sprites/simple_souls/player_hurt.png",
-	"dead": "res://assets/sprites/simple_souls/player_death.png",
-	"weapon": "res://assets/sprites/simple_souls/player_weapon.png",
+	"idle": "res://assets/sprites/ashen_runtime/player_idle.png",
+	"run_1": "res://assets/sprites/ashen_runtime/player_run_1.png",
+	"run_2": "res://assets/sprites/ashen_runtime/player_run_2.png",
+	"attack": "res://assets/sprites/ashen_runtime/player_attack.png",
+	"dodge": "res://assets/sprites/ashen_runtime/player_dodge.png",
+	"hurt": "res://assets/sprites/ashen_runtime/player_hurt.png",
+	"dead": "res://assets/sprites/ashen_runtime/player_death.png",
+	"weapon": "res://assets/sprites/ashen_runtime/player_weapon.png",
 }
 
 var facing := Vector2.RIGHT
@@ -48,7 +48,7 @@ func _draw() -> void:
 	var bob := _bob_offset()
 	var flip := -1.0 if facing.x < -0.12 else 1.0
 	var tint := Color.WHITE.lerp(Color(1.0, 0.34, 0.24), flash)
-	draw_colored_polygon(_ellipse(Vector2(0, 35), 35.0, 11.0), Color(0.02, 0.018, 0.022, 0.62))
+	draw_colored_polygon(_ellipse(Vector2(0, 35), 31.0, 10.0), Color(0.02, 0.018, 0.022, 0.58))
 	if state_name == "dodge":
 		_draw_dodge_afterimages(flip, tint)
 	if attack_alpha > 0.0:
@@ -58,9 +58,9 @@ func _draw() -> void:
 	var body_rotation := _body_rotation(flip)
 	var body_scale := _body_scale()
 	draw_set_transform(Vector2(0, bob), body_rotation, Vector2(flip * body_scale.x, body_scale.y))
-	_draw_texture_centered(frame, Vector2.ZERO, Vector2.ONE, tint)
+	_draw_texture_centered(frame, Vector2(0, -18), Vector2(0.56, 0.56), tint)
 	if state_name == "idle" or state_name == "move":
-		_draw_texture_centered(_sprites["weapon"], Vector2(28, -10), Vector2(0.58, 0.58), Color.WHITE)
+		_draw_texture_centered(_sprites["weapon"], Vector2(22, -22), Vector2(0.42, 0.42), Color.WHITE)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
@@ -170,7 +170,7 @@ func _draw_dodge_afterimages(flip: float, tint: Color) -> void:
 		var offset := -facing * float(i + 1) * 22.0
 		var alpha := 0.20 - float(i) * 0.045
 		draw_set_transform(offset + Vector2(0, 3), 0.0, Vector2(flip, 1.0) * (1.0 - float(i) * 0.08))
-		_draw_texture_centered(_sprites["dodge"], Vector2.ZERO, Vector2(1.0, 1.0), Color(tint.r, tint.g, tint.b, alpha))
+		_draw_texture_centered(_sprites["dodge"], Vector2(0, -18), Vector2(0.56, 0.56), Color(tint.r, tint.g, tint.b, alpha))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 

@@ -5,7 +5,7 @@
 - `scripts/player/PlayerController.gd`
   - Player movement, stamina, light combo, heavy attack, heavy anti-spam chain cost, dodge cancel, parry, perfect dodge, Ash Brand targeting, Collect, flask, hurt, death, hitboxes, and combat state names.
 - `scripts/player/PlayerVisual.gd`
-  - Sprite-based player presentation using `assets/sprites/simple_souls/player_*.png`, bounded vector slash arcs, dodge afterimages, hit flash, and shadow.
+  - Sprite-based player presentation using `assets/sprites/ashen_runtime/player_*.png`, bounded vector slash arcs, dodge afterimages, hit flash, and shadow.
 - `scripts/autoload/GameBalance.gd`
   - Central editable values for speed, stamina costs, combo timings, damage, stagger, knockback, dodge timing, perfect-dodge window, Ash Brand rules, enemy health, and enemy attack tuning.
 - `scripts/combat/CombatMath.gd`
@@ -16,7 +16,7 @@
 - `scripts/enemies/ShrineGuardian.gd`
   - Shared enemy controller for Shrine Guardian, Ashbound Hound, Reliquary Archer, Bell-Bearer, and Ashen Judicator. Owns AI states, lateral pressure, parry response, attacks, projectiles, boss attack patterns, counter/rear-hit punish rules, Brand state, stagger, death, and enemy audio cues.
 - `scripts/enemies/ShrineGuardianVisual.gd`
-  - Sprite-based enemy visuals using `assets/sprites/simple_souls/melee_*`, `hound_*`, `archer_*`, `elite_*`, and `judicator_*`, plus telegraphs, Brand rings, bounded attack arcs, boss pattern tells, stagger sparks, and death smoke.
+  - Sprite-based enemy visuals using `assets/sprites/ashen_runtime/melee_*`, `hound_*`, `archer_*`, `elite_*`, and `judicator_*`, plus telegraphs, Brand rings, bounded attack arcs, boss pattern tells, stagger sparks, and death smoke.
 - `scripts/enemies/EnemyProjectile.gd`
   - Reliquary Archer and Judicator projectile movement, hit detection, player damage, parry, and perfect-dodge interaction.
 - `scenes/enemies/ShrineGuardian.tscn`
@@ -41,7 +41,9 @@
 - `assets/sprites/upgrade/`
   - Older v0.5 runtime sprite frames retained for reference, not the current actor set.
 - `assets/sprites/simple_souls/`
-  - Current runtime player and enemy sprite frames.
+  - Earlier public-source runtime sprite crops retained for reference, no longer the active actor set.
+- `assets/sprites/ashen_runtime/`
+  - Current original runtime player and enemy sprite frames generated for Ashen Pity after the public-source crops proved visually unreliable.
 - `assets/effects/upgrade/`
   - Current runtime spark, flame, smoke, and blood/impact textures.
 - `assets/audio/upgrade/`

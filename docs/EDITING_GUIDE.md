@@ -143,15 +143,15 @@ To swap a sound, replace the OGG file or change the path in `CUE_PATHS`.
 
 ## Sprites
 
-Player sprites live in `assets/sprites/simple_souls/player_*.png`.
+Player sprites live in `assets/sprites/ashen_runtime/player_*.png`.
 
 Enemy sprites live in:
 
-- `assets/sprites/simple_souls/melee_*.png`
-- `assets/sprites/simple_souls/hound_*.png`
-- `assets/sprites/simple_souls/archer_*.png`
-- `assets/sprites/simple_souls/elite_*.png`
-- `assets/sprites/simple_souls/judicator_*.png`
+- `assets/sprites/ashen_runtime/melee_*.png`
+- `assets/sprites/ashen_runtime/hound_*.png`
+- `assets/sprites/ashen_runtime/archer_*.png`
+- `assets/sprites/ashen_runtime/elite_*.png`
+- `assets/sprites/ashen_runtime/judicator_*.png`
 
 Sprite selection happens in:
 

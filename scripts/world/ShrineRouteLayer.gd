@@ -104,9 +104,10 @@ func _draw_room_floor(room: Rect2) -> void:
 		if cell["room"] != room:
 			continue
 		var rect: Rect2 = cell["rect"]
-		_draw_tiled_texture(_textures.get(str(cell["texture"])), rect, cell["tint"])
+		draw_rect(rect, cell["color"])
+		draw_rect(rect.grow(-1.0), Color(0.04, 0.035, 0.035, 0.16), false, 1.0)
 		if bool(cell["worn"]):
-			_draw_tiled_texture(_textures.get("floor_ash"), rect, Color(0.24, 0.21, 0.18, 0.12))
+			draw_circle(rect.get_center() + Vector2(9, -7), minf(rect.size.x, rect.size.y) * 0.28, Color(0.10, 0.085, 0.070, 0.12))
 	for x in range(int(room.position.x), int(room.end.x), 128):
 		draw_line(Vector2(x, room.position.y + 8.0), Vector2(x, room.end.y - 8.0), Color(0.03, 0.028, 0.030, 0.16), 1.0)
 	for y in range(int(room.position.y), int(room.end.y), 128):
@@ -210,29 +211,22 @@ func _build_floor_cells() -> void:
 			while x < room.end.x:
 				var rect := Rect2(Vector2(x, y), Vector2(64.0, 64.0)).intersection(room)
 				if rect.size.x > 18.0 and rect.size.y > 18.0:
-					var texture_key := "floor_a"
 					var roll := floor_rng.randf()
-					if room == Route.WEST_OSSUARY or room == Route.WEST_DEEP_CRYPT:
-						texture_key = "floor_ash" if roll < 0.46 else "floor_warm"
-					elif room == Route.BOSS_SANCTUM or room == Route.ALTAR:
-						texture_key = "floor_warm" if roll < 0.62 else "floor_b"
-					elif roll > 0.78:
-						texture_key = "floor_b"
-					var tint := Color(0.56, 0.53, 0.49, floor_rng.randf_range(0.24, 0.36))
+					var shade := floor_rng.randf_range(0.19, 0.245)
+					var warm := floor_rng.randf_range(-0.006, 0.014)
 					if room == Route.BOSS_SANCTUM:
-						tint = Color(0.60, 0.39, 0.38, floor_rng.randf_range(0.24, 0.34))
+						warm += 0.035
 					elif room == Route.PILGRIM_COURT or room == Route.SOUTH_STEPS:
-						tint = Color(0.54, 0.46, 0.40, floor_rng.randf_range(0.24, 0.34))
+						warm += 0.018
 					elif room == Route.EAST_RELIQUARY or room == Route.EAST_DEEP_CHAPEL:
-						tint = Color(0.48, 0.48, 0.56, floor_rng.randf_range(0.24, 0.34))
+						shade += 0.006
 					elif room == Route.WEST_OSSUARY or room == Route.WEST_DEEP_CRYPT:
-						tint = Color(0.43, 0.40, 0.36, floor_rng.randf_range(0.24, 0.34))
+						shade -= 0.018
 					_floor_cells.append({
 						"room": room,
 						"rect": rect,
-						"texture": texture_key,
-						"tint": tint,
-						"worn": floor_rng.randf() < 0.11
+						"color": Color(shade + warm, shade * floor_rng.randf_range(0.92, 0.98), shade * floor_rng.randf_range(0.84, 0.92), 0.88),
+						"worn": floor_rng.randf() < 0.10 or roll > 0.94
 					})
 				x += 64.0
 			y += 64.0

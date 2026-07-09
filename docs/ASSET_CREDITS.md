@@ -4,7 +4,11 @@
 
 This build uses curated public/free game-dev assets for the runtime sprites, tiles, VFX textures, and combat audio. No ripped commercial-game assets were added.
 
-## Runtime Character And Shrine Pixel Art
+## Current Runtime Character Sprites
+
+The current player, Guardian, Hound, Archer, Bell-Bearer, and Judicator runtime sprites in `assets/sprites/ashen_runtime/` are original prototype sprites generated inside this repository for Ashen Pity. They replaced the previous public-source crops because those crops looked malformed and inconsistent in motion.
+
+## Shrine Pixel Art Source Material
 
 Source: Simple Souls Set by Elvies
 URL: https://elvies.itch.io/simple-souls-set
@@ -13,13 +17,10 @@ Local license note: `assets/third_party/simple_souls/LICENSE.txt`
 
 Used for:
 
-- Hooded player runtime frames.
-- Shrine Guardian, Ashbound Hound, Reliquary Archer, Bell-Bearer, and Ashen Judicator runtime frames.
 - Bones, urn, and reliquary source material.
 
 Runtime folders:
 
-- `assets/sprites/simple_souls/`
 - `assets/environment/simple_souls/`
 
 Source sheets:

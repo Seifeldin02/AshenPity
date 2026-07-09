@@ -239,3 +239,17 @@ The older Raylib prototype was not reused because it was an abandoned technical 
 - `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
 - Harness snapshot on the development PC: 157 FPS reported, display refresh about 170 Hz, p95 frame time 8.33 ms under fixed 120 FPS simulation, physics 120 Hz.
 - Known warning remains: the display playtest harness reports ObjectDB leaked instances at exit.
+
+## v0.5.3 Runtime Art Correction
+
+- Removed the Simple Souls actor crops from active runtime use after visual QA showed they read as malformed blobs and made movement look cheap.
+- Added a new original `assets/sprites/ashen_runtime/` actor set for the player, Guardian, Hound, Archer, Bell-Bearer, and Judicator with consistent size, silhouette, weapon readability, and color language.
+- Reworked floor, wall, and pillar rendering to stop relying on loud repeated public tile textures. The shrine now uses controlled authored colors, subtle slab variation, procedural seams, and restrained grain so the scene does not look like stretched/tiled asset-sheet fragments.
+- Kept the public assets and license notes in the repository as source/reference material where still used, but the active combat actors are now project-original runtime sprites.
+
+### v0.5.3 Verification
+
+- `godot_console --headless --path . -s tests/test_runner.gd`: passed.
+- `godot_console --path . --quit-after 5`: passed.
+- `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
+- Harness snapshot on the development PC: 258 FPS reported, display refresh about 170 Hz, p95 frame time 8.33 ms under fixed 120 FPS simulation, physics 120 Hz.

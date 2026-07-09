@@ -2,44 +2,44 @@ extends Node2D
 
 const SPRITE_PATHS := {
 	"guardian": {
-		"idle": "res://assets/sprites/simple_souls/melee_idle.png",
-		"run_1": "res://assets/sprites/simple_souls/melee_run_1.png",
-		"run_2": "res://assets/sprites/simple_souls/melee_run_2.png",
-		"attack": "res://assets/sprites/simple_souls/melee_attack.png",
-		"hurt": "res://assets/sprites/simple_souls/melee_hurt.png",
-		"death": "res://assets/sprites/simple_souls/melee_death.png",
+		"idle": "res://assets/sprites/ashen_runtime/melee_idle.png",
+		"run_1": "res://assets/sprites/ashen_runtime/melee_run_1.png",
+		"run_2": "res://assets/sprites/ashen_runtime/melee_run_2.png",
+		"attack": "res://assets/sprites/ashen_runtime/melee_attack.png",
+		"hurt": "res://assets/sprites/ashen_runtime/melee_hurt.png",
+		"death": "res://assets/sprites/ashen_runtime/melee_death.png",
 	},
 	"hound": {
-		"idle": "res://assets/sprites/simple_souls/hound_idle.png",
-		"run_1": "res://assets/sprites/simple_souls/hound_run_1.png",
-		"run_2": "res://assets/sprites/simple_souls/hound_run_2.png",
-		"attack": "res://assets/sprites/simple_souls/hound_attack.png",
-		"hurt": "res://assets/sprites/simple_souls/hound_hurt.png",
-		"death": "res://assets/sprites/simple_souls/hound_death.png",
+		"idle": "res://assets/sprites/ashen_runtime/hound_idle.png",
+		"run_1": "res://assets/sprites/ashen_runtime/hound_run_1.png",
+		"run_2": "res://assets/sprites/ashen_runtime/hound_run_2.png",
+		"attack": "res://assets/sprites/ashen_runtime/hound_attack.png",
+		"hurt": "res://assets/sprites/ashen_runtime/hound_hurt.png",
+		"death": "res://assets/sprites/ashen_runtime/hound_death.png",
 	},
 	"archer": {
-		"idle": "res://assets/sprites/simple_souls/archer_idle.png",
-		"run_1": "res://assets/sprites/simple_souls/archer_run_1.png",
-		"run_2": "res://assets/sprites/simple_souls/archer_run_2.png",
-		"attack": "res://assets/sprites/simple_souls/archer_attack.png",
-		"hurt": "res://assets/sprites/simple_souls/archer_hurt.png",
-		"death": "res://assets/sprites/simple_souls/archer_death.png",
+		"idle": "res://assets/sprites/ashen_runtime/archer_idle.png",
+		"run_1": "res://assets/sprites/ashen_runtime/archer_run_1.png",
+		"run_2": "res://assets/sprites/ashen_runtime/archer_run_2.png",
+		"attack": "res://assets/sprites/ashen_runtime/archer_attack.png",
+		"hurt": "res://assets/sprites/ashen_runtime/archer_hurt.png",
+		"death": "res://assets/sprites/ashen_runtime/archer_death.png",
 	},
 	"bell_bearer": {
-		"idle": "res://assets/sprites/simple_souls/elite_idle.png",
-		"run_1": "res://assets/sprites/simple_souls/elite_run_1.png",
-		"run_2": "res://assets/sprites/simple_souls/elite_run_2.png",
-		"attack": "res://assets/sprites/simple_souls/elite_attack.png",
-		"hurt": "res://assets/sprites/simple_souls/elite_hurt.png",
-		"death": "res://assets/sprites/simple_souls/elite_death.png",
+		"idle": "res://assets/sprites/ashen_runtime/elite_idle.png",
+		"run_1": "res://assets/sprites/ashen_runtime/elite_run_1.png",
+		"run_2": "res://assets/sprites/ashen_runtime/elite_run_2.png",
+		"attack": "res://assets/sprites/ashen_runtime/elite_attack.png",
+		"hurt": "res://assets/sprites/ashen_runtime/elite_hurt.png",
+		"death": "res://assets/sprites/ashen_runtime/elite_death.png",
 	},
 	"ashen_judicator": {
-		"idle": "res://assets/sprites/simple_souls/judicator_idle.png",
-		"run_1": "res://assets/sprites/simple_souls/judicator_run_1.png",
-		"run_2": "res://assets/sprites/simple_souls/judicator_run_2.png",
-		"attack": "res://assets/sprites/simple_souls/judicator_attack.png",
-		"hurt": "res://assets/sprites/simple_souls/judicator_hurt.png",
-		"death": "res://assets/sprites/simple_souls/judicator_death.png",
+		"idle": "res://assets/sprites/ashen_runtime/judicator_idle.png",
+		"run_1": "res://assets/sprites/ashen_runtime/judicator_run_1.png",
+		"run_2": "res://assets/sprites/ashen_runtime/judicator_run_2.png",
+		"attack": "res://assets/sprites/ashen_runtime/judicator_attack.png",
+		"hurt": "res://assets/sprites/ashen_runtime/judicator_hurt.png",
+		"death": "res://assets/sprites/ashen_runtime/judicator_death.png",
 	},
 }
 
@@ -105,7 +105,7 @@ func _draw() -> void:
 		_draw_telegraph()
 	var scale_value := _sprite_scale() * _body_scale()
 	draw_set_transform(Vector2(0, bob), _body_rotation(flip), Vector2(flip * scale_value.x, scale_value.y))
-	_draw_texture_centered(sprite, Vector2.ZERO, Vector2.ONE, tint)
+	_draw_texture_centered(sprite, Vector2(0, -18), Vector2.ONE, tint)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	if state_name == "active":
 		_draw_swing()
@@ -132,12 +132,12 @@ func _select_frame() -> Texture2D:
 
 func _sprite_scale() -> Vector2:
 	if enemy_kind == "hound":
-		return Vector2(1.05, 1.05)
+		return Vector2(0.58, 0.58)
 	if enemy_kind == "bell_bearer":
-		return Vector2(1.05, 1.05)
+		return Vector2(0.66, 0.66)
 	if enemy_kind == "ashen_judicator":
-		return Vector2(1.12, 1.12)
-	return Vector2(1.0, 1.0)
+		return Vector2(0.76, 0.76)
+	return Vector2(0.60, 0.60)
 
 
 func _bob_offset() -> float:

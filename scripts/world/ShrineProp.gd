@@ -21,17 +21,19 @@ func _draw() -> void:
 func _draw_pillar() -> void:
 	var texture: Texture2D = _textures.get("pillar")
 	draw_colored_polygon(_ellipse_points(Vector2(0, 112), 38.0, 13.0), Color(0.02, 0.016, 0.02, 0.42))
-	if texture != null:
-		var shaft := Rect2(-25, -14, 50, 118)
-		var cap_top := Rect2(-38, -26, 76, 18)
-		var cap_bottom := Rect2(-34, 96, 68, 20)
-		draw_texture_rect(texture, shaft, true, Color(0.58, 0.56, 0.54, 0.94))
-		draw_texture_rect(texture, cap_top, true, Color(0.70, 0.67, 0.63, 0.96))
-		draw_texture_rect(texture, cap_bottom, true, Color(0.45, 0.43, 0.43, 0.94))
-		draw_rect(shaft, Color("#151319"), false, 2.0)
-		draw_line(Vector2(-18, 4), Vector2(-20, 88), Color(0.88, 0.84, 0.76, 0.12), 3.0)
-		draw_line(Vector2(17, 0), Vector2(14, 94), Color(0.02, 0.018, 0.022, 0.38), 4.0)
-		return
+	var shaft := PackedVector2Array([
+		Vector2(-23, -10), Vector2(22, -10), Vector2(18, 98), Vector2(0, 108), Vector2(-20, 98)
+	])
+	draw_colored_polygon(shaft, Color("#4a494d"))
+	draw_colored_polygon(PackedVector2Array([Vector2(-15, -4), Vector2(6, -4), Vector2(0, 102), Vector2(-18, 94)]), Color("#5e5c61"))
+	draw_colored_polygon(PackedVector2Array([Vector2(6, -4), Vector2(22, -10), Vector2(18, 98), Vector2(0, 102)]), Color("#38373d"))
+	draw_rect(Rect2(-36, -25, 72, 18), Color("#34323a"))
+	draw_rect(Rect2(-31, 92, 62, 18), Color("#2e2c33"))
+	draw_rect(Rect2(-25, -10, 50, 110), Color("#151319"), false, 2.0)
+	draw_line(Vector2(-11, 6), Vector2(-17, 88), Color(0.86, 0.82, 0.72, 0.15), 3.0)
+	draw_line(Vector2(14, 6), Vector2(9, 92), Color(0.02, 0.018, 0.022, 0.42), 4.0)
+	draw_polyline(PackedVector2Array([Vector2(-16, 36), Vector2(2, 22), Vector2(-4, 54), Vector2(16, 73)]), Color("#242229"), 4.0)
+	return
 	var outer := PackedVector2Array([
 		Vector2(-25, -12), Vector2(-12, -26), Vector2(18, -26), Vector2(31, -12),
 		Vector2(24, 103), Vector2(0, 114), Vector2(-26, 103)
