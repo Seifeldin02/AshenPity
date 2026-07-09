@@ -1,11 +1,11 @@
 extends RefCounted
 class_name ShrineRoute
 
-const CAMERA_LIMIT_LEFT := -1720
-const CAMERA_LIMIT_TOP := -1020
-const CAMERA_LIMIT_RIGHT := 1720
-const CAMERA_LIMIT_BOTTOM := 1020
-const CAMERA_ZOOM := Vector2(1.30, 1.30)
+const CAMERA_LIMIT_LEFT := -1980
+const CAMERA_LIMIT_TOP := -1680
+const CAMERA_LIMIT_RIGHT := 1980
+const CAMERA_LIMIT_BOTTOM := 1040
+const CAMERA_ZOOM := Vector2(1.22, 1.22)
 
 const PLAYER_START := Vector2(-360, 430)
 const GUARDIAN_SPAWNS := [Vector2(-280, -80), Vector2(310, -120), Vector2(120, 160)]
@@ -18,8 +18,31 @@ const LEFT_SIDE_PATH := Rect2(-1060, -155, 320, 380)
 const RIGHT_SIDE_PATH := Rect2(740, -170, 320, 395)
 const UPPER_PASSAGE := Rect2(-210, -365, 420, 115)
 const ALTAR := Rect2(-520, -620, 1040, 310)
+const WEST_OSSUARY := Rect2(-1420, -650, 560, 500)
+const WEST_PASSAGE := Rect2(-900, -455, 360, 180)
+const EAST_RELIQUARY := Rect2(860, -660, 600, 505)
+const EAST_PASSAGE := Rect2(540, -455, 360, 180)
+const NORTH_NAVE := Rect2(-690, -1015, 1380, 360)
+const BOSS_SANCTUM := Rect2(-510, -1460, 1020, 390)
+const SANCTUM_PASSAGE := Rect2(-235, -1120, 470, 160)
 
-const ROOMS := [ENTRANCE, SIDE_ALCOVE, LOWER_PASSAGE, CENTRAL, LEFT_SIDE_PATH, RIGHT_SIDE_PATH, UPPER_PASSAGE, ALTAR]
+const ROOMS := [
+	ENTRANCE,
+	SIDE_ALCOVE,
+	LOWER_PASSAGE,
+	CENTRAL,
+	LEFT_SIDE_PATH,
+	RIGHT_SIDE_PATH,
+	UPPER_PASSAGE,
+	ALTAR,
+	WEST_PASSAGE,
+	WEST_OSSUARY,
+	EAST_PASSAGE,
+	EAST_RELIQUARY,
+	NORTH_NAVE,
+	SANCTUM_PASSAGE,
+	BOSS_SANCTUM
+]
 
 const TEST_VISIBILITY_POINTS := [
 	Vector2(-470, 520),
@@ -29,7 +52,11 @@ const TEST_VISIBILITY_POINTS := [
 	Vector2(900, 0),
 	Vector2(0, -35),
 	Vector2(-430, -520),
-	Vector2(430, -520)
+	Vector2(430, -520),
+	Vector2(-1240, -420),
+	Vector2(1240, -425),
+	Vector2(0, -850),
+	Vector2(0, -1320)
 ]
 
 const WALLS := [
@@ -52,7 +79,28 @@ const WALLS := [
 	["AltarEast", Vector2(574, -464), Vector2(74, 310)],
 	["AltarNorth", Vector2(0, -664), Vector2(1160, 72)],
 	["AltarSouthLeft", Vector2(-400, -286), Vector2(370, 70)],
-	["AltarSouthRight", Vector2(400, -286), Vector2(370, 70)]
+	["AltarSouthRight", Vector2(400, -286), Vector2(370, 70)],
+	["WestPassageNorth", Vector2(-720, -504), Vector2(370, 58)],
+	["WestPassageSouth", Vector2(-720, -246), Vector2(370, 58)],
+	["WestOssuaryWest", Vector2(-1468, -395), Vector2(70, 515)],
+	["WestOssuaryNorth", Vector2(-1140, -690), Vector2(620, 66)],
+	["WestOssuarySouth", Vector2(-1170, -124), Vector2(560, 66)],
+	["EastPassageNorth", Vector2(720, -510), Vector2(370, 58)],
+	["EastPassageSouth", Vector2(720, -246), Vector2(370, 58)],
+	["EastReliquaryEast", Vector2(1510, -404), Vector2(70, 520)],
+	["EastReliquaryNorth", Vector2(1160, -700), Vector2(650, 66)],
+	["EastReliquarySouth", Vector2(1170, -124), Vector2(575, 66)],
+	["NaveWest", Vector2(-736, -830), Vector2(72, 370)],
+	["NaveEast", Vector2(736, -830), Vector2(72, 370)],
+	["NaveNorthLeft", Vector2(-455, -1056), Vector2(560, 66)],
+	["NaveNorthRight", Vector2(455, -1056), Vector2(560, 66)],
+	["SanctumPassageWest", Vector2(-282, -1040), Vector2(58, 190)],
+	["SanctumPassageEast", Vector2(282, -1040), Vector2(58, 190)],
+	["BossWest", Vector2(-560, -1265), Vector2(74, 420)],
+	["BossEast", Vector2(560, -1265), Vector2(74, 420)],
+	["BossNorth", Vector2(0, -1502), Vector2(1120, 72)],
+	["BossSouthLeft", Vector2(-315, -1094), Vector2(410, 66)],
+	["BossSouthRight", Vector2(315, -1094), Vector2(410, 66)]
 ]
 
 const OBSTACLES := [
@@ -63,10 +111,37 @@ const OBSTACLES := [
 	["BrokenWallA", Vector2(255, 202), Vector2(155, 38), "broken_wall"],
 	["BrokenWallB", Vector2(-760, 10), Vector2(145, 38), "broken_wall"],
 	["BrokenWallC", Vector2(760, 4), Vector2(145, 38), "broken_wall"],
-	["AltarBlock", Vector2(0, -514), Vector2(250, 68), "altar"]
+	["AltarBlock", Vector2(0, -514), Vector2(250, 68), "altar"],
+	["OssuaryShelfA", Vector2(-1278, -486), Vector2(130, 46), "broken_wall"],
+	["OssuaryShelfB", Vector2(-1018, -292), Vector2(150, 46), "broken_wall"],
+	["ReliquaryShelfA", Vector2(1020, -490), Vector2(150, 46), "broken_wall"],
+	["ReliquaryShelfB", Vector2(1300, -315), Vector2(150, 46), "broken_wall"],
+	["NavePillarA", Vector2(-470, -830), Vector2(58, 82), "pillar"],
+	["NavePillarB", Vector2(470, -830), Vector2(58, 82), "pillar"],
+	["BossPillarA", Vector2(-330, -1240), Vector2(70, 92), "pillar"],
+	["BossPillarB", Vector2(330, -1240), Vector2(70, 92), "pillar"],
+	["BossAltar", Vector2(0, -1370), Vector2(250, 70), "altar"]
 ]
 
-const TORCHES := [Vector2(-545, 330), Vector2(165, 310), Vector2(-780, 390), Vector2(-820, -55), Vector2(820, -80), Vector2(-660, -225), Vector2(660, -225), Vector2(-330, -555), Vector2(335, -555)]
+const TORCHES := [
+	Vector2(-545, 330),
+	Vector2(165, 310),
+	Vector2(-780, 390),
+	Vector2(-820, -55),
+	Vector2(820, -80),
+	Vector2(-660, -225),
+	Vector2(660, -225),
+	Vector2(-330, -555),
+	Vector2(335, -555),
+	Vector2(-1340, -570),
+	Vector2(-910, -235),
+	Vector2(940, -560),
+	Vector2(1370, -250),
+	Vector2(-610, -900),
+	Vector2(610, -900),
+	Vector2(-405, -1380),
+	Vector2(405, -1380)
+]
 
 static func is_inside_route(point: Vector2) -> bool:
 	for room in ROOMS:

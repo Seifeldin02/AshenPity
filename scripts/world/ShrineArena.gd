@@ -246,7 +246,8 @@ func _on_trial_enemies_changed(enemies: Array[Node]) -> void:
 
 func _on_trial_wave_started(index: int, label: String) -> void:
 	if is_instance_valid(_hud) and _hud.has_method("show_wave"):
-		_hud.show_wave("%s / %d" % [label, index + 1])
+		var total: int = int(trial.wave_count()) if is_instance_valid(trial) and trial.has_method("wave_count") else index + 1
+		_hud.show_wave("%s  %d/%d" % [label, index + 1, total])
 
 
 func _on_trial_completed() -> void:

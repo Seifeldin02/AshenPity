@@ -93,7 +93,7 @@ anchor_right = 0.65
 anchor_bottom = 0.94
 theme_override_colors/font_color = Color(0.82, 0.75, 0.64, 0.92)
 theme_override_font_sizes/font_size = 20
-text = "WASD move  |  Mouse aim  |  Click combo  |  Right heavy  |  Space dodge  |  Q collect"
+text = "WASD move  |  Mouse aim  |  Click combo  |  Right heavy  |  Space dodge  |  E parry  |  Q collect"
 horizontal_alignment = 1
 
 [node name="WaveLabel" type="Label" parent="Root"]

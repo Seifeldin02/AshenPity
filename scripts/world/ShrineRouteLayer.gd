@@ -41,8 +41,13 @@ func _draw_ground() -> void:
 	_draw_room_trim(Route.RIGHT_SIDE_PATH, Color("#332d36"))
 	_draw_room_trim(Route.CENTRAL, Color("#493f43"))
 	_draw_room_trim(Route.ALTAR, Color("#514347"))
+	_draw_room_trim(Route.WEST_OSSUARY, Color("#3b3431"))
+	_draw_room_trim(Route.EAST_RELIQUARY, Color("#3c3740"))
+	_draw_room_trim(Route.NORTH_NAVE, Color("#403940"))
+	_draw_room_trim(Route.BOSS_SANCTUM, Color("#4a3537"))
 	_draw_stairs()
 	_draw_landmark()
+	_draw_room_landmarks()
 
 
 func _draw_decals() -> void:
@@ -81,6 +86,12 @@ func _draw_room_floor(room: Rect2) -> void:
 		base_tint = Color(0.82, 0.72, 0.66, 0.90)
 	elif room == Route.SIDE_ALCOVE or room == Route.LEFT_SIDE_PATH or room == Route.RIGHT_SIDE_PATH:
 		base_tint = Color(0.58, 0.55, 0.58, 0.82)
+	elif room == Route.WEST_OSSUARY:
+		base_tint = Color(0.60, 0.55, 0.49, 0.86)
+	elif room == Route.EAST_RELIQUARY:
+		base_tint = Color(0.64, 0.60, 0.66, 0.84)
+	elif room == Route.BOSS_SANCTUM:
+		base_tint = Color(0.76, 0.56, 0.54, 0.90)
 	draw_rect(room.grow(24.0), Color("#17151b"))
 	_draw_tiled_texture(_textures.get("floor_a"), room, Color(base_tint.r, base_tint.g, base_tint.b, 0.28))
 	for cell in _floor_cells:
@@ -137,19 +148,21 @@ func _draw_irregular_edges() -> void:
 
 
 func _draw_stairs() -> void:
-	for i in 5:
-		var y := -310.0 - float(i) * 26.0
-		var width := 340.0 - float(i) * 24.0
-		draw_rect(Rect2(-width * 0.5, y, width, 18), Color(0.20, 0.18, 0.20, 1.0))
-		draw_line(Vector2(-width * 0.5, y), Vector2(width * 0.5, y), Color(0.48, 0.42, 0.36, 0.23), 2.0)
+	_draw_texture_centered(_textures.get("stairs"), Vector2(0, -360), Vector2(1.18, 0.72), Color(0.95, 0.90, 0.86, 0.90))
+	_draw_texture_centered(_textures.get("stairs"), Vector2(0, -1125), Vector2(1.35, 0.78), Color(0.95, 0.84, 0.78, 0.92))
 
 
 func _draw_landmark() -> void:
-	draw_colored_polygon(_ellipse(Vector2(0, -28), 112.0, 54.0), Color("#252229"))
-	draw_colored_polygon(_ellipse(Vector2(0, -35), 70.0, 32.0), Color("#3b3130"))
-	draw_arc(Vector2(0, -35), 64.0, 0.2, TAU - 0.4, 42, Color(0.80, 0.45, 0.23, 0.36), 7.0)
-	draw_line(Vector2(-38, -70), Vector2(22, 4), Color("#17141a"), 5.0)
-	draw_line(Vector2(42, -61), Vector2(-12, -4), Color("#17141a"), 4.0)
+	_draw_texture_centered(_textures.get("brazier"), Vector2(0, -36), Vector2(1.2, 1.2), Color.WHITE)
+
+
+func _draw_room_landmarks() -> void:
+	_draw_texture_centered(_textures.get("bone_debris"), Vector2(-1260, -410), Vector2(1.0, 1.0), Color(0.90, 0.84, 0.78, 0.78))
+	_draw_texture_centered(_textures.get("bone_debris"), Vector2(-1040, -540), Vector2(0.78, 0.78), Color(0.80, 0.76, 0.70, 0.62))
+	_draw_texture_centered(_textures.get("reliquary"), Vector2(1095, -470), Vector2(1.05, 1.05), Color(0.84, 0.80, 0.88, 0.86))
+	_draw_texture_centered(_textures.get("reliquary"), Vector2(1325, -305), Vector2(0.90, 0.90), Color(0.82, 0.78, 0.86, 0.82))
+	_draw_texture_centered(_textures.get("sealed_door"), Vector2(0, -1405), Vector2(1.35, 1.15), Color(0.90, 0.78, 0.72, 0.92))
+	_draw_texture_centered(_textures.get("brazier"), Vector2(0, -1260), Vector2(0.92, 0.92), Color(1.0, 0.88, 0.78, 0.88))
 
 
 func _draw_light_pool(center: Vector2, radius: float) -> void:
@@ -193,6 +206,10 @@ func _build_floor_cells() -> void:
 						warm += 0.010
 					elif room == Route.SIDE_ALCOVE or room == Route.LEFT_SIDE_PATH or room == Route.RIGHT_SIDE_PATH:
 						shade *= 0.88
+					elif room == Route.WEST_OSSUARY:
+						shade *= 0.86
+					elif room == Route.BOSS_SANCTUM:
+						warm += 0.018
 					_floor_cells.append({
 						"room": room,
 						"rect": rect,
@@ -208,6 +225,11 @@ func _load_textures() -> void:
 		"floor_a": _load_texture("res://assets/environment/upgrade/floor_stone_a.png"),
 		"floor_b": _load_texture("res://assets/environment/upgrade/floor_stone_b.png"),
 		"floor_c": _load_texture("res://assets/environment/upgrade/floor_stone_c.png"),
+		"stairs": _load_texture("res://assets/environment/upgrade/altar_stairs.png"),
+		"brazier": _load_texture("res://assets/environment/upgrade/ash_brazier.png"),
+		"sealed_door": _load_texture("res://assets/environment/upgrade/sealed_door.png"),
+		"bone_debris": _load_texture("res://assets/environment/upgrade/bone_debris.png"),
+		"reliquary": _load_texture("res://assets/environment/upgrade/reliquary_shelf.png"),
 	}
 
 
@@ -215,6 +237,13 @@ func _draw_tiled_texture(texture: Texture2D, rect: Rect2, tint: Color) -> void:
 	if texture == null:
 		return
 	draw_texture_rect(texture, rect, true, tint)
+
+
+func _draw_texture_centered(texture: Texture2D, center: Vector2, scale_value: Vector2, tint: Color) -> void:
+	if texture == null:
+		return
+	var size := texture.get_size() * scale_value
+	draw_texture_rect(texture, Rect2(center - size * 0.5, size), false, tint)
 
 
 func _load_texture(path: String) -> Texture2D:
