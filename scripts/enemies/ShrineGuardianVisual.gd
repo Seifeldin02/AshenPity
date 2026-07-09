@@ -2,44 +2,44 @@ extends Node2D
 
 const SPRITE_PATHS := {
 	"guardian": {
-		"idle": "res://assets/sprites/upgrade/melee_idle.png",
-		"run_1": "res://assets/sprites/upgrade/melee_run_1.png",
-		"run_2": "res://assets/sprites/upgrade/melee_run_2.png",
-		"attack": "res://assets/sprites/upgrade/melee_attack.png",
-		"hurt": "res://assets/sprites/upgrade/melee_hurt.png",
-		"death": "res://assets/sprites/upgrade/melee_death.png",
+		"idle": "res://assets/sprites/simple_souls/melee_idle.png",
+		"run_1": "res://assets/sprites/simple_souls/melee_run_1.png",
+		"run_2": "res://assets/sprites/simple_souls/melee_run_2.png",
+		"attack": "res://assets/sprites/simple_souls/melee_attack.png",
+		"hurt": "res://assets/sprites/simple_souls/melee_hurt.png",
+		"death": "res://assets/sprites/simple_souls/melee_death.png",
 	},
 	"hound": {
-		"idle": "res://assets/sprites/upgrade/hound_idle.png",
-		"run_1": "res://assets/sprites/upgrade/hound_run_1.png",
-		"run_2": "res://assets/sprites/upgrade/hound_run_2.png",
-		"attack": "res://assets/sprites/upgrade/hound_attack.png",
-		"hurt": "res://assets/sprites/upgrade/hound_hurt.png",
-		"death": "res://assets/sprites/upgrade/hound_death.png",
+		"idle": "res://assets/sprites/simple_souls/hound_idle.png",
+		"run_1": "res://assets/sprites/simple_souls/hound_run_1.png",
+		"run_2": "res://assets/sprites/simple_souls/hound_run_2.png",
+		"attack": "res://assets/sprites/simple_souls/hound_attack.png",
+		"hurt": "res://assets/sprites/simple_souls/hound_hurt.png",
+		"death": "res://assets/sprites/simple_souls/hound_death.png",
 	},
 	"archer": {
-		"idle": "res://assets/sprites/upgrade/archer_idle.png",
-		"run_1": "res://assets/sprites/upgrade/archer_run_1.png",
-		"run_2": "res://assets/sprites/upgrade/archer_run_2.png",
-		"attack": "res://assets/sprites/upgrade/archer_attack.png",
-		"hurt": "res://assets/sprites/upgrade/archer_hurt.png",
-		"death": "res://assets/sprites/upgrade/archer_death.png",
+		"idle": "res://assets/sprites/simple_souls/archer_idle.png",
+		"run_1": "res://assets/sprites/simple_souls/archer_run_1.png",
+		"run_2": "res://assets/sprites/simple_souls/archer_run_2.png",
+		"attack": "res://assets/sprites/simple_souls/archer_attack.png",
+		"hurt": "res://assets/sprites/simple_souls/archer_hurt.png",
+		"death": "res://assets/sprites/simple_souls/archer_death.png",
 	},
 	"bell_bearer": {
-		"idle": "res://assets/sprites/upgrade/elite_idle.png",
-		"run_1": "res://assets/sprites/upgrade/elite_run_1.png",
-		"run_2": "res://assets/sprites/upgrade/elite_run_2.png",
-		"attack": "res://assets/sprites/upgrade/elite_attack.png",
-		"hurt": "res://assets/sprites/upgrade/elite_hurt.png",
-		"death": "res://assets/sprites/upgrade/elite_death.png",
+		"idle": "res://assets/sprites/simple_souls/elite_idle.png",
+		"run_1": "res://assets/sprites/simple_souls/elite_run_1.png",
+		"run_2": "res://assets/sprites/simple_souls/elite_run_2.png",
+		"attack": "res://assets/sprites/simple_souls/elite_attack.png",
+		"hurt": "res://assets/sprites/simple_souls/elite_hurt.png",
+		"death": "res://assets/sprites/simple_souls/elite_death.png",
 	},
 	"ashen_judicator": {
-		"idle": "res://assets/sprites/upgrade/judicator_idle.png",
-		"run_1": "res://assets/sprites/upgrade/judicator_run_1.png",
-		"run_2": "res://assets/sprites/upgrade/judicator_run_2.png",
-		"attack": "res://assets/sprites/upgrade/judicator_attack.png",
-		"hurt": "res://assets/sprites/upgrade/judicator_hurt.png",
-		"death": "res://assets/sprites/upgrade/judicator_death.png",
+		"idle": "res://assets/sprites/simple_souls/judicator_idle.png",
+		"run_1": "res://assets/sprites/simple_souls/judicator_run_1.png",
+		"run_2": "res://assets/sprites/simple_souls/judicator_run_2.png",
+		"attack": "res://assets/sprites/simple_souls/judicator_attack.png",
+		"hurt": "res://assets/sprites/simple_souls/judicator_hurt.png",
+		"death": "res://assets/sprites/simple_souls/judicator_death.png",
 	},
 }
 
@@ -221,6 +221,16 @@ func _draw_telegraph() -> void:
 				draw_arc(Vector2.ZERO, 142.0, dir_angle - 0.88, dir_angle + 0.88, 34, Color(0.92, 0.20, 0.12, 0.50), 8.0)
 		return
 	var radius := 92.0 if enemy_kind != "bell_bearer" else 132.0
+	if attack_pattern == "thrust" or attack_pattern == "shot" or attack_pattern == "pounce":
+		var reach := 142.0 if attack_pattern != "shot" else 520.0
+		var width := 9.0 if attack_pattern != "pounce" else 16.0
+		draw_line(Vector2.ZERO, facing * reach, Color(0.92, 0.20, 0.12, 0.46), width)
+		draw_line(Vector2.ZERO, facing * reach, Color(0.95, 0.70, 0.25, 0.24), maxf(width * 0.38, 3.0))
+		return
+	if attack_pattern == "bell_slam":
+		draw_arc(Vector2.ZERO, 118.0, 0.0, TAU, 52, Color(0.92, 0.20, 0.12, 0.48), 8.0)
+		draw_arc(Vector2.ZERO, 72.0, 0.0, TAU, 44, Color(0.95, 0.70, 0.25, 0.24), 4.0)
+		return
 	draw_arc(Vector2.ZERO, radius, dir_angle - 0.72, dir_angle + 0.72, 30, Color(0.92, 0.20, 0.12, 0.50), 7.0)
 	draw_arc(Vector2.ZERO, radius + 8.0, dir_angle - 0.72, dir_angle + 0.72, 30, Color(0.95, 0.70, 0.25, 0.25), 3.0)
 
@@ -229,6 +239,20 @@ func _draw_swing() -> void:
 	var radius := 92.0 if enemy_kind != "bell_bearer" else 126.0
 	var reach := 68.0 if enemy_kind != "bell_bearer" else 98.0
 	var spread := 0.72 if enemy_kind != "bell_bearer" else 0.92
+	if attack_pattern == "thrust" or attack_pattern == "pounce":
+		var thrust_reach := 126.0 if attack_pattern == "thrust" else 102.0
+		var line_width := 10.0 if attack_pattern == "thrust" else 18.0
+		draw_line(facing * 18.0, facing * thrust_reach, Color(0.05, 0.025, 0.018, 0.36), line_width + 6.0)
+		draw_line(facing * 22.0, facing * thrust_reach, Color(1.0, 0.44, 0.16, 0.54), line_width)
+		draw_line(facing * 42.0, facing * (thrust_reach - 12.0), Color(1.0, 0.78, 0.34, 0.30), maxf(line_width * 0.35, 3.0))
+		return
+	if attack_pattern == "shot":
+		draw_line(Vector2.ZERO, facing * 160.0, Color(1.0, 0.68, 0.24, 0.40), 5.0)
+		return
+	if attack_pattern == "bell_slam":
+		draw_arc(Vector2.ZERO, 130.0, 0.0, TAU, 58, Color(1.0, 0.40, 0.16, 0.44), 13.0)
+		draw_arc(Vector2.ZERO, 82.0, 0.0, TAU, 44, Color(0.22, 0.08, 0.05, 0.42), 8.0)
+		return
 	if enemy_kind == "ashen_judicator":
 		if attack_pattern == "slam":
 			draw_arc(Vector2.ZERO, 132.0, 0.0, TAU, 60, Color(1.0, 0.40, 0.16, 0.46), 14.0)

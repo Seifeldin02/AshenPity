@@ -27,8 +27,11 @@ func _run() -> void:
 	_test_frame_rate_independent_velocity()
 	_test_attack_buffering_window()
 	_test_ash_brand_collect_progress()
+	_test_attack_damage_hierarchy()
 	_test_heavy_chain_cost_prevents_spam()
 	_test_parry_timing_window()
+	_test_parry_brand_expires_quickly()
+	_test_flask_restore_clamps_to_two()
 	_test_enemy_configs_exist()
 	if _failures == 0:
 		print("All gameplay logic tests passed.")
@@ -130,6 +133,14 @@ func _test_ash_brand_collect_progress() -> void:
 	_assert_true(CombatMathUtil.is_collect_ready(hits, GameBalance.ASH_BRAND_HITS_TO_COLLECT), "required branded hits unlock collect")
 
 
+func _test_attack_damage_hierarchy() -> void:
+	var strongest_light := 0.0
+	for attack in GameBalance.LIGHT_COMBO:
+		strongest_light = maxf(strongest_light, float(attack["damage"]))
+	_assert_true(float(GameBalance.COLLECT_ATTACK["damage"]) > float(GameBalance.HEAVY_ATTACK["damage"]), "Collect is stronger than heavy")
+	_assert_true(float(GameBalance.HEAVY_ATTACK["damage"]) > strongest_light, "heavy is stronger than every light attack")
+
+
 func _test_heavy_chain_cost_prevents_spam() -> void:
 	var first := float(GameBalance.HEAVY_ATTACK["stamina"])
 	var second := first + GameBalance.PLAYER_HEAVY_CHAIN_COST_STEP
@@ -145,6 +156,23 @@ func _test_parry_timing_window() -> void:
 	_assert_true(GameBalance.PLAYER_PARRY_COST > 0.0, "parry spends stamina")
 	_assert_true(GameBalance.PLAYER_PARRY_COLLECT_DAMAGE_MULTIPLIER > 1.0, "parry-primed Collect has a damage payoff")
 	_assert_true(GameBalance.PLAYER_PARRY_COLLECT_STAGGER_BONUS > 0.0, "parry-primed Collect has a stagger payoff")
+	_assert_equal(GameBalance.PLAYER_PARRY_BRAND_DURATION, 3.0, "parry Brand claim window is three seconds")
+
+
+func _test_parry_brand_expires_quickly() -> void:
+	var enemy: Node = GuardianScene.instantiate()
+	root.add_child(enemy)
+	enemy.call("prime_parry_collect", null)
+	_assert_true(enemy.get("collect_ready"), "parry primes Collect")
+	enemy.call("_update_brand", GameBalance.PLAYER_PARRY_BRAND_DURATION + 0.05)
+	_assert_false(enemy.get("collect_ready"), "parry Collect expires when ignored")
+	_assert_false(enemy.get("ash_branded"), "parry Brand clears when ignored")
+	enemy.free()
+
+
+func _test_flask_restore_clamps_to_two() -> void:
+	_assert_equal(CombatMathUtil.restore_flask_charge(0, 1, 2), 1, "stage restore gives one flask")
+	_assert_equal(CombatMathUtil.restore_flask_charge(1, 4, 2), 2, "flask restore clamps at max charges")
 
 
 func _test_enemy_configs_exist() -> void:

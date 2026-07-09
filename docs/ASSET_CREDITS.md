@@ -4,7 +4,29 @@
 
 This build uses curated public/free game-dev assets for the runtime sprites, tiles, VFX textures, and combat audio. No ripped commercial-game assets were added.
 
-## Runtime Character Sprites
+## Runtime Character And Shrine Pixel Art
+
+Source: Simple Souls Set by Elvies
+URL: https://elvies.itch.io/simple-souls-set
+License: Commercial and non-commercial use allowed; edits allowed; no NFT/blockchain projects; do not resell the original or edited asset pack. Credit appreciated but not required.
+Local license note: `assets/third_party/simple_souls/LICENSE.txt`
+
+Used for:
+
+- Hooded player runtime frames.
+- Shrine Guardian, Ashbound Hound, Reliquary Archer, Bell-Bearer, and Ashen Judicator runtime frames.
+- Bones, urn, and reliquary source material.
+
+Runtime folders:
+
+- `assets/sprites/simple_souls/`
+- `assets/environment/simple_souls/`
+
+Source sheets:
+
+- `assets/third_party/simple_souls/`
+
+## Previous Runtime Character Sprite Source
 
 Source: Dungeon Crawl 32x32 Tiles  
 URL: https://opengameart.org/content/dungeon-crawl-32x32-tiles  
@@ -13,17 +35,10 @@ Local license note: `assets/third_party/upgrade_licenses/crawl_tiles_license.txt
 
 Used for:
 
-- Modular hooded player sprite parts.
-- Shrine Guardian melee sprite.
-- Ashbound Hound sprite.
-- Reliquary Archer sprite.
-- Bell-Bearer elite sprite.
-- Base material for the generated Ashen Judicator sprite variants.
 - Small spark, flame, smoke, and blood/impact VFX textures.
 
 Runtime folders:
 
-- `assets/sprites/upgrade/`
 - `assets/effects/upgrade/`
 
 ## Runtime Environment Tiles
@@ -31,7 +46,7 @@ Runtime folders:
 Source: Top Down Dungeon Pack by Screaming Brain Studios  
 URL: https://opengameart.org/content/top-down-dungeon-pack  
 License: CC0 / Public Domain  
-Local license note: `assets/third_party/upgrade_licenses/sbs_top_down_dungeon_license.txt`
+Local license note: `assets/third_party/sbs_top_down_dungeon/LICENSE.txt`
 
 Used for:
 
@@ -41,11 +56,11 @@ Used for:
 
 Runtime folder:
 
-- `assets/environment/upgrade/`
+- `assets/environment/sbs_dungeon/`
 
 ## Original Runtime Prop And Variant Rasters
 
-The torch brazier, broken pillar, broken wall chunk, stairs, ash brazier, sealed door, bone debris, and reliquary shelf PNGs in `assets/environment/upgrade/` were generated inside this repository for Ashen Pity. They are original prototype assets and do not come from commercial game rips.
+The cleaned runtime brazier in `assets/environment/simple_souls/brazier.png` was generated inside this repository for Ashen Pity after the Simple Souls object-sheet flame/chest crops proved visually unsuitable. The stairs, ash brazier, sealed door, and earlier generated prop PNGs in `assets/environment/upgrade/` are original prototype assets and do not come from commercial game rips.
 
 The `judicator_*.png` files in `assets/sprites/upgrade/` were generated inside this repository by transforming the project-owned runtime elite silhouette into a larger cold-iron/gold boss variant for Ashen Pity v0.5.
 

@@ -99,6 +99,13 @@ func heal_to_full_for_test() -> void:
 	health_changed.emit(health, GameBalance.PLAYER_MAX_HEALTH)
 
 
+func restore_flask_charge(amount: int = 1) -> void:
+	var old_charges := flask_charges
+	flask_charges = CombatMathUtil.restore_flask_charge(flask_charges, amount, 2)
+	if flask_charges != old_charges:
+		flask_changed.emit(flask_charges, 2)
+
+
 func try_perfect_dodge(enemy: Node, _attack_position: Vector2) -> bool:
 	if state != PlayerState.DODGE or not invulnerable or _perfect_dodge_used:
 		return false

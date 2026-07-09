@@ -1,0 +1,16 @@
+Simple Souls Set by Elvies
+
+Source: https://elvies.itch.io/simple-souls-set
+Downloaded: 2026-07-09
+
+License summary from the itch.io asset page:
+- Assets can be used in non-commercial and commercial projects, excluding NFT or blockchain-related projects.
+- Users may edit the pack for their own game consistency/uniformity.
+- Users may distribute the asset pack site origin/link.
+- Users may not resell the original or edited asset pack.
+- Credit is not necessary, but appreciated.
+
+Ashen Pity usage:
+- Source sheets are kept in assets/third_party/simple_souls/.
+- Cropped runtime sprites are kept in assets/sprites/simple_souls/.
+- Cropped runtime environment pieces are kept in assets/environment/simple_souls/.

@@ -41,6 +41,7 @@ var _knockback := Vector2.ZERO
 var _died_emitted := false
 var _rng := RandomNumberGenerator.new()
 var _elite_attack_flip := false
+var _variant_attack_index := 0
 var _ai_time := 0.0
 var _attack_pattern := "sweep"
 var _boss_pattern_index := 0
@@ -140,7 +141,7 @@ func prime_parry_collect(_source: Node) -> void:
 	ash_branded = true
 	collect_ready = true
 	_brand_hits = GameBalance.ASH_BRAND_HITS_TO_COLLECT
-	_brand_timer = GameBalance.ASH_BRAND_DURATION + GameBalance.PLAYER_PARRY_BRAND_DURATION_BONUS
+	_brand_timer = GameBalance.PLAYER_PARRY_BRAND_DURATION
 	_play_audio("ash_brand", -3.5)
 	brand_changed.emit(ash_branded, collect_ready)
 
@@ -201,7 +202,7 @@ func _tick_state(delta: float) -> void:
 				_set_state(EnemyState.ACTIVE, float(_config["active"]))
 		EnemyState.ACTIVE:
 			if enemy_kind == "hound":
-				velocity = _attack_direction * 130.0
+				velocity = _attack_direction * (230.0 if _attack_pattern == "pounce" else 150.0)
 			elif enemy_kind == "ashen_judicator" and _attack_pattern == "lunge":
 				velocity = _attack_direction * 390.0
 			elif enemy_kind == "ashen_judicator" and _attack_pattern == "slam":
@@ -266,14 +267,32 @@ func _begin_attack() -> void:
 		facing = _attack_direction
 	if enemy_kind == "bell_bearer":
 		_elite_attack_flip = not _elite_attack_flip
+		_attack_pattern = "bell_slam" if _elite_attack_flip else "bell_sweep"
 	if enemy_kind == "ashen_judicator":
 		var patterns := ["sweep", "lunge", "slam", "toll"]
 		_attack_pattern = patterns[_boss_pattern_index % patterns.size()]
 		_boss_pattern_index += 1
 	else:
-		_attack_pattern = "lunge" if enemy_kind == "hound" else "sweep"
+		if enemy_kind == "guardian":
+			var guardian_patterns := ["sweep", "thrust"]
+			_attack_pattern = guardian_patterns[_variant_attack_index % guardian_patterns.size()]
+			_variant_attack_index += 1
+		elif enemy_kind == "hound":
+			_attack_pattern = "pounce"
+		elif enemy_kind == "archer":
+			_attack_pattern = "shot"
+		elif enemy_kind != "bell_bearer":
+			_attack_pattern = "sweep"
 	_special_fired = false
 	var windup := float(_config["windup"]) + (0.18 if enemy_kind == "bell_bearer" and _elite_attack_flip else 0.0)
+	if enemy_kind == "guardian" and _attack_pattern == "thrust":
+		windup = maxf(float(_config["windup"]) - 0.10, 0.32)
+	elif enemy_kind == "hound":
+		windup = 0.18
+	elif enemy_kind == "archer":
+		windup = 0.56
+	elif enemy_kind == "bell_bearer" and _attack_pattern == "bell_slam":
+		windup = 0.88
 	if enemy_kind == "ashen_judicator":
 		match _attack_pattern:
 			"lunge":
@@ -350,6 +369,14 @@ func _update_facing() -> void:
 func _update_attack_hitbox() -> void:
 	var attack_facing := _attack_direction if state in [EnemyState.WINDUP, EnemyState.ACTIVE, EnemyState.RECOVERY] else facing
 	var range := float(_config["attack_range"]) * (1.08 if enemy_kind == "bell_bearer" and _elite_attack_flip else 0.72)
+	if enemy_kind == "guardian" and _attack_pattern == "thrust":
+		range = 118.0
+	elif enemy_kind == "hound" and _attack_pattern == "pounce":
+		range = 94.0
+	elif enemy_kind == "bell_bearer" and _attack_pattern == "bell_slam":
+		range = 46.0
+	elif enemy_kind == "bell_bearer" and _attack_pattern == "bell_sweep":
+		range = 135.0
 	if enemy_kind == "ashen_judicator":
 		match _attack_pattern:
 			"lunge":
@@ -364,9 +391,13 @@ func _update_attack_hitbox() -> void:
 	attack_area.rotation = attack_facing.angle()
 	var rect := attack_shape.shape as RectangleShape2D
 	if rect != null:
-		if enemy_kind == "hound":
-			rect.size = Vector2(72, 46)
-		elif enemy_kind == "bell_bearer" and _elite_attack_flip:
+		if enemy_kind == "guardian" and _attack_pattern == "thrust":
+			rect.size = Vector2(82, 40)
+		elif enemy_kind == "hound":
+			rect.size = Vector2(96, 42)
+		elif enemy_kind == "bell_bearer" and _attack_pattern == "bell_slam":
+			rect.size = Vector2(210, 142)
+		elif enemy_kind == "bell_bearer" and _attack_pattern == "bell_sweep":
 			rect.size = Vector2(170, 84)
 		elif enemy_kind == "ashen_judicator" and _attack_pattern == "slam":
 			rect.size = Vector2(220, 148)

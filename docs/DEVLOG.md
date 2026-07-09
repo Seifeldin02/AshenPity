@@ -220,3 +220,22 @@ The older Raylib prototype was not reused because it was an abandoned technical 
 - `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
 - Harness snapshot on the development PC: 170 FPS reported, display refresh about 170 Hz, p95 frame time 8.33 ms under fixed 120 FPS simulation, physics 120 Hz.
 - The playtest harness still reports the existing ObjectDB leak warning at process exit.
+
+## v0.5.2 Ash Brand Timeout, Flask, UI, and Shrine Material Pass
+
+- Changed parry-created Ash Brand from a generous extended payoff into a short punish window. A successful parry now primes Collect for 3 seconds through `PLAYER_PARRY_BRAND_DURATION`; waiting too long drops the opportunity.
+- Rebalanced the damage hierarchy so Collect is the hardest-hitting player attack, heavy is second, and light combo hits are weakest. Parry-primed Collect still gets extra damage, stagger, and knockback.
+- Added one flask charge restoration after each cleared Ash Trial stage, clamped to the two-flask maximum.
+- Updated the HUD presentation toward a Souls-style read: a long squared red health bar, shorter squared green stamina bar, and cleaner screen-fixed layout.
+- Added Simple Souls Set runtime actor sprites for player and enemy variants, with license/source sheets recorded under `assets/third_party/simple_souls/`.
+- Replaced the noisy full-sheet floor/wall usage with cropped Screaming Brain Studios CC0 dungeon tiles under `assets/environment/sbs_dungeon/`.
+- Rebuilt the runtime brazier after discovering the previous crop was actually a chest-like UI/object tile. The new brazier is an original cleaned sprite made for Ashen Pity and no longer reads as loot noise.
+- Updated enemy attack selection so Guardian, Hound, Archer, and Bell-Bearer use more distinct patterns, timing, hit shapes, and telegraphs instead of all feeling like the same grunt swing.
+
+### v0.5.2 Verification
+
+- `godot_console --headless --path . -s tests/test_runner.gd`: passed.
+- `godot_console --path . --quit-after 5`: passed.
+- `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
+- Harness snapshot on the development PC: 157 FPS reported, display refresh about 170 Hz, p95 frame time 8.33 ms under fixed 120 FPS simulation, physics 120 Hz.
+- Known warning remains: the display playtest harness reports ObjectDB leaked instances at exit.

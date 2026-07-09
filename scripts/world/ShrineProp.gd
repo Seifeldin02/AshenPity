@@ -6,8 +6,8 @@ var _textures := {}
 
 func _ready() -> void:
 	_textures = {
-		"pillar": _load_texture("res://assets/environment/upgrade/broken_pillar.png"),
-		"torch": _load_texture("res://assets/environment/upgrade/torch_brazier.png"),
+		"pillar": _load_texture("res://assets/environment/sbs_dungeon/wall_stone_a.png"),
+		"torch": _load_texture("res://assets/environment/simple_souls/brazier.png"),
 	}
 
 
@@ -20,8 +20,17 @@ func _draw() -> void:
 
 func _draw_pillar() -> void:
 	var texture: Texture2D = _textures.get("pillar")
+	draw_colored_polygon(_ellipse_points(Vector2(0, 112), 38.0, 13.0), Color(0.02, 0.016, 0.02, 0.42))
 	if texture != null:
-		_draw_texture_centered(texture, Vector2(0, 36), Vector2.ONE, Color.WHITE)
+		var shaft := Rect2(-25, -14, 50, 118)
+		var cap_top := Rect2(-38, -26, 76, 18)
+		var cap_bottom := Rect2(-34, 96, 68, 20)
+		draw_texture_rect(texture, shaft, true, Color(0.58, 0.56, 0.54, 0.94))
+		draw_texture_rect(texture, cap_top, true, Color(0.70, 0.67, 0.63, 0.96))
+		draw_texture_rect(texture, cap_bottom, true, Color(0.45, 0.43, 0.43, 0.94))
+		draw_rect(shaft, Color("#151319"), false, 2.0)
+		draw_line(Vector2(-18, 4), Vector2(-20, 88), Color(0.88, 0.84, 0.76, 0.12), 3.0)
+		draw_line(Vector2(17, 0), Vector2(14, 94), Color(0.02, 0.018, 0.022, 0.38), 4.0)
 		return
 	var outer := PackedVector2Array([
 		Vector2(-25, -12), Vector2(-12, -26), Vector2(18, -26), Vector2(31, -12),
@@ -42,7 +51,7 @@ func _draw_pillar() -> void:
 func _draw_torch() -> void:
 	var texture: Texture2D = _textures.get("torch")
 	if texture != null:
-		_draw_texture_centered(texture, Vector2.ZERO, Vector2(0.82, 0.82), Color.WHITE)
+		_draw_texture_centered(texture, Vector2.ZERO, Vector2(0.92, 0.92), Color.WHITE)
 		return
 
 

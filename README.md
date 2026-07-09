@@ -6,10 +6,10 @@ This repository is the real Godot foundation for the project. The older Raylib t
 
 ## Current Prototype Status
 
-Version 0.5 is a shrine expansion combat sandbox. The build label is:
+Version 0.5.2 is a shrine expansion combat sandbox. The build label is:
 
 ```text
-Ashen Pity - Shrine Expansion v0.5.1
+Ashen Pity - Shrine Expansion v0.5.2
 ```
 
 Current scope:
@@ -17,8 +17,9 @@ Current scope:
 - Title screen into the shrine arena.
 - One playable hooded wanderer.
 - Fast mouse-aimed movement, dodge, parry, light combo, heavy attack, flask, and death/restart.
-- Ash Brand: a perfect dodge through an enemy attack marks that enemy.
-- Collect: landing follow-up hits on a Branded enemy opens a `Q` dash-through payoff.
+- Ash Brand: a perfect dodge through an enemy attack marks that enemy; a parry Brand expires after 3 seconds if you hesitate.
+- Collect: landing follow-up hits on a Branded enemy opens a `Q` dash-through payoff. Collect is tuned as the hardest hit, heavy is second, light combo hits are weakest.
+- Two healing flasks, with one flask charge restored after each cleared stage.
 - One repeatable seven-stage Ash Trial through the expanded shrine route.
 - Enemy variants for the trial: Shrine Guardian, Ashbound Hound, Reliquary Archer, Bell-Bearer elite, and Ashen Judicator final encounter.
 - Minimal Ash Trial Complete summary with replay.
@@ -145,7 +146,7 @@ More detail is in `docs/FILE_MAP.md` and `docs/EDITING_GUIDE.md`.
 - Art uses curated public/free prototype assets and is not final production key art.
 - Audio uses curated public/free prototype SFX and is not final mixed sound design.
 - The Ash Trial enemy variants share one configurable enemy controller and scene.
-- Parry now immediately primes Collect and gives that Collect extra damage, stagger, and knockback, but this still needs real human feel testing.
+- Parry now immediately primes a 3-second Collect window and gives that Collect extra damage, stagger, and knockback, but this still needs real human feel testing.
 - Touch controls need real landscape phone testing.
 - Balance is first-pass and must be judged through human playtesting.
 - The Ashen Judicator is a first-pass final encounter, not production boss design.

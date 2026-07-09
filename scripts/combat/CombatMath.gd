@@ -56,3 +56,7 @@ static func ash_brand_hit_progress(current_hits: int, required_hits: int) -> int
 
 static func is_collect_ready(brand_hits: int, required_hits: int) -> bool:
 	return brand_hits >= max(required_hits, 1)
+
+
+static func restore_flask_charge(current: int, amount: int, maximum: int) -> int:
+	return clampi(current + max(amount, 0), 0, maximum)

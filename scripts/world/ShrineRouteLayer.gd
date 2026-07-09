@@ -99,18 +99,17 @@ func _draw_room_floor(room: Rect2) -> void:
 	elif room == Route.BOSS_SANCTUM:
 		base_tint = Color(0.76, 0.56, 0.54, 0.90)
 	draw_rect(room.grow(24.0), Color("#17151b"))
-	_draw_tiled_texture(_textures.get("floor_a"), room, Color(base_tint.r, base_tint.g, base_tint.b, 0.28))
 	for cell in _floor_cells:
 		if cell["room"] != room:
 			continue
 		var rect: Rect2 = cell["rect"]
-		draw_rect(rect, cell["color"])
-		draw_rect(rect.grow(-2.0), Color(0.02, 0.018, 0.020, 0.075), false, 1.0)
+		_draw_tiled_texture(_textures.get(str(cell["texture"])), rect, cell["tint"])
+		draw_rect(rect.grow(-1.0), Color(0.02, 0.018, 0.020, 0.12), false, 1.0)
 		if bool(cell["worn"]):
-			_draw_tiled_texture(_textures.get("floor_c"), rect, Color(0.72, 0.68, 0.60, 0.055))
+			_draw_tiled_texture(_textures.get("floor_ash"), rect, Color(0.34, 0.30, 0.26, 0.22))
 	for i in 3:
 		var band_y := room.position.y + room.size.y * (0.28 + float(i) * 0.20)
-		draw_line(Vector2(room.position.x + 25, band_y), Vector2(room.end.x - 25, band_y + sin(float(i) * 1.8) * 18.0), Color(0.50, 0.42, 0.32, 0.022), 18.0)
+		draw_line(Vector2(room.position.x + 25, band_y), Vector2(room.end.x - 25, band_y + sin(float(i) * 1.8) * 18.0), Color(0.50, 0.42, 0.32, 0.018), 16.0)
 
 
 func _draw_room_trim(room: Rect2, color: Color) -> void:
@@ -203,47 +202,51 @@ func _build_floor_cells() -> void:
 	var floor_rng := RandomNumberGenerator.new()
 	floor_rng.seed = 42111
 	for room in Route.ROOMS:
-		var y: float = room.position.y
-		while y < room.end.y - 12.0:
-			var row_height: float = floor_rng.randf_range(68.0, 118.0)
-			var x: float = room.position.x
-			while x < room.end.x - 12.0:
-				var width: float = floor_rng.randf_range(72.0, 132.0)
-				var jitter := Vector2(floor_rng.randf_range(-7.0, 7.0), floor_rng.randf_range(-5.0, 5.0))
-				var rect := Rect2(Vector2(x, y) + jitter, Vector2(width, row_height)).intersection(room.grow(-8.0))
-				if rect.size.x > 20.0 and rect.size.y > 20.0:
-					var shade: float = floor_rng.randf_range(0.19, 0.255)
-					var warm: float = floor_rng.randf_range(-0.006, 0.010)
-					if room == Route.ALTAR:
-						warm += 0.010
-					elif room == Route.SIDE_ALCOVE or room == Route.LEFT_SIDE_PATH or room == Route.RIGHT_SIDE_PATH:
-						shade *= 0.88
+		var y: float = floor(room.position.y / 64.0) * 64.0
+		while y < room.end.y:
+			var x: float = floor(room.position.x / 64.0) * 64.0
+			while x < room.end.x:
+				var rect := Rect2(Vector2(x, y), Vector2(64.0, 64.0)).intersection(room)
+				if rect.size.x > 18.0 and rect.size.y > 18.0:
+					var texture_key := "floor_a"
+					var roll := floor_rng.randf()
+					if room == Route.WEST_OSSUARY or room == Route.WEST_DEEP_CRYPT:
+						texture_key = "floor_ash" if roll < 0.46 else "floor_warm"
+					elif room == Route.BOSS_SANCTUM or room == Route.ALTAR:
+						texture_key = "floor_warm" if roll < 0.62 else "floor_b"
+					elif roll > 0.78:
+						texture_key = "floor_b"
+					var tint := Color(0.62, 0.58, 0.54, floor_rng.randf_range(0.66, 0.80))
+					if room == Route.BOSS_SANCTUM:
+						tint = Color(0.70, 0.49, 0.48, floor_rng.randf_range(0.66, 0.80))
+					elif room == Route.PILGRIM_COURT or room == Route.SOUTH_STEPS:
+						tint = Color(0.60, 0.51, 0.45, floor_rng.randf_range(0.64, 0.76))
+					elif room == Route.EAST_RELIQUARY or room == Route.EAST_DEEP_CHAPEL:
+						tint = Color(0.56, 0.55, 0.62, floor_rng.randf_range(0.64, 0.76))
 					elif room == Route.WEST_OSSUARY or room == Route.WEST_DEEP_CRYPT:
-						shade *= 0.86
-					elif room == Route.PILGRIM_COURT:
-						warm += 0.012
-					elif room == Route.BOSS_SANCTUM:
-						warm += 0.018
+						tint = Color(0.50, 0.47, 0.42, floor_rng.randf_range(0.64, 0.78))
 					_floor_cells.append({
 						"room": room,
 						"rect": rect,
-						"color": Color(shade + warm, shade * floor_rng.randf_range(0.92, 0.98), shade * floor_rng.randf_range(0.86, 0.94), 0.46),
-						"worn": floor_rng.randf() < 0.18
+						"texture": texture_key,
+						"tint": tint,
+						"worn": floor_rng.randf() < 0.11
 					})
-				x += width + floor_rng.randf_range(-8.0, 12.0)
-			y += row_height + floor_rng.randf_range(-8.0, 12.0)
+				x += 64.0
+			y += 64.0
 
 
 func _load_textures() -> void:
 	_textures = {
-		"floor_a": _load_texture("res://assets/environment/upgrade/floor_stone_a.png"),
-		"floor_b": _load_texture("res://assets/environment/upgrade/floor_stone_b.png"),
-		"floor_c": _load_texture("res://assets/environment/upgrade/floor_stone_c.png"),
+		"floor_a": _load_texture("res://assets/environment/sbs_dungeon/floor_stone_a.png"),
+		"floor_b": _load_texture("res://assets/environment/sbs_dungeon/floor_stone_b.png"),
+		"floor_warm": _load_texture("res://assets/environment/sbs_dungeon/floor_stone_warm.png"),
+		"floor_ash": _load_texture("res://assets/environment/sbs_dungeon/floor_ash_dirt.png"),
 		"stairs": _load_texture("res://assets/environment/upgrade/altar_stairs.png"),
-		"brazier": _load_texture("res://assets/environment/upgrade/ash_brazier.png"),
+		"brazier": _load_texture("res://assets/environment/simple_souls/brazier.png"),
 		"sealed_door": _load_texture("res://assets/environment/upgrade/sealed_door.png"),
-		"bone_debris": _load_texture("res://assets/environment/upgrade/bone_debris.png"),
-		"reliquary": _load_texture("res://assets/environment/upgrade/reliquary_shelf.png"),
+		"bone_debris": _load_texture("res://assets/environment/simple_souls/bones.png"),
+		"reliquary": _load_texture("res://assets/environment/simple_souls/reliquary.png"),
 	}
 
 

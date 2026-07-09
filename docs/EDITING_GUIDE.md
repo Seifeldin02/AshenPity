@@ -87,7 +87,7 @@ Edit `scripts/autoload/GameBalance.gd`:
 - `PLAYER_PARRY_DAMAGE`
 - `PLAYER_PARRY_STAGGER`
 - `PLAYER_PARRY_KNOCKBACK`
-- `PLAYER_PARRY_BRAND_DURATION_BONUS`
+- `PLAYER_PARRY_BRAND_DURATION`
 - `PLAYER_PARRY_COLLECT_DAMAGE_MULTIPLIER`
 - `PLAYER_PARRY_COLLECT_STAGGER_BONUS`
 - `PLAYER_PARRY_COLLECT_KNOCKBACK_BONUS`
@@ -106,10 +106,13 @@ Edit `scripts/autoload/GameBalance.gd`:
 - `ASH_BRAND_HITS_TO_COLLECT`
 - `COLLECT_TARGET_RANGE`
 - `COLLECT_ATTACK`
+- `PLAYER_PARRY_BRAND_DURATION`
 
 Player-side detection and Collect execution are in `scripts/player/PlayerController.gd`.
 
 Enemy-side Brand storage and Collect readiness are in `scripts/enemies/ShrineGuardian.gd`.
+
+Parry-created Brands intentionally use the shorter `PLAYER_PARRY_BRAND_DURATION` timeout. The current value is 3 seconds, so waiting too long after a successful parry loses the free Collect punish.
 
 ## Enemy Stats
 
@@ -140,15 +143,15 @@ To swap a sound, replace the OGG file or change the path in `CUE_PATHS`.
 
 ## Sprites
 
-Player sprites live in `assets/sprites/upgrade/player_*.png`.
+Player sprites live in `assets/sprites/simple_souls/player_*.png`.
 
 Enemy sprites live in:
 
-- `assets/sprites/upgrade/melee_*.png`
-- `assets/sprites/upgrade/hound_*.png`
-- `assets/sprites/upgrade/archer_*.png`
-- `assets/sprites/upgrade/elite_*.png`
-- `assets/sprites/upgrade/judicator_*.png`
+- `assets/sprites/simple_souls/melee_*.png`
+- `assets/sprites/simple_souls/hound_*.png`
+- `assets/sprites/simple_souls/archer_*.png`
+- `assets/sprites/simple_souls/elite_*.png`
+- `assets/sprites/simple_souls/judicator_*.png`
 
 Sprite selection happens in:
 
@@ -173,11 +176,13 @@ Ground texture drawing and shrine floor presentation live in `scripts/world/Shri
 
 Wall, broken wall, and altar rendering live in `scripts/world/ShrineWallVisual.gd`.
 
-Stone tile textures live in `assets/environment/upgrade/`.
+Stone floor and wall tiles live in `assets/environment/sbs_dungeon/`.
 
-Torch, pillar, broken wall, stairs, brazier, sealed door, bone debris, and reliquary raster props also live in `assets/environment/upgrade/`.
+Runtime torch/brazier, bones, urn, and reliquary props live in `assets/environment/simple_souls/`. The stairs and sealed door still live in `assets/environment/upgrade/`.
 
-Natural floor slab generation lives in `scripts/world/ShrineRouteLayer.gd` in `_build_floor_cells`.
+Natural floor tile generation lives in `scripts/world/ShrineRouteLayer.gd` in `_build_floor_cells`.
+
+Stage flask restoration is triggered in `scripts/world/ShrineArena.gd` in `_on_trial_wave_started`. The player-side clamp is `restore_flask_charge` in `scripts/player/PlayerController.gd`.
 
 ## Wave Setup
 

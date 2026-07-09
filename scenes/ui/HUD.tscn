@@ -1,6 +1,39 @@
-[gd_scene load_steps=2 format=3 uid="uid://hudashenpity"]
+[gd_scene load_steps=6 format=3 uid="uid://hudashenpity"]
 
 [ext_resource type="Script" path="res://scripts/ui/HUD.gd" id="1_hud"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_health_bg"]
+bg_color = Color(0.0352941, 0.0313726, 0.027451, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.33, 0.30, 0.25, 0.96)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_health_fill"]
+bg_color = Color(0.56, 0.05, 0.035, 1)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stamina_fill"]
+bg_color = Color(0.09, 0.48, 0.19, 1)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_enemy_fill"]
+bg_color = Color(0.62, 0.60, 0.56, 1)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -14,25 +47,39 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Bars" type="VBoxContainer" parent="Root"]
+[node name="Bars" type="Control" parent="Root"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.025
 anchor_top = 0.035
-anchor_right = 0.295
-anchor_bottom = 0.125
-theme_override_constants/separation = 8
+anchor_right = 0.36
+anchor_bottom = 0.12
 
 [node name="HealthBar" type="ProgressBar" parent="Root/Bars"]
 unique_name_in_owner = true
-layout_mode = 2
+custom_minimum_size = Vector2(540, 18)
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.36
+offset_bottom = 18.0
+theme_override_styles/background = SubResource("StyleBoxFlat_health_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_health_fill")
 show_percentage = false
 max_value = 100.0
 value = 100.0
 
 [node name="StaminaBar" type="ProgressBar" parent="Root/Bars"]
 unique_name_in_owner = true
-layout_mode = 2
+custom_minimum_size = Vector2(405, 14)
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.55
+anchor_right = 0.75
+anchor_bottom = 0.85
+offset_bottom = 14.0
+theme_override_styles/background = SubResource("StyleBoxFlat_health_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_stamina_fill")
 show_percentage = false
 max_value = 100.0
 value = 100.0
@@ -79,6 +126,8 @@ horizontal_alignment = 1
 [node name="EnemyBar" type="ProgressBar" parent="Root/EnemyPanel"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_health_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_enemy_fill")
 show_percentage = false
 max_value = 86.0
 value = 86.0

@@ -1,4 +1,4 @@
-# QA v0.5.1 Shrine Expansion
+# QA v0.5.2 Shrine Expansion
 
 ## What Changed
 
@@ -10,6 +10,12 @@
 - Expanded the shrine route with the Pilgrim Court, west ossuary, deep crypt, east reliquary, deep chapel, north nave, and final sanctum spaces while leaving the first room as a safer tutorial space.
 - Added generated Judicator sprite variants and generated raster shrine props for stairs, brazier, sealed door, bone debris, and reliquary shelves.
 - Replaced the previous small placeholder actor sprites with a darker Dungeon Crawl based hooded player and four distinct enemy silhouettes.
+- v0.5.2 switches the current actor sprites to the Simple Souls Set runtime crops and uses cropped Screaming Brain Studios CC0 dungeon tiles for stone floors and walls.
+- v0.5.2 replaces the broken chest-like brazier crop with an original cleaned brazier sprite and reduces loud prop repetition in the combat route.
+- v0.5.2 changes parry-created Ash Brand to expire after 3 seconds if Collect is not used.
+- v0.5.2 confirms damage hierarchy: Collect is strongest, heavy is second, light combo hits are weakest.
+- v0.5.2 restores one flask charge after each cleared stage, clamped to two charges.
+- v0.5.2 gives Guardian, Hound, Archer, and Bell-Bearer more distinct attack pattern data and telegraph shapes.
 - Replaced the weak combat cue bank with StarNinjas sword impacts and rubberduck RPG sounds.
 - Removed texture-based slash rendering from player/enemy attacks so a bad slash texture cannot cover the screen.
 - Added bounded vector weapon arcs, tighter spark/impact bursts, death smoke, and Collect cross-cut feedback.
@@ -37,7 +43,7 @@ Latest local results:
 - `godot_console --headless --path . -s tests/test_runner.gd`: passed.
 - `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
 - `godot_console --path . --quit-after 5`: passed.
-- Harness performance snapshot: 170 FPS reported, 170 Hz display refresh, 8.33 ms p95 frame time under fixed 120 FPS simulation, physics 120 Hz.
+- Latest harness performance snapshot: 157 FPS reported, 170 Hz display refresh, 8.33 ms p95 frame time under fixed 120 FPS simulation, physics 120 Hz.
 - Known warning: the playtest harness still reports ObjectDB leaked instances at process exit.
 
 ## What Automation Cannot Judge

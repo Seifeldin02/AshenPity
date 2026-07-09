@@ -1,14 +1,14 @@
 extends Node2D
 
 const SPRITE_PATHS := {
-	"idle": "res://assets/sprites/upgrade/player_idle.png",
-	"run_1": "res://assets/sprites/upgrade/player_run_1.png",
-	"run_2": "res://assets/sprites/upgrade/player_run_2.png",
-	"attack": "res://assets/sprites/upgrade/player_attack.png",
-	"dodge": "res://assets/sprites/upgrade/player_dodge.png",
-	"hurt": "res://assets/sprites/upgrade/player_hurt.png",
-	"dead": "res://assets/sprites/upgrade/player_death.png",
-	"weapon": "res://assets/sprites/upgrade/player_weapon.png",
+	"idle": "res://assets/sprites/simple_souls/player_idle.png",
+	"run_1": "res://assets/sprites/simple_souls/player_run_1.png",
+	"run_2": "res://assets/sprites/simple_souls/player_run_2.png",
+	"attack": "res://assets/sprites/simple_souls/player_attack.png",
+	"dodge": "res://assets/sprites/simple_souls/player_dodge.png",
+	"hurt": "res://assets/sprites/simple_souls/player_hurt.png",
+	"dead": "res://assets/sprites/simple_souls/player_death.png",
+	"weapon": "res://assets/sprites/simple_souls/player_weapon.png",
 }
 
 var facing := Vector2.RIGHT
