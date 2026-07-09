@@ -3,11 +3,11 @@
 ## Player And Combat
 
 - `scripts/player/PlayerController.gd`
-  - Player movement, stamina, light combo, heavy attack, heavy anti-spam chain cost, dodge cancel, parry, perfect dodge, Ash Brand targeting, Collect, flask, hurt, death, hitboxes, and combat state names.
+  - Player movement, stamina, light combo, heavy attack, heavy anti-spam chain cost, dodge cancel, parry, perfect dodge, Ash Brand targeting, Collect, run boons, flask, hurt, death, hitboxes, and combat state names.
 - `scripts/player/PlayerVisual.gd`
   - Sprite-based player presentation using `assets/sprites/ashen_runtime/player_*.png`, bounded vector slash arcs, dodge afterimages, hit flash, and shadow.
 - `scripts/autoload/GameBalance.gd`
-  - Central editable values for speed, stamina costs, combo timings, damage, stagger, knockback, dodge timing, perfect-dodge window, Ash Brand rules, enemy health, and enemy attack tuning.
+  - Central editable values for speed, stamina costs, combo timings, damage, stagger, knockback, dodge timing, perfect-dodge window, Ash Brand rules, run boon effects, enemy health, and enemy attack tuning.
 - `scripts/combat/CombatMath.gd`
   - Pure combat math used by tests: stamina spend, normalization, aim direction, attack buffering, invulnerability, perfect dodge, and Collect readiness.
 
@@ -25,9 +25,11 @@
 ## Ash Trial
 
 - `scripts/trial/AshTrial.gd`
-  - Seven-stage Ash Trial setup, spawn points, enemy kind selection, wave transitions, final Judicator encounter, trial completion, and replay reset.
+  - Nine-stage Ash Trial setup, spawn points, enemy kind selection, wave transitions, final Judicator encounter, trial completion, and replay reset.
 - `scripts/world/ShrineArena.gd`
-  - Runtime assembly for the shrine scene, player/trial/HUD/mobile controls, camera follow, hit stop, screen shake, hit VFX, perfect-dodge VFX, and debug overlay.
+  - Runtime assembly for the shrine scene, player/trial/HUD/mobile controls, loot shrines, camera follow, hit stop, screen shake, hit VFX, perfect-dodge VFX, and debug overlay.
+- `scripts/world/LootShrine.gd`
+  - In-world run-only boon pickup. Applies `ember_step`, `grave_guard`, or `reaper_vow` to the player and then dissolves.
 
 ## Audio And VFX
 
@@ -66,14 +68,14 @@
 - `scripts/autoload/InputRouter.gd`
   - Shared desktop, mobile, and test input state for move, aim, light attack, heavy attack, dodge, parry, flask, Collect, pause, debug, and mobile controls.
 - `scripts/ui/HUD.gd`
-  - HUD bars, enemy health, Ash Brand/Collect prompt, wave labels, trial-complete panel, build label, and debug/performance overlay.
+  - HUD bars, enemy health, flask hint, Ash Brand/Collect prompt, active boons, pickup banners, wave labels, trial-complete panel, build label, and debug/performance overlay.
 - `scripts/ui/MobileControls.gd`
   - Virtual joystick, aim drag, attack, heavy, dodge, parry, flask, Collect, pause, and desktop mobile-toggle support.
 
 ## Level And Camera
 
 - `scripts/world/ShrineRoute.gd`
-  - Shrine route geometry, expanded room rectangles, camera limits/zoom, player start, obstacles, walls, torches, props, and spawn anchors.
+  - Shrine route geometry, expanded room rectangles, camera limits/zoom, player start, obstacles, walls, torches, loot shrine positions, props, and spawn anchors.
 - `scripts/world/ShrineRouteLayer.gd`
   - Naturalized ground slabs, texture grain, route shapes, cracks, ash, torch light pools, room landmarks, generated prop rasters, and environmental drawing.
 - `scripts/world/ShrineWallVisual.gd`

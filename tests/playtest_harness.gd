@@ -18,7 +18,7 @@ func _ready() -> void:
 func _run() -> void:
 	_artifact_dir = ProjectSettings.globalize_path("res://playtest_artifacts")
 	DirAccess.make_dir_recursive_absolute(_artifact_dir)
-	get_tree().create_timer(120.0).timeout.connect(_on_timeout)
+	get_tree().create_timer(210.0).timeout.connect(_on_timeout)
 	_log("Stage 0.5 deterministic playtest harness started.")
 	InputRouter.begin_simulation()
 	_arena = ArenaScene.instantiate()

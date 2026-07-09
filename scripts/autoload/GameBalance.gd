@@ -76,9 +76,30 @@ const ENEMY_RECOVERY_TIME := 0.68
 const ENEMY_STAGGER_HITS := 3
 const ENEMY_STAGGER_TIME := 0.42
 const ENEMY_PATROL_RADIUS := 80.0
-const ASH_BRAND_DURATION := 5.0
+const ASH_BRAND_DURATION := 3.0
 const ASH_BRAND_HITS_TO_COLLECT := 2
 const COLLECT_TARGET_RANGE := 720.0
+const BOON_EMBER_STEP_DAMAGE_BONUS := 16.0
+const BOON_EMBER_STEP_STAGGER_BONUS := 1.15
+const BOON_EMBER_STEP_KNOCKBACK_BONUS := 90.0
+const BOON_GRAVE_GUARD_STAMINA_RESTORE := 18.0
+const BOON_REAPER_VOW_STAMINA_RESTORE := 28.0
+const BOON_REAPER_VOW_FLASK_RESTORE := 1
+
+const BOON_DATA := {
+	"ember_step": {
+		"display_name": "Ember Step",
+		"description": "Perfect dodge charges the next light strike with ash fire."
+	},
+	"grave_guard": {
+		"display_name": "Grave Guard",
+		"description": "Successful parries restore extra stamina."
+	},
+	"reaper_vow": {
+		"display_name": "Reaper Vow",
+		"description": "Collect kills restore stamina and one flask charge."
+	}
+}
 
 const LIGHT_COMBO := [
 	{

@@ -8,6 +8,7 @@ const PROP_SCRIPT := preload("res://scripts/world/ShrineProp.gd")
 const WALL_VISUAL_SCRIPT := preload("res://scripts/world/ShrineWallVisual.gd")
 const EFFECT_SCRIPT := preload("res://scripts/effects/CombatEffect.gd")
 const TRIAL_SCRIPT := preload("res://scripts/trial/AshTrial.gd")
+const LOOT_SHRINE_SCRIPT := preload("res://scripts/world/LootShrine.gd")
 const Route := preload("res://scripts/world/ShrineRoute.gd")
 
 @onready var actors_and_tall_props: Node2D = %ActorsAndTallProps
@@ -32,6 +33,7 @@ func _ready() -> void:
 	_build_collision()
 	_build_world_props()
 	_spawn_combatants()
+	_spawn_loot_shrines()
 	_spawn_ui()
 	_configure_camera()
 
@@ -145,6 +147,17 @@ func _build_world_props() -> void:
 		actors_and_tall_props.add_child(torch)
 
 
+func _spawn_loot_shrines() -> void:
+	for shrine_data in Route.LOOT_SHRINES:
+		var shrine := Area2D.new()
+		shrine.name = "LootShrine_%s" % str(shrine_data["id"])
+		shrine.set_script(LOOT_SHRINE_SCRIPT)
+		shrine.set("boon_id", str(shrine_data["id"]))
+		shrine.position = shrine_data["pos"]
+		shrine.collected.connect(_on_loot_collected)
+		actors_and_tall_props.add_child(shrine)
+
+
 func _add_obstacle_visual(obstacle: Array) -> void:
 	var name_value: String = obstacle[0]
 	var pos: Vector2 = obstacle[1]
@@ -215,6 +228,10 @@ func _on_hit_confirmed(kind: String = "light", hit_position: Vector2 = Vector2.Z
 	var shake := 0.24
 	var stop := 0.035
 	var effect := "spark"
+	if kind == "light_ember":
+		shake = 0.36
+		stop = 0.046
+		effect = "brand"
 	if kind == "heavy":
 		shake = 0.42
 		stop = 0.050
@@ -254,6 +271,12 @@ func _on_trial_wave_started(index: int, label: String) -> void:
 	if is_instance_valid(_hud) and _hud.has_method("show_wave"):
 		var total: int = int(trial.wave_count()) if is_instance_valid(trial) and trial.has_method("wave_count") else index + 1
 		_hud.show_wave("%s  %d/%d" % [label, index + 1, total])
+
+
+func _on_loot_collected(_boon_id: String, display_name: String) -> void:
+	if is_instance_valid(_hud) and _hud.has_method("show_pickup"):
+		_hud.show_pickup("Boon claimed: %s" % display_name)
+	EFFECT_SCRIPT.spawn(actors_and_tall_props, player.global_position if is_instance_valid(player) else Vector2.ZERO, "brand", Vector2.RIGHT, Color("#ff8f2a"))
 
 
 func _on_trial_completed() -> void:

@@ -7,6 +7,7 @@ signal state_changed(state: String)
 signal hit_confirmed(kind: String, position: Vector2)
 signal perfect_dodge(enemy: Node)
 signal ash_brand_changed(enemy: Node, collect_ready: bool)
+signal boons_changed(boons: Dictionary)
 signal died
 
 enum PlayerState { IDLE, MOVE, ATTACK_WINDUP, ATTACK_ACTIVE, ATTACK_RECOVERY, DODGE, DODGE_RECOVERY, PARRY, PARRY_RECOVERY, COLLECT_WINDUP, COLLECT_ACTIVE, COLLECT_RECOVERY, HEAL, HURT, DEAD }
@@ -27,6 +28,7 @@ var state_name := "idle"
 var invulnerable := false
 var collect_ready := false
 var branded_enemy: Node
+var boons := {}
 
 var _state_timer := 0.0
 var _state_duration := 0.0
@@ -48,6 +50,7 @@ var _dead_emitted := false
 var _perfect_dodge_used := false
 var _parry_success := false
 var _parry_collect_bonus := false
+var _ember_step_charged := false
 var _collect_target: Node
 
 func _ready() -> void:
@@ -106,6 +109,18 @@ func restore_flask_charge(amount: int = 1) -> void:
 		flask_changed.emit(flask_charges, 2)
 
 
+func apply_boon(boon_id: String) -> bool:
+	if not GameBalance.BOON_DATA.has(boon_id) or boons.has(boon_id):
+		return false
+	boons[boon_id] = true
+	boons_changed.emit(boons.duplicate())
+	return true
+
+
+func has_boon(boon_id: String) -> bool:
+	return boons.has(boon_id)
+
+
 func try_perfect_dodge(enemy: Node, _attack_position: Vector2) -> bool:
 	if state != PlayerState.DODGE or not invulnerable or _perfect_dodge_used:
 		return false
@@ -119,6 +134,8 @@ func try_perfect_dodge(enemy: Node, _attack_position: Vector2) -> bool:
 	stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
 	if enemy.has_method("apply_ash_brand"):
 		enemy.apply_ash_brand(self)
+	if has_boon("ember_step"):
+		_ember_step_charged = true
 	collect_ready = enemy.get("collect_ready") if enemy != null else false
 	InputRouter.set_collect_available(collect_ready)
 	_play_audio("perfect_dodge", -5.0)
@@ -431,10 +448,20 @@ func _on_attack_body_entered(body: Node) -> void:
 	if body.has_method("take_combat_hit"):
 		_hit_targets.append(body)
 		var hit_kind := str(_current_attack.get("name", "light"))
+		var damage := float(_current_attack["damage"])
+		var stagger := float(_current_attack["stagger"])
+		var knockback := float(_current_attack["knockback"])
+		if _ember_step_charged and hit_kind.begins_with("light"):
+			damage += GameBalance.BOON_EMBER_STEP_DAMAGE_BONUS
+			stagger += GameBalance.BOON_EMBER_STEP_STAGGER_BONUS
+			knockback += GameBalance.BOON_EMBER_STEP_KNOCKBACK_BONUS
+			hit_kind = "light_ember"
+			_ember_step_charged = false
+		var health_before := float(body.get("health"))
 		var hit := {
-			"damage": float(_current_attack["damage"]),
-			"stagger": float(_current_attack["stagger"]),
-			"knockback": float(_current_attack["knockback"]),
+			"damage": damage,
+			"stagger": stagger,
+			"knockback": knockback,
 			"kind": hit_kind,
 			"direction": _attack_direction,
 			"source": self
@@ -445,6 +472,10 @@ func _on_attack_body_entered(body: Node) -> void:
 			branded_enemy = null
 			collect_ready = false
 			_parry_collect_bonus = false
+			if has_boon("reaper_vow") and health_before > 0.0 and float(body.get("health")) <= 0.0:
+				stamina = minf(stamina + GameBalance.BOON_REAPER_VOW_STAMINA_RESTORE, GameBalance.PLAYER_MAX_STAMINA)
+				stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
+				restore_flask_charge(GameBalance.BOON_REAPER_VOW_FLASK_RESTORE)
 		hit_confirmed.emit(hit_kind, body.global_position)
 	elif body.has_method("take_damage"):
 		_hit_targets.append(body)
@@ -476,6 +507,9 @@ func try_parry(enemy: Node, hit_position: Vector2) -> bool:
 		collect_ready = true
 		_parry_collect_bonus = true
 		InputRouter.set_collect_available(true)
+		if has_boon("grave_guard"):
+			stamina = minf(stamina + GameBalance.BOON_GRAVE_GUARD_STAMINA_RESTORE, GameBalance.PLAYER_MAX_STAMINA)
+			stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
 		if enemy.has_method("receive_parry"):
 			enemy.receive_parry(self, hit_position)
 		if enemy.has_method("prime_parry_collect"):
@@ -525,6 +559,8 @@ func playtest_reset(position_value: Vector2, aim: Vector2) -> void:
 	_queued_heavy = false
 	_dead_emitted = false
 	_parry_collect_bonus = false
+	_ember_step_charged = false
+	boons.clear()
 	_combo_index = 0
 	_combo_timer = 0.0
 	branded_enemy = null
@@ -586,6 +622,7 @@ func _emit_all() -> void:
 	flask_changed.emit(flask_charges, 2)
 	state_changed.emit(state_name)
 	ash_brand_changed.emit(branded_enemy, collect_ready)
+	boons_changed.emit(boons.duplicate())
 
 
 func _play_audio(cue: String, volume_db: float) -> void:

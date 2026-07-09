@@ -189,6 +189,12 @@ const TORCHES := [
 	Vector2(405, -1380)
 ]
 
+const LOOT_SHRINES := [
+	{"id": "ember_step", "pos": Vector2(-760, 425)},
+	{"id": "grave_guard", "pos": Vector2(1110, -472)},
+	{"id": "reaper_vow", "pos": Vector2(-1935, -430)}
+]
+
 static func is_inside_route(point: Vector2) -> bool:
 	for room in ROOMS:
 		if room.has_point(point):

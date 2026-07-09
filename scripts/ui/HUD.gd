@@ -8,6 +8,8 @@ extends CanvasLayer
 @onready var enemy_label: Label = %EnemyLabel
 @onready var hints: Label = %Hints
 @onready var brand_label: Label = %BrandLabel
+@onready var boon_label: Label = %BoonLabel
+@onready var pickup_label: Label = %PickupLabel
 @onready var wave_label: Label = %WaveLabel
 @onready var death_panel: Control = %DeathPanel
 @onready var pause_panel: Control = %PausePanel
@@ -18,6 +20,7 @@ var _player: Node
 var _enemies: Array[Node] = []
 var _hint_timer := 7.0
 var _wave_timer := 0.0
+var _pickup_timer := 0.0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -27,6 +30,8 @@ func _ready() -> void:
 	enemy_panel.hide()
 	build_label.text = BuildInfo.label()
 	brand_label.text = "Ash Brand: -"
+	boon_label.text = "Boons: -"
+	pickup_label.hide()
 	wave_label.hide()
 
 
@@ -41,6 +46,8 @@ func bind(player: Node, enemies: Array[Node]) -> void:
 		player.flask_changed.connect(_on_flask_changed)
 	if player.has_signal("ash_brand_changed"):
 		player.ash_brand_changed.connect(_on_ash_brand_changed)
+	if player.has_signal("boons_changed"):
+		player.boons_changed.connect(_on_boons_changed)
 	for enemy in enemies:
 		if enemy.has_signal("health_changed"):
 			enemy.health_changed.connect(_on_enemy_health_changed.bind(enemy))
@@ -48,6 +55,7 @@ func bind(player: Node, enemies: Array[Node]) -> void:
 	_on_player_stamina_changed(player.get("stamina"), GameBalance.PLAYER_MAX_STAMINA)
 	_on_flask_changed(player.get("flask_charges"), 2)
 	_on_ash_brand_changed(player.get("branded_enemy"), player.get("collect_ready"))
+	_on_boons_changed(player.get("boons"))
 
 
 func bind_enemies(enemies: Array[Node]) -> void:
@@ -66,6 +74,10 @@ func _process(delta: float) -> void:
 		_wave_timer -= delta
 		if _wave_timer <= 0.0:
 			wave_label.hide()
+	if _pickup_timer > 0.0:
+		_pickup_timer -= delta
+		if _pickup_timer <= 0.0:
+			pickup_label.hide()
 	_update_enemy_panel()
 
 
@@ -83,6 +95,12 @@ func show_wave(label: String) -> void:
 	_wave_timer = 2.4
 
 
+func show_pickup(label: String) -> void:
+	pickup_label.text = label
+	pickup_label.show()
+	_pickup_timer = 3.0
+
+
 func show_trial_complete() -> void:
 	trial_panel.show()
 
@@ -98,7 +116,7 @@ func _on_player_stamina_changed(current: float, maximum: float) -> void:
 
 
 func _on_flask_changed(current: int, maximum: int) -> void:
-	flask_label.text = "Flask %d/%d" % [current, maximum]
+	flask_label.text = "F  Flask %d/%d" % [current, maximum]
 
 
 func _on_ash_brand_changed(enemy: Node, collect_ready: bool) -> void:
@@ -109,6 +127,19 @@ func _on_ash_brand_changed(enemy: Node, collect_ready: bool) -> void:
 	else:
 		brand_label.text = "Ash Brand: -"
 		brand_label.modulate = Color(0.78, 0.72, 0.64, 0.82)
+
+
+func _on_boons_changed(boons: Dictionary) -> void:
+	if boons.is_empty():
+		boon_label.text = "Boons: -"
+		boon_label.modulate = Color(0.78, 0.72, 0.64, 0.76)
+		return
+	var names: Array[String] = []
+	for boon_id in boons.keys():
+		var data: Dictionary = GameBalance.BOON_DATA.get(str(boon_id), {})
+		names.append(str(data.get("display_name", boon_id)))
+	boon_label.text = "Boons: %s" % ", ".join(PackedStringArray(names))
+	boon_label.modulate = Color(0.92, 0.74, 0.43, 0.92)
 
 
 func _on_enemy_health_changed(current: float, maximum: float, enemy: Node) -> void:

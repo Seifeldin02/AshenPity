@@ -53,6 +53,23 @@ const WAVES := [
 		]
 	},
 	{
+		"label": "Stage 7 - Split Crypts",
+		"spawns": [
+			{"kind": "hound", "pos": Vector2(-1880, -500)},
+			{"kind": "guardian", "pos": Vector2(-1710, -280)},
+			{"kind": "archer", "pos": Vector2(1810, -500)},
+			{"kind": "hound", "pos": Vector2(2020, -305)}
+		]
+	},
+	{
+		"label": "Stage 8 - Nave Pressure",
+		"spawns": [
+			{"kind": "bell_bearer", "pos": Vector2(-360, -885)},
+			{"kind": "guardian", "pos": Vector2(360, -850)},
+			{"kind": "archer", "pos": Vector2(0, -1010)}
+		]
+	},
+	{
 		"label": "Final - Ashen Judicator",
 		"spawns": [
 			{"kind": "ashen_judicator", "pos": Vector2(0, -1295)},

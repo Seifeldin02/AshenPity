@@ -221,8 +221,18 @@ func _draw_telegraph() -> void:
 				draw_arc(Vector2.ZERO, 142.0, dir_angle - 0.88, dir_angle + 0.88, 34, Color(0.92, 0.20, 0.12, 0.50), 8.0)
 		return
 	var radius := 92.0 if enemy_kind != "bell_bearer" else 132.0
-	if attack_pattern == "thrust" or attack_pattern == "shot" or attack_pattern == "pounce":
+	if attack_pattern == "fan":
+		for offset in [-0.22, 0.0, 0.22]:
+			draw_line(Vector2.ZERO, facing.rotated(offset) * 500.0, Color(0.92, 0.20, 0.12, 0.36), 7.0)
+		return
+	if attack_pattern == "shield_bash":
+		draw_arc(Vector2.ZERO, 82.0, dir_angle - 0.45, dir_angle + 0.45, 24, Color(0.92, 0.20, 0.12, 0.50), 11.0)
+		draw_line(facing.rotated(-PI * 0.5) * 44.0 + facing * 55.0, facing.rotated(PI * 0.5) * 44.0 + facing * 55.0, Color(0.95, 0.70, 0.25, 0.25), 6.0)
+		return
+	if attack_pattern == "thrust" or attack_pattern == "shot" or attack_pattern == "pounce" or attack_pattern == "snap":
 		var reach := 142.0 if attack_pattern != "shot" else 520.0
+		if attack_pattern == "snap":
+			reach = 80.0
 		var width := 9.0 if attack_pattern != "pounce" else 16.0
 		draw_line(Vector2.ZERO, facing * reach, Color(0.92, 0.20, 0.12, 0.46), width)
 		draw_line(Vector2.ZERO, facing * reach, Color(0.95, 0.70, 0.25, 0.24), maxf(width * 0.38, 3.0))
@@ -239,8 +249,17 @@ func _draw_swing() -> void:
 	var radius := 92.0 if enemy_kind != "bell_bearer" else 126.0
 	var reach := 68.0 if enemy_kind != "bell_bearer" else 98.0
 	var spread := 0.72 if enemy_kind != "bell_bearer" else 0.92
-	if attack_pattern == "thrust" or attack_pattern == "pounce":
+	if attack_pattern == "fan":
+		for offset in [-0.22, 0.0, 0.22]:
+			draw_line(Vector2.ZERO, facing.rotated(offset) * 170.0, Color(1.0, 0.68, 0.24, 0.34), 4.0)
+		return
+	if attack_pattern == "shield_bash":
+		draw_arc(Vector2.ZERO, 86.0, facing.angle() - 0.48, facing.angle() + 0.48, 28, Color(1.0, 0.45, 0.18, 0.48), 13.0)
+		return
+	if attack_pattern == "thrust" or attack_pattern == "pounce" or attack_pattern == "snap":
 		var thrust_reach := 126.0 if attack_pattern == "thrust" else 102.0
+		if attack_pattern == "snap":
+			thrust_reach = 78.0
 		var line_width := 10.0 if attack_pattern == "thrust" else 18.0
 		draw_line(facing * 18.0, facing * thrust_reach, Color(0.05, 0.025, 0.018, 0.36), line_width + 6.0)
 		draw_line(facing * 22.0, facing * thrust_reach, Color(1.0, 0.44, 0.16, 0.54), line_width)

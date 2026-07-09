@@ -19,7 +19,6 @@ func _draw() -> void:
 
 
 func _draw_pillar() -> void:
-	var texture: Texture2D = _textures.get("pillar")
 	draw_colored_polygon(_ellipse_points(Vector2(0, 112), 38.0, 13.0), Color(0.02, 0.016, 0.02, 0.42))
 	var shaft := PackedVector2Array([
 		Vector2(-23, -10), Vector2(22, -10), Vector2(18, 98), Vector2(0, 108), Vector2(-20, 98)
@@ -33,21 +32,6 @@ func _draw_pillar() -> void:
 	draw_line(Vector2(-11, 6), Vector2(-17, 88), Color(0.86, 0.82, 0.72, 0.15), 3.0)
 	draw_line(Vector2(14, 6), Vector2(9, 92), Color(0.02, 0.018, 0.022, 0.42), 4.0)
 	draw_polyline(PackedVector2Array([Vector2(-16, 36), Vector2(2, 22), Vector2(-4, 54), Vector2(16, 73)]), Color("#242229"), 4.0)
-	return
-	var outer := PackedVector2Array([
-		Vector2(-25, -12), Vector2(-12, -26), Vector2(18, -26), Vector2(31, -12),
-		Vector2(24, 103), Vector2(0, 114), Vector2(-26, 103)
-	])
-	draw_colored_polygon(outer, Color("#4b4a50"))
-	var face := PackedVector2Array([
-		Vector2(-16, -7), Vector2(17, -7), Vector2(12, 96),
-		Vector2(-4, 105), Vector2(-20, 96)
-	])
-	draw_colored_polygon(face, Color("#64626b"))
-	draw_rect(Rect2(-36, -13, 72, 15), Color("#38363d"))
-	draw_line(Vector2(-9, 8), Vector2(-18, 95), Color(0.82, 0.78, 0.70, 0.18), 3.0)
-	draw_line(Vector2(14, 10), Vector2(7, 97), Color(0.02, 0.018, 0.023, 0.45), 4.0)
-	draw_polyline(PackedVector2Array([Vector2(-18, 35), Vector2(2, 21), Vector2(-5, 52), Vector2(18, 71)]), Color("#2d2b31"), 5.0)
 
 
 func _draw_torch() -> void:

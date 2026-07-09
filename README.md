@@ -6,10 +6,10 @@ This repository is the real Godot foundation for the project. The older Raylib t
 
 ## Current Prototype Status
 
-Version 0.5.2 is a shrine expansion combat sandbox. The build label is:
+Version 0.5.4 is a shrine expansion combat sandbox with run-only boon pickups. The build label is:
 
 ```text
-Ashen Pity - Shrine Expansion v0.5.2
+Ashen Pity - Run Boons v0.5.4
 ```
 
 Current scope:
@@ -17,10 +17,11 @@ Current scope:
 - Title screen into the shrine arena.
 - One playable hooded wanderer.
 - Fast mouse-aimed movement, dodge, parry, light combo, heavy attack, flask, and death/restart.
-- Ash Brand: a perfect dodge through an enemy attack marks that enemy; a parry Brand expires after 3 seconds if you hesitate.
+- Ash Brand: a perfect dodge or parry marks that enemy for 3 seconds; hesitating loses the Collect opportunity.
 - Collect: landing follow-up hits on a Branded enemy opens a `Q` dash-through payoff. Collect is tuned as the hardest hit, heavy is second, light combo hits are weakest.
 - Two healing flasks, with one flask charge restored after each cleared stage.
-- One repeatable seven-stage Ash Trial through the expanded shrine route.
+- Three in-world run boons: Ember Step, Grave Guard, and Reaper Vow.
+- One repeatable nine-stage Ash Trial through the expanded shrine route.
 - Enemy variants for the trial: Shrine Guardian, Ashbound Hound, Reliquary Archer, Bell-Bearer elite, and Ashen Judicator final encounter.
 - Minimal Ash Trial Complete summary with replay.
 - Desktop controls and mobile-oriented controls using the same input router.
@@ -103,6 +104,7 @@ The current level is an expanded but still compact shrine route:
 - East Reliquary and Deep Chapel: side chambers with ranged crossfire and shelf props.
 - North Nave: transition area before the final gate.
 - Broken Altar and Sanctum: raised-looking destination and Ashen Judicator final encounter.
+- Loot Shrines: optional side-route pickups that modify perfect dodge, parry, or Collect for the current run only.
 
 The first room stays simple enough to function as a tutorial space.
 
@@ -136,6 +138,7 @@ tools/            local helper scripts
 - Lightweight combat VFX and bounded hit arcs: `scripts/effects/CombatEffect.gd`.
 - HUD, enemy bars, Ash Brand/Collect indicator, trial summary, and debug overlay: `scripts/ui/HUD.gd` and `scenes/ui/HUD.tscn`.
 - Shrine route layout, walls, obstacles, torches, spawns, and camera limits: `scripts/world/ShrineRoute.gd`.
+- Run-only loot pickup behavior: `scripts/world/LootShrine.gd`.
 - Naturalized floor and room landmark drawing: `scripts/world/ShrineRouteLayer.gd`.
 - Torch, pillar, wall, and broken wall prop visuals: `scripts/world/ShrineProp.gd` and `scripts/world/ShrineWallVisual.gd`.
 
@@ -146,6 +149,7 @@ More detail is in `docs/FILE_MAP.md` and `docs/EDITING_GUIDE.md`.
 - Art uses curated public/free prototype assets and is not final production key art.
 - Audio uses curated public/free prototype SFX and is not final mixed sound design.
 - The Ash Trial enemy variants share one configurable enemy controller and scene.
+- Run boons are first-pass combat modifiers, not a permanent relic/progression system.
 - Parry now immediately primes a 3-second Collect window and gives that Collect extra damage, stagger, and knockback, but this still needs real human feel testing.
 - Touch controls need real landscape phone testing.
 - Balance is first-pass and must be judged through human playtesting.

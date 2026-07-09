@@ -253,3 +253,24 @@ The older Raylib prototype was not reused because it was an abandoned technical 
 - `godot_console --path . --quit-after 5`: passed.
 - `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
 - Harness snapshot on the development PC: 258 FPS reported, display refresh about 170 Hz, p95 frame time 8.33 ms under fixed 120 FPS simulation, physics 120 Hz.
+
+## v0.5.4 Run Boons, Trial Pressure, and Shrine Cleanup
+
+- Added three in-world run-only loot shrines through `scripts/world/LootShrine.gd` and `ShrineRoute.LOOT_SHRINES`.
+- Added `Ember Step`: after claiming the boon, a perfect dodge charges the next light strike with extra damage, stagger, and knockback.
+- Added `Grave Guard`: after claiming the boon, successful parries restore additional stamina.
+- Added `Reaper Vow`: after claiming the boon, Collect kills restore stamina and one flask charge.
+- Shortened normal perfect-dodge Ash Brand duration to 3 seconds so delayed Collect attempts expire instead of lingering awkwardly.
+- Expanded the Ash Trial from seven to nine stages with Split Crypts and Nave Pressure before the final Judicator encounter.
+- Increased enemy pattern variety: Guardian adds shield bash, Hound alternates pounce and snap, and Archer alternates direct and fan shots.
+- Updated HUD readability: flask now explicitly displays `F Flask`, active boons are listed, and picked-up boons show a short screen-fixed banner.
+- Further naturalized shrine floor rendering by reducing repeated texture use, using larger uneven slabs, softer seams, and calmer exterior floor drawing.
+- Fixed `LootShrine` pickup cleanup to defer `monitoring = false` during `body_entered`, which Godot requires.
+
+### v0.5.4 Verification
+
+- `godot_console --headless --path . -s tests/test_runner.gd`: passed.
+- `godot_console --path . --quit-after 6`: passed.
+- `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
+- Harness snapshot on the development PC: 170 FPS reported, display refresh about 170 Hz, p95 frame time 8.33 ms under fixed 120 FPS simulation, physics 120 Hz.
+- Known warning remains: the display playtest harness reports ObjectDB leaked instances at exit.

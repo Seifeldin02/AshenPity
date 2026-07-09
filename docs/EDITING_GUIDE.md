@@ -114,6 +114,28 @@ Enemy-side Brand storage and Collect readiness are in `scripts/enemies/ShrineGua
 
 Parry-created Brands intentionally use the shorter `PLAYER_PARRY_BRAND_DURATION` timeout. The current value is 3 seconds, so waiting too long after a successful parry loses the free Collect punish.
 
+## Run Boons And Loot
+
+Run-only boon data lives in `scripts/autoload/GameBalance.gd`:
+
+- `BOON_DATA`
+- `BOON_EMBER_STEP_DAMAGE_BONUS`
+- `BOON_EMBER_STEP_STAGGER_BONUS`
+- `BOON_EMBER_STEP_KNOCKBACK_BONUS`
+- `BOON_GRAVE_GUARD_STAMINA_RESTORE`
+- `BOON_REAPER_VOW_STAMINA_RESTORE`
+- `BOON_REAPER_VOW_FLASK_RESTORE`
+
+World placement lives in `scripts/world/ShrineRoute.gd` under `LOOT_SHRINES`.
+
+Pickup behavior lives in `scripts/world/LootShrine.gd`.
+
+Player-side boon effects live in `scripts/player/PlayerController.gd`:
+
+- `ember_step`: perfect dodge charges the next light strike with extra damage, stagger, and knockback.
+- `grave_guard`: successful parry restores extra stamina.
+- `reaper_vow`: Collect kills restore stamina and one flask charge.
+
 ## Enemy Stats
 
 Edit `ENEMY_CONFIGS` in `scripts/autoload/GameBalance.gd`.
@@ -182,6 +204,8 @@ Runtime torch/brazier, bones, urn, and reliquary props live in `assets/environme
 
 Natural floor tile generation lives in `scripts/world/ShrineRouteLayer.gd` in `_build_floor_cells`.
 
+Run boon pickup placement lives in `scripts/world/ShrineRoute.gd` in `LOOT_SHRINES`.
+
 Stage flask restoration is triggered in `scripts/world/ShrineArena.gd` in `_on_trial_wave_started`. The player-side clamp is `restore_flask_charge` in `scripts/player/PlayerController.gd`.
 
 ## Wave Setup
@@ -196,6 +220,8 @@ Current stages:
 - Stage 4: two `hound`, one `guardian`, one `archer` in the deep ossuary
 - Stage 5: three `archer`, one `guardian` in the reliquary side route
 - Stage 6: one `bell_bearer`, one `hound`, one `archer` at the Bell Gate
+- Stage 7: split crypt pressure with west-side melee/hounds and east-side ranged pressure
+- Stage 8: nave pressure with Bell-Bearer, Guardian, and Archer
 - Final: one `ashen_judicator`, two `guardian` in the sanctum
 
 Keep new encounters inside the shrine route until the core combat survives human playtesting.

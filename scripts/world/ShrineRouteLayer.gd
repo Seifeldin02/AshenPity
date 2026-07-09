@@ -108,9 +108,9 @@ func _draw_room_floor(room: Rect2) -> void:
 		draw_rect(rect.grow(-1.0), Color(0.04, 0.035, 0.035, 0.16), false, 1.0)
 		if bool(cell["worn"]):
 			draw_circle(rect.get_center() + Vector2(9, -7), minf(rect.size.x, rect.size.y) * 0.28, Color(0.10, 0.085, 0.070, 0.12))
-	for x in range(int(room.position.x), int(room.end.x), 128):
+	for x in range(int(room.position.x), int(room.end.x), 192):
 		draw_line(Vector2(x, room.position.y + 8.0), Vector2(x, room.end.y - 8.0), Color(0.03, 0.028, 0.030, 0.16), 1.0)
-	for y in range(int(room.position.y), int(room.end.y), 128):
+	for y in range(int(room.position.y), int(room.end.y), 192):
 		draw_line(Vector2(room.position.x + 8.0, y), Vector2(room.end.x - 8.0, y), Color(0.03, 0.028, 0.030, 0.16), 1.0)
 	for i in 3:
 		var band_y := room.position.y + room.size.y * (0.28 + float(i) * 0.20)
@@ -133,8 +133,6 @@ func _draw_exterior_courtyard() -> void:
 			var hash := int(abs(x * 5.0 + y * 11.0)) % 4
 			var shade := 0.06 + float(hash) * 0.005
 			draw_rect(Rect2(x, y, tile, tile), Color(shade, shade * 0.92, shade * 0.86, 1.0))
-			if hash == 1:
-				_draw_tiled_texture(_textures.get("floor_b"), Rect2(x, y, tile, tile), Color(0.36, 0.34, 0.36, 0.18))
 			draw_rect(Rect2(x + 3, y + 3, tile - 6, tile - 6), Color(0.02, 0.018, 0.022, 0.12), false, 2.0)
 			x += tile
 		y += tile
@@ -205,11 +203,14 @@ func _build_floor_cells() -> void:
 	var floor_rng := RandomNumberGenerator.new()
 	floor_rng.seed = 42111
 	for room in Route.ROOMS:
-		var y: float = floor(room.position.y / 64.0) * 64.0
+		var slab := 96.0
+		var y: float = floor(room.position.y / slab) * slab
 		while y < room.end.y:
-			var x: float = floor(room.position.x / 64.0) * 64.0
+			var row_offset := 0.0 if int(y / slab) % 2 == 0 else slab * 0.34
+			var x: float = floor(room.position.x / slab) * slab - row_offset
 			while x < room.end.x:
-				var rect := Rect2(Vector2(x, y), Vector2(64.0, 64.0)).intersection(room)
+				var shrink := floor_rng.randf_range(1.0, 4.0)
+				var rect := Rect2(Vector2(x, y), Vector2(slab + floor_rng.randf_range(-10.0, 18.0), slab + floor_rng.randf_range(-14.0, 12.0))).grow(-shrink).intersection(room)
 				if rect.size.x > 18.0 and rect.size.y > 18.0:
 					var roll := floor_rng.randf()
 					var shade := floor_rng.randf_range(0.19, 0.245)
@@ -228,8 +229,8 @@ func _build_floor_cells() -> void:
 						"color": Color(shade + warm, shade * floor_rng.randf_range(0.92, 0.98), shade * floor_rng.randf_range(0.84, 0.92), 0.88),
 						"worn": floor_rng.randf() < 0.10 or roll > 0.94
 					})
-				x += 64.0
-			y += 64.0
+				x += slab
+			y += slab
 
 
 func _load_textures() -> void:

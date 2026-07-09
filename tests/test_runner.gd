@@ -32,6 +32,7 @@ func _run() -> void:
 	_test_parry_timing_window()
 	_test_parry_brand_expires_quickly()
 	_test_flask_restore_clamps_to_two()
+	_test_run_boon_values_are_combat_bound()
 	_test_enemy_configs_exist()
 	if _failures == 0:
 		print("All gameplay logic tests passed.")
@@ -173,6 +174,16 @@ func _test_parry_brand_expires_quickly() -> void:
 func _test_flask_restore_clamps_to_two() -> void:
 	_assert_equal(CombatMathUtil.restore_flask_charge(0, 1, 2), 1, "stage restore gives one flask")
 	_assert_equal(CombatMathUtil.restore_flask_charge(1, 4, 2), 2, "flask restore clamps at max charges")
+
+
+func _test_run_boon_values_are_combat_bound() -> void:
+	for boon_id in ["ember_step", "grave_guard", "reaper_vow"]:
+		_assert_true(GameBalance.BOON_DATA.has(boon_id), "run boon exists: %s" % boon_id)
+	_assert_equal(GameBalance.ASH_BRAND_DURATION, 3.0, "perfect-dodge Brand also expires after three seconds")
+	_assert_true(GameBalance.BOON_EMBER_STEP_DAMAGE_BONUS > 0.0, "Ember Step adds damage only after a perfect dodge")
+	_assert_true(GameBalance.BOON_GRAVE_GUARD_STAMINA_RESTORE > 0.0, "Grave Guard pays stamina only after a parry")
+	_assert_true(GameBalance.BOON_REAPER_VOW_STAMINA_RESTORE > 0.0, "Reaper Vow pays stamina only after a Collect kill")
+	_assert_true(float(GameBalance.COLLECT_ATTACK["damage"]) > float(GameBalance.HEAVY_ATTACK["damage"]) + GameBalance.BOON_EMBER_STEP_DAMAGE_BONUS, "Collect remains the hardest baseline payoff")
 
 
 func _test_enemy_configs_exist() -> void:

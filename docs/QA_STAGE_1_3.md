@@ -16,6 +16,11 @@
 - v0.5.2 confirms damage hierarchy: Collect is strongest, heavy is second, light combo hits are weakest.
 - v0.5.2 restores one flask charge after each cleared stage, clamped to two charges.
 - v0.5.2 gives Guardian, Hound, Archer, and Bell-Bearer more distinct attack pattern data and telegraph shapes.
+- v0.5.4 adds three in-world run boons: Ember Step, Grave Guard, and Reaper Vow.
+- v0.5.4 expands the Ash Trial to nine stages with Split Crypts and Nave Pressure before the final Judicator fight.
+- v0.5.4 gives Guardian a shield bash, Hound a short snap, and Archer a fan-shot pattern.
+- v0.5.4 makes the HUD explicitly show `F Flask`, active boons, and pickup banners.
+- v0.5.4 further reduces repeated floor texture noise with larger uneven authored slabs.
 - Replaced the weak combat cue bank with StarNinjas sword impacts and rubberduck RPG sounds.
 - Removed texture-based slash rendering from player/enemy attacks so a bad slash texture cannot cover the screen.
 - Added bounded vector weapon arcs, tighter spark/impact bursts, death smoke, and Collect cross-cut feedback.
@@ -36,14 +41,14 @@ godot_console --path . --quit-after 5
 
 The logic tests cover stamina, dodge gating, 120 Hz physics, enemy damage, invulnerability, movement normalization, route/camera bounds, aim direction, frame-rate independence, attack buffering, perfect-dodge timing, heavy anti-spam cost scaling, parry timing values, parry-primed Collect payoff values, Ash Brand progress, and enemy configs.
 
-The playtest harness uses `InputRouter` and exercises route movement through the lower court and deep side rooms, visibility screenshots, actor variants including Ashen Judicator, screen-edge aim, moving light attacks, heavy attacks, dodge direction, parry, immediate parry-primed Collect damage, perfect dodge, Ash Brand, Collect, flask interruption, and clearing the seven-stage Ash Trial.
+The playtest harness uses `InputRouter` and exercises route movement through the lower court and deep side rooms, visibility screenshots, actor variants including Ashen Judicator, screen-edge aim, moving light attacks, heavy attacks, dodge direction, parry, immediate parry-primed Collect damage, perfect dodge, Ash Brand, Collect, flask interruption, and clearing the nine-stage Ash Trial.
 
 Latest local results:
 
 - `godot_console --headless --path . -s tests/test_runner.gd`: passed.
 - `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
 - `godot_console --path . --quit-after 5`: passed.
-- Latest harness performance snapshot: 157 FPS reported, 170 Hz display refresh, 8.33 ms p95 frame time under fixed 120 FPS simulation, physics 120 Hz.
+- Latest harness performance snapshot: 170 FPS reported, 170 Hz display refresh, 8.33 ms p95 frame time under fixed 120 FPS simulation, physics 120 Hz.
 - Known warning: the playtest harness still reports ObjectDB leaked instances at process exit.
 
 ## What Automation Cannot Judge
@@ -55,6 +60,7 @@ Latest local results:
 - Whether the Judicator patterns are readable and punishable without feeling cheap.
 - Whether the hound, archer, guardian, and elite are clear enough under combat pressure.
 - Whether the brighter tiled shrine route has the right amount of depth without becoming visually noisy.
+- Whether the new run boons create real decision-making or are just automatic power creep.
 
 ## Manual Playtest Checklist
 
@@ -65,3 +71,4 @@ Latest local results:
 5. Confirm the map feels more like a shrine route and less like a flat rectangle.
 6. Confirm heavy spam is no longer the best strategy.
 7. Confirm the expanded stages do not feel like walking too far between fights.
+8. Confirm the three loot shrines are discoverable without becoming mandatory chores.
