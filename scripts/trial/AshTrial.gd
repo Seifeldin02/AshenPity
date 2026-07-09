@@ -6,30 +6,46 @@ signal enemies_changed(enemies: Array[Node])
 
 const WAVES := [
 	{
-		"label": "Wave 1",
+		"label": "Stage 1 - Entrance Lesson",
 		"spawns": [
-			{"kind": "guardian", "pos": Vector2(-260, -80)},
-			{"kind": "guardian", "pos": Vector2(285, -90)}
+			{"kind": "guardian", "pos": Vector2(-210, 150)}
 		]
 	},
 	{
-		"label": "Wave 2",
+		"label": "Stage 2 - Central Shrine",
 		"spawns": [
-			{"kind": "hound", "pos": Vector2(-330, 145)},
-			{"kind": "guardian", "pos": Vector2(240, -130)}
+			{"kind": "guardian", "pos": Vector2(-320, -85)},
+			{"kind": "guardian", "pos": Vector2(310, -100)},
+			{"kind": "hound", "pos": Vector2(55, 155)}
 		]
 	},
 	{
-		"label": "Wave 3",
+		"label": "Stage 3 - Ossuary Pressure",
 		"spawns": [
-			{"kind": "archer", "pos": Vector2(430, -210)},
-			{"kind": "guardian", "pos": Vector2(-260, 90)}
+			{"kind": "hound", "pos": Vector2(-1240, -420)},
+			{"kind": "guardian", "pos": Vector2(-1030, -305)},
+			{"kind": "archer", "pos": Vector2(-1285, -535)}
 		]
 	},
 	{
-		"label": "Final",
+		"label": "Stage 4 - Reliquary Crossfire",
 		"spawns": [
-			{"kind": "bell_bearer", "pos": Vector2(0, -120)}
+			{"kind": "archer", "pos": Vector2(1050, -520)},
+			{"kind": "archer", "pos": Vector2(1310, -330)},
+			{"kind": "guardian", "pos": Vector2(1155, -250)}
+		]
+	},
+	{
+		"label": "Stage 5 - Bell Gate",
+		"spawns": [
+			{"kind": "bell_bearer", "pos": Vector2(0, -830)},
+			{"kind": "hound", "pos": Vector2(-380, -820)}
+		]
+	},
+	{
+		"label": "Final - Ashen Judicator",
+		"spawns": [
+			{"kind": "ashen_judicator", "pos": Vector2(0, -1295)}
 		]
 	}
 ]
@@ -91,3 +107,7 @@ func _on_enemy_died(enemy: Node) -> void:
 
 func all_enemies() -> Array[Node]:
 	return active_enemies.duplicate()
+
+
+func wave_count() -> int:
+	return WAVES.size()

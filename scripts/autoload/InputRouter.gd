@@ -15,6 +15,7 @@ var simulated_aim_vector := Vector2.ZERO
 var _attack_pressed := false
 var _heavy_pressed := false
 var _collect_pressed := false
+var _parry_pressed := false
 var _dodge_pressed := false
 var _flask_pressed := false
 var _pause_pressed := false
@@ -52,6 +53,7 @@ func end_simulation() -> void:
 	_attack_pressed = false
 	_heavy_pressed = false
 	_collect_pressed = false
+	_parry_pressed = false
 	_dodge_pressed = false
 	_flask_pressed = false
 	_pause_pressed = false
@@ -91,6 +93,10 @@ func press_collect() -> void:
 	_collect_pressed = true
 
 
+func press_parry() -> void:
+	_parry_pressed = true
+
+
 func press_dodge() -> void:
 	_dodge_pressed = true
 
@@ -113,6 +119,10 @@ func consume_heavy() -> bool:
 
 func consume_collect() -> bool:
 	return _consume("_collect_pressed")
+
+
+func consume_parry() -> bool:
+	return _consume("_parry_pressed")
 
 
 func consume_dodge() -> bool:

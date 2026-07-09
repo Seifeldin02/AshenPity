@@ -10,7 +10,7 @@ const EnemyBrainUtil := preload("res://scripts/enemies/EnemyBrain.gd")
 const CombatMathUtil := preload("res://scripts/combat/CombatMath.gd")
 const ProjectileScript := preload("res://scripts/enemies/EnemyProjectile.gd")
 
-@export_enum("guardian", "hound", "archer", "bell_bearer") var enemy_kind := "guardian"
+@export_enum("guardian", "hound", "archer", "bell_bearer", "ashen_judicator") var enemy_kind := "guardian"
 
 @onready var visual: Node2D = %Visual
 @onready var attack_area: Area2D = %AttackArea
@@ -42,6 +42,9 @@ var _died_emitted := false
 var _rng := RandomNumberGenerator.new()
 var _elite_attack_flip := false
 var _ai_time := 0.0
+var _attack_pattern := "sweep"
+var _boss_pattern_index := 0
+var _special_fired := false
 
 func _ready() -> void:
 	add_to_group("enemies")
@@ -177,18 +180,28 @@ func _tick_state(delta: float) -> void:
 			velocity = velocity.move_toward(Vector2.ZERO, 900.0 * delta)
 			if _state_timer <= 0.0:
 				_hit_targets.clear()
+				_special_fired = false
 				if str(_config["attack_style"]) == "ranged":
 					_fire_projectile()
+				elif str(_config["attack_style"]) == "boss" and _attack_pattern == "toll":
+					_spawn_radial_projectiles(8, 360.0, 0.72)
 				else:
 					attack_area.monitoring = true
 				_set_state(EnemyState.ACTIVE, float(_config["active"]))
 		EnemyState.ACTIVE:
 			if enemy_kind == "hound":
 				velocity = _attack_direction * 130.0
+			elif enemy_kind == "ashen_judicator" and _attack_pattern == "lunge":
+				velocity = _attack_direction * 390.0
+			elif enemy_kind == "ashen_judicator" and _attack_pattern == "slam":
+				velocity = velocity.move_toward(Vector2.ZERO, 1600.0 * delta)
 			else:
 				velocity = Vector2.ZERO
 			if attack_area.monitoring:
 				_poll_attack_hits()
+			if enemy_kind == "ashen_judicator" and _attack_pattern == "slam" and not _special_fired and _state_timer <= float(_config["active"]) * 0.45:
+				_special_fired = true
+				_spawn_radial_projectiles(6, 300.0, 0.55)
 			if _state_timer <= 0.0:
 				attack_area.monitoring = false
 				_set_state(EnemyState.RECOVERY, float(_config["recovery"]))
@@ -223,6 +236,9 @@ func _chase(delta: float) -> void:
 	var desired := to_player.normalized() * float(_config["move_speed"])
 	if enemy_kind == "archer" and to_player.length() < 260.0:
 		desired = -to_player.normalized() * float(_config["move_speed"])
+	elif enemy_kind == "ashen_judicator" and to_player.length() < 230.0:
+		var boss_tangent := to_player.normalized().orthogonal() * sin(_ai_time * 2.6)
+		desired = (to_player.normalized() * 0.22 + boss_tangent * 0.48).normalized() * float(_config["move_speed"]) * 0.72
 	elif enemy_kind == "guardian" and to_player.length() < 260.0:
 		var tangent := to_player.normalized().orthogonal() * sin(_ai_time * 4.8 + global_position.x * 0.01)
 		desired = (to_player.normalized() + tangent * 0.28).normalized() * float(_config["move_speed"])
@@ -239,18 +255,41 @@ func _begin_attack() -> void:
 		facing = _attack_direction
 	if enemy_kind == "bell_bearer":
 		_elite_attack_flip = not _elite_attack_flip
-	_set_state(EnemyState.WINDUP, float(_config["windup"]) + (0.18 if enemy_kind == "bell_bearer" and _elite_attack_flip else 0.0))
+	if enemy_kind == "ashen_judicator":
+		var patterns := ["sweep", "lunge", "slam", "toll"]
+		_attack_pattern = patterns[_boss_pattern_index % patterns.size()]
+		_boss_pattern_index += 1
+	else:
+		_attack_pattern = "lunge" if enemy_kind == "hound" else "sweep"
+	_special_fired = false
+	var windup := float(_config["windup"]) + (0.18 if enemy_kind == "bell_bearer" and _elite_attack_flip else 0.0)
+	if enemy_kind == "ashen_judicator":
+		match _attack_pattern:
+			"lunge":
+				windup = 0.50
+			"slam":
+				windup = 0.78
+			"toll":
+				windup = 0.92
+			_:
+				windup = 0.62
+	_set_state(EnemyState.WINDUP, windup)
 
 
 func _fire_projectile() -> void:
+	_spawn_projectile(_attack_direction, 430.0, 1.0)
+
+
+func _spawn_projectile(direction_value: Vector2, speed_value: float, damage_scale: float) -> void:
 	var projectile := Area2D.new()
 	projectile.name = "ReliquaryBolt"
 	projectile.collision_layer = 0
 	projectile.collision_mask = 2
 	projectile.set_script(ProjectileScript)
-	projectile.global_position = global_position + _attack_direction * 48.0
-	projectile.set("direction", _attack_direction)
-	projectile.set("damage", float(_config["attack_damage"]))
+	projectile.global_position = global_position + direction_value.normalized() * 56.0
+	projectile.set("direction", direction_value.normalized())
+	projectile.set("speed", speed_value)
+	projectile.set("damage", float(_config["attack_damage"]) * damage_scale)
 	projectile.set("knockback", float(_config["attack_knockback"]))
 	projectile.set("source_enemy", self)
 	var shape := CollisionShape2D.new()
@@ -259,6 +298,12 @@ func _fire_projectile() -> void:
 	shape.shape = circle
 	projectile.add_child(shape)
 	get_parent().add_child(projectile)
+
+
+func _spawn_radial_projectiles(count: int, speed_value: float, damage_scale: float) -> void:
+	for i in count:
+		var angle := _attack_direction.angle() + float(i) * TAU / float(count)
+		_spawn_projectile(Vector2.RIGHT.rotated(angle), speed_value, damage_scale)
 
 
 func _die() -> void:
@@ -294,6 +339,16 @@ func _update_facing() -> void:
 func _update_attack_hitbox() -> void:
 	var attack_facing := _attack_direction if state in [EnemyState.WINDUP, EnemyState.ACTIVE, EnemyState.RECOVERY] else facing
 	var range := float(_config["attack_range"]) * (1.08 if enemy_kind == "bell_bearer" and _elite_attack_flip else 0.72)
+	if enemy_kind == "ashen_judicator":
+		match _attack_pattern:
+			"lunge":
+				range = 150.0
+			"slam":
+				range = 70.0
+			"toll":
+				range = 0.0
+			_:
+				range = 118.0
 	attack_area.position = attack_facing * range
 	attack_area.rotation = attack_facing.angle()
 	var rect := attack_shape.shape as RectangleShape2D
@@ -302,6 +357,12 @@ func _update_attack_hitbox() -> void:
 			rect.size = Vector2(72, 46)
 		elif enemy_kind == "bell_bearer" and _elite_attack_flip:
 			rect.size = Vector2(170, 84)
+		elif enemy_kind == "ashen_judicator" and _attack_pattern == "slam":
+			rect.size = Vector2(220, 148)
+		elif enemy_kind == "ashen_judicator" and _attack_pattern == "lunge":
+			rect.size = Vector2(126, 72)
+		elif enemy_kind == "ashen_judicator":
+			rect.size = Vector2(180, 92)
 		else:
 			rect.size = Vector2(104, 58)
 
@@ -314,6 +375,9 @@ func _poll_attack_hits() -> void:
 func _on_attack_body_entered(body: Node) -> void:
 	if state != EnemyState.ACTIVE or _hit_targets.has(body):
 		return
+	if body.has_method("try_parry") and body.try_parry(self, global_position):
+		_hit_targets.append(body)
+		return
 	if body.has_method("try_perfect_dodge") and body.try_perfect_dodge(self, global_position):
 		_hit_targets.append(body)
 		return
@@ -324,7 +388,26 @@ func _on_attack_body_entered(body: Node) -> void:
 
 func _update_visual() -> void:
 	if visual.has_method("set_pose"):
-		visual.set_pose(facing, state_name, health / max_health, enemy_kind, ash_branded, collect_ready)
+		visual.set_pose(facing, state_name, health / max_health, enemy_kind, ash_branded, collect_ready, _attack_pattern)
+
+
+func receive_parry(source: Node, hit_position: Vector2) -> void:
+	if state in [EnemyState.DYING, EnemyState.DEAD]:
+		return
+	var stagger_scale := GameBalance.BOSS_PARRY_STAGGER_RESIST if enemy_kind == "ashen_judicator" else 1.0
+	var hit := {
+		"damage": float(GameBalance.PARRY_COUNTER["damage"]),
+		"stagger": float(GameBalance.PARRY_COUNTER["stagger"]) * stagger_scale,
+		"knockback": float(GameBalance.PARRY_COUNTER["knockback"]),
+		"kind": "parry",
+		"direction": (global_position - hit_position).normalized(),
+		"source": source
+	}
+	take_combat_hit(hit, hit_position)
+	if enemy_kind == "ashen_judicator":
+		_set_state(EnemyState.STAGGER, 0.34)
+	else:
+		_set_state(EnemyState.STAGGER, 0.48)
 
 
 func apply_performance_mode(lightweight: bool) -> void:

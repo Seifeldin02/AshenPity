@@ -9,6 +9,7 @@ const PLAYER_ATTACK_COST := 18.0
 const PLAYER_HEAVY_COST := 34.0
 const PLAYER_COLLECT_COST := 22.0
 const PLAYER_DODGE_COST := 34.0
+const PLAYER_PARRY_COST := 18.0
 const PLAYER_ATTACK_DAMAGE := 28.0
 const PLAYER_HEAVY_DAMAGE := 48.0
 const PLAYER_COLLECT_DAMAGE := 72.0
@@ -26,6 +27,9 @@ const PLAYER_COLLECT_ACTIVE_TIME := 0.16
 const PLAYER_COLLECT_RECOVERY_TIME := 0.12
 const PLAYER_ATTACK_BUFFER_WINDOW := 0.13
 const PLAYER_HEAVY_BUFFER_WINDOW := 0.10
+const PLAYER_HEAVY_CHAIN_WINDOW := 1.15
+const PLAYER_HEAVY_CHAIN_COST_STEP := 18.0
+const PLAYER_HEAVY_CHAIN_MAX := 2
 const PLAYER_DODGE_SPEED := 900.0
 const PLAYER_DODGE_TIME := 0.245
 const PLAYER_DODGE_INVULN_TIME := 0.155
@@ -34,6 +38,13 @@ const PLAYER_DODGE_RECOVERY := 0.065
 const PLAYER_DODGE_CANCEL_AFTER := 0.055
 const PLAYER_DODGE_ATTACK_BUFFER_WINDOW := 0.045
 const PLAYER_PERFECT_DODGE_STAMINA_RESTORE := 18.0
+const PLAYER_PARRY_STARTUP := 0.055
+const PLAYER_PARRY_ACTIVE := 0.145
+const PLAYER_PARRY_RECOVERY := 0.24
+const PLAYER_PARRY_STAMINA_RESTORE := 24.0
+const PLAYER_PARRY_STAGGER := 4.2
+const PLAYER_PARRY_DAMAGE := 12.0
+const PLAYER_PARRY_KNOCKBACK := 210.0
 const PLAYER_HEAL_AMOUNT := 38.0
 const PLAYER_HEAL_TIME := 0.75
 const PLAYER_STAMINA_REGEN := 78.0
@@ -44,6 +55,7 @@ const COUNTER_HIT_STAGGER_MULTIPLIER := 1.45
 const REAR_HIT_DAMAGE_MULTIPLIER := 1.16
 const REAR_HIT_STAGGER_BONUS := 0.55
 const RECOVERY_PUNISH_STAGGER_BONUS := 0.35
+const BOSS_PARRY_STAGGER_RESIST := 0.55
 
 const ENEMY_MAX_HEALTH := 86.0
 const HOUND_MAX_HEALTH := 58.0
@@ -113,7 +125,7 @@ const HEAVY_ATTACK := {
 	"name": "heavy",
 	"windup": 0.22,
 	"active": 0.16,
-	"recovery": 0.24,
+	"recovery": 0.29,
 	"damage": 52.0,
 	"stagger": 3.0,
 	"stamina": PLAYER_HEAVY_COST,
@@ -122,6 +134,13 @@ const HEAVY_ATTACK := {
 	"width": 116.0,
 	"height": 70.0,
 	"lunge": 135.0
+}
+
+const PARRY_COUNTER := {
+	"name": "parry",
+	"damage": PLAYER_PARRY_DAMAGE,
+	"stagger": PLAYER_PARRY_STAGGER,
+	"knockback": PLAYER_PARRY_KNOCKBACK,
 }
 
 const COLLECT_ATTACK := {
@@ -195,6 +214,20 @@ const ENEMY_CONFIGS := {
 		"recovery": 0.86,
 		"stagger_threshold": 7.0,
 		"attack_style": "elite"
+	},
+	"ashen_judicator": {
+		"display_name": "Ashen Judicator",
+		"max_health": 420.0,
+		"move_speed": 118.0,
+		"detect_range": 980.0,
+		"attack_range": 150.0,
+		"attack_damage": 31.0,
+		"attack_knockback": 430.0,
+		"windup": 0.68,
+		"active": 0.22,
+		"recovery": 0.72,
+		"stagger_threshold": 12.0,
+		"attack_style": "boss"
 	}
 }
 

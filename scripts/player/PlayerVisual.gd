@@ -53,6 +53,8 @@ func _draw() -> void:
 		_draw_dodge_afterimages(flip, tint)
 	if attack_alpha > 0.0:
 		_draw_slash()
+	if state_name == "parry":
+		_draw_parry_guard()
 	var body_rotation := _body_rotation(flip)
 	var body_scale := _body_scale()
 	draw_set_transform(Vector2(0, bob), body_rotation, Vector2(flip * body_scale.x, body_scale.y))
@@ -67,6 +69,8 @@ func _select_frame() -> Texture2D:
 		return _sprites["dead"]
 	if state_name == "hurt":
 		return _sprites["hurt"]
+	if state_name == "parry" or state_name == "parry_recovery":
+		return _sprites["attack"]
 	if state_name == "dodge":
 		return _sprites["dodge"]
 	if state_name.begins_with("light") or state_name.begins_with("heavy") or state_name.begins_with("collect"):
@@ -152,6 +156,13 @@ func _draw_slash() -> void:
 		var a := lerpf(angle - spread, angle + spread, t)
 		var p := center + Vector2.RIGHT.rotated(a) * (radius - 8.0)
 		draw_line(p - facing * 13.0, p + facing * 16.0, Color(1.0, 0.80, 0.45, 0.36 * alpha), 2.0)
+
+
+func _draw_parry_guard() -> void:
+	var center := facing * 42.0
+	var angle := facing.angle()
+	draw_arc(center, 52.0, angle - 0.72, angle + 0.72, 24, Color(0.95, 0.80, 0.42, 0.62), 5.0)
+	draw_arc(center, 36.0, angle - 0.52, angle + 0.52, 18, Color(0.96, 0.96, 0.82, 0.34), 3.0)
 
 
 func _draw_dodge_afterimages(flip: float, tint: Color) -> void:

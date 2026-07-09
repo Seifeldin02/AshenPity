@@ -37,6 +37,10 @@ func _on_body_entered(body: Node) -> void:
 	if _hit:
 		return
 	var brand_source := source_enemy if is_instance_valid(source_enemy) else self
+	if body.has_method("try_parry") and body.try_parry(brand_source, global_position):
+		_hit = true
+		queue_free()
+		return
 	if body.has_method("try_perfect_dodge") and body.try_perfect_dodge(brand_source, global_position):
 		_hit = true
 		queue_free()

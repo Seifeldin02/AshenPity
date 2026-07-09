@@ -9,7 +9,7 @@ signal perfect_dodge(enemy: Node)
 signal ash_brand_changed(enemy: Node, collect_ready: bool)
 signal died
 
-enum PlayerState { IDLE, MOVE, ATTACK_WINDUP, ATTACK_ACTIVE, ATTACK_RECOVERY, DODGE, DODGE_RECOVERY, COLLECT_WINDUP, COLLECT_ACTIVE, COLLECT_RECOVERY, HEAL, HURT, DEAD }
+enum PlayerState { IDLE, MOVE, ATTACK_WINDUP, ATTACK_ACTIVE, ATTACK_RECOVERY, DODGE, DODGE_RECOVERY, PARRY, PARRY_RECOVERY, COLLECT_WINDUP, COLLECT_ACTIVE, COLLECT_RECOVERY, HEAL, HURT, DEAD }
 
 const CombatMathUtil := preload("res://scripts/combat/CombatMath.gd")
 
@@ -37,6 +37,8 @@ var _attack_direction := Vector2.RIGHT
 var _current_attack := {}
 var _combo_index := 0
 var _combo_timer := 0.0
+var _heavy_chain_timer := 0.0
+var _heavy_chain_count := 0
 var _queued_light := false
 var _queued_heavy := false
 var _heal_pending := false
@@ -44,6 +46,7 @@ var _hit_targets: Array[Node] = []
 var _knockback := Vector2.ZERO
 var _dead_emitted := false
 var _perfect_dodge_used := false
+var _parry_success := false
 var _collect_target: Node
 
 func _ready() -> void:
@@ -57,6 +60,9 @@ func _physics_process(delta: float) -> void:
 	_update_aim()
 	_update_stamina(delta)
 	_combo_timer = maxf(_combo_timer - delta, 0.0)
+	_heavy_chain_timer = maxf(_heavy_chain_timer - delta, 0.0)
+	if _heavy_chain_timer <= 0.0:
+		_heavy_chain_count = 0
 	var move_input := _get_move_input()
 	_tick_state(delta, move_input)
 	_update_attack_hitbox()
@@ -172,6 +178,21 @@ func _tick_state(delta: float, move_input: Vector2) -> void:
 					return
 			if _state_timer <= 0.0:
 				_set_state(PlayerState.IDLE, 0.0)
+		PlayerState.PARRY:
+			velocity = velocity.move_toward(Vector2.ZERO, GameBalance.PLAYER_DECELERATION * delta)
+			if _state_timer <= 0.0:
+				_set_state(PlayerState.PARRY_RECOVERY, GameBalance.PLAYER_PARRY_RECOVERY if not _parry_success else GameBalance.PLAYER_PARRY_RECOVERY * 0.45)
+		PlayerState.PARRY_RECOVERY:
+			velocity = velocity.move_toward(Vector2.ZERO, GameBalance.PLAYER_DECELERATION * delta)
+			if _state_timer <= GameBalance.PLAYER_DODGE_ATTACK_BUFFER_WINDOW:
+				if _action_attack_pressed() and _can_start_light():
+					_start_light_attack()
+					return
+				if _action_heavy_pressed() and _can_start_heavy():
+					_start_heavy_attack()
+					return
+			if _state_timer <= 0.0:
+				_set_state(PlayerState.IDLE, 0.0)
 		PlayerState.COLLECT_WINDUP:
 			velocity = velocity.move_toward(Vector2.ZERO, GameBalance.PLAYER_DECELERATION * delta)
 			if _state_timer <= 0.0:
@@ -209,6 +230,9 @@ func _handle_actions(move_input: Vector2) -> void:
 	if _action_collect_pressed() and _can_start_collect():
 		_start_collect()
 		return
+	if _action_parry_pressed() and _can_start_parry():
+		_start_parry()
+		return
 	if _action_heavy_pressed() and _can_start_heavy():
 		_start_heavy_attack()
 		return
@@ -230,6 +254,8 @@ func _capture_attack_buffer() -> void:
 	if CombatMathUtil.is_attack_buffer_allowed(_state_timer, GameBalance.PLAYER_ATTACK_BUFFER_WINDOW):
 		if _action_collect_pressed() and _can_start_collect():
 			_start_collect()
+		elif _action_parry_pressed() and _can_start_parry():
+			_start_parry()
 		elif _action_attack_pressed() and _can_start_light():
 			_queued_light = true
 		elif _action_heavy_pressed() and _can_start_heavy():
@@ -248,6 +274,10 @@ func _action_collect_pressed() -> bool:
 	return Input.is_action_just_pressed("collect") or InputRouter.consume_collect()
 
 
+func _action_parry_pressed() -> bool:
+	return Input.is_action_just_pressed("parry") or InputRouter.consume_parry()
+
+
 func _dodge_pressed() -> bool:
 	return Input.is_action_just_pressed("dodge") or InputRouter.consume_dodge()
 
@@ -258,7 +288,11 @@ func _can_start_light() -> bool:
 
 
 func _can_start_heavy() -> bool:
-	return CombatMathUtil.can_spend_stamina(stamina, float(GameBalance.HEAVY_ATTACK["stamina"]))
+	return CombatMathUtil.can_spend_stamina(stamina, _current_heavy_cost())
+
+
+func _can_start_parry() -> bool:
+	return CombatMathUtil.can_spend_stamina(stamina, GameBalance.PLAYER_PARRY_COST)
 
 
 func _can_start_collect() -> bool:
@@ -273,6 +307,7 @@ func _next_combo_index() -> int:
 
 
 func _start_light_attack() -> void:
+	_heavy_chain_count = 0
 	var index := _next_combo_index()
 	_combo_index = (index + 1) % GameBalance.LIGHT_COMBO.size()
 	_combo_timer = 0.72
@@ -283,9 +318,12 @@ func _start_heavy_attack() -> void:
 	_combo_index = 0
 	_combo_timer = 0.0
 	_start_attack(GameBalance.HEAVY_ATTACK, "heavy")
+	_heavy_chain_count = mini(_heavy_chain_count + 1, GameBalance.PLAYER_HEAVY_CHAIN_MAX)
+	_heavy_chain_timer = GameBalance.PLAYER_HEAVY_CHAIN_WINDOW
 
 
 func _start_dodge(move_input: Vector2) -> void:
+	_heavy_chain_count = 0
 	stamina = CombatMathUtil.spend_stamina(stamina, GameBalance.PLAYER_DODGE_COST)
 	_regen_delay = GameBalance.PLAYER_STAMINA_REGEN_DELAY
 	stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
@@ -299,10 +337,24 @@ func _start_dodge(move_input: Vector2) -> void:
 	_set_state(PlayerState.DODGE, GameBalance.PLAYER_DODGE_TIME)
 
 
+func _start_parry() -> void:
+	_heavy_chain_count = 0
+	stamina = CombatMathUtil.spend_stamina(stamina, GameBalance.PLAYER_PARRY_COST)
+	_regen_delay = GameBalance.PLAYER_STAMINA_REGEN_DELAY
+	stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
+	_parry_success = false
+	attack_area.monitoring = false
+	_play_audio("dodge", -15.0)
+	_set_state(PlayerState.PARRY, GameBalance.PLAYER_PARRY_STARTUP + GameBalance.PLAYER_PARRY_ACTIVE)
+
+
 func _start_attack(attack_data: Dictionary, _kind: String) -> void:
 	_current_attack = attack_data
-	stamina = CombatMathUtil.spend_stamina(stamina, float(attack_data["stamina"]))
+	var cost := _current_heavy_cost() if _kind == "heavy" else float(attack_data["stamina"])
+	stamina = CombatMathUtil.spend_stamina(stamina, cost)
 	_regen_delay = GameBalance.PLAYER_STAMINA_REGEN_DELAY
+	if _kind == "heavy":
+		_regen_delay += 0.18 + float(_heavy_chain_count) * 0.12
 	stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
 	_attack_direction = facing
 	_play_audio("sword_whoosh", -10.0)
@@ -310,6 +362,7 @@ func _start_attack(attack_data: Dictionary, _kind: String) -> void:
 
 
 func _start_collect() -> void:
+	_heavy_chain_count = 0
 	_collect_target = branded_enemy
 	_current_attack = GameBalance.COLLECT_ATTACK
 	stamina = CombatMathUtil.spend_stamina(stamina, float(GameBalance.COLLECT_ATTACK["stamina"]))
@@ -339,7 +392,7 @@ func _update_stamina(delta: float) -> void:
 	if _regen_delay > 0.0:
 		_regen_delay -= delta
 		return
-	if stamina < GameBalance.PLAYER_MAX_STAMINA and state not in [PlayerState.ATTACK_WINDUP, PlayerState.ATTACK_ACTIVE, PlayerState.DODGE, PlayerState.COLLECT_ACTIVE]:
+	if stamina < GameBalance.PLAYER_MAX_STAMINA and state not in [PlayerState.ATTACK_WINDUP, PlayerState.ATTACK_ACTIVE, PlayerState.DODGE, PlayerState.PARRY, PlayerState.COLLECT_ACTIVE]:
 		stamina = CombatMathUtil.regenerate_stamina(stamina, GameBalance.PLAYER_MAX_STAMINA, GameBalance.PLAYER_STAMINA_REGEN, delta)
 		stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
 
@@ -393,6 +446,26 @@ func _update_visual() -> void:
 		alpha = 0.42
 	if visual.has_method("set_pose"):
 		visual.set_pose(_attack_direction if alpha > 0.0 else facing, state_name, alpha, str(_current_attack.get("name", "")))
+
+
+func try_parry(enemy: Node, hit_position: Vector2) -> bool:
+	if state != PlayerState.PARRY or _parry_success:
+		return false
+	var elapsed := _elapsed_in_state
+	if elapsed < GameBalance.PLAYER_PARRY_STARTUP or elapsed > GameBalance.PLAYER_PARRY_STARTUP + GameBalance.PLAYER_PARRY_ACTIVE:
+		return false
+	_parry_success = true
+	stamina = minf(stamina + GameBalance.PLAYER_PARRY_STAMINA_RESTORE, GameBalance.PLAYER_MAX_STAMINA)
+	stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
+	if is_instance_valid(enemy) and enemy.has_method("receive_parry"):
+		enemy.receive_parry(self, hit_position)
+	_play_audio("enemy_stagger", -5.0)
+	hit_confirmed.emit("parry", hit_position)
+	return true
+
+
+func _current_heavy_cost() -> float:
+	return float(GameBalance.HEAVY_ATTACK["stamina"]) + float(_heavy_chain_count) * GameBalance.PLAYER_HEAVY_CHAIN_COST_STEP
 
 
 func _update_collect_status() -> void:
@@ -464,6 +537,10 @@ func _state_to_name(value: PlayerState) -> String:
 			return "%s_recovery" % str(_current_attack.get("name", "attack"))
 		PlayerState.DODGE, PlayerState.DODGE_RECOVERY:
 			return "dodge"
+		PlayerState.PARRY:
+			return "parry"
+		PlayerState.PARRY_RECOVERY:
+			return "parry_recovery"
 		PlayerState.COLLECT_WINDUP:
 			return "collect_windup"
 		PlayerState.COLLECT_ACTIVE:

@@ -133,6 +133,21 @@ grow_horizontal = 0
 grow_vertical = 0
 text = "Roll"
 
+[node name="ParryButton" type="Button" parent="Root"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -382.0
+offset_top = -198.0
+offset_right = -292.0
+offset_bottom = -116.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Parry"
+
 [node name="FlaskButton" type="Button" parent="Root"]
 layout_mode = 1
 anchors_preset = -1
@@ -167,5 +182,6 @@ text = "Pause"
 [connection signal="pressed" from="Root/HeavyButton" to="." method="_on_heavy_pressed"]
 [connection signal="pressed" from="Root/CollectButton" to="." method="_on_collect_pressed"]
 [connection signal="pressed" from="Root/DodgeButton" to="." method="_on_dodge_pressed"]
+[connection signal="pressed" from="Root/ParryButton" to="." method="_on_parry_pressed"]
 [connection signal="pressed" from="Root/FlaskButton" to="." method="_on_flask_pressed"]
 [connection signal="pressed" from="Root/PauseButton" to="." method="_on_pause_pressed"]

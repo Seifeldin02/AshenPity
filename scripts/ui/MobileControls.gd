@@ -97,6 +97,10 @@ func _on_collect_pressed() -> void:
 	InputRouter.press_collect()
 
 
+func _on_parry_pressed() -> void:
+	InputRouter.press_parry()
+
+
 func _on_dodge_pressed() -> void:
 	InputRouter.press_dodge()
 
