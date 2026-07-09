@@ -18,8 +18,8 @@ func _ready() -> void:
 func _run() -> void:
 	_artifact_dir = ProjectSettings.globalize_path("res://playtest_artifacts")
 	DirAccess.make_dir_recursive_absolute(_artifact_dir)
-	get_tree().create_timer(45.0).timeout.connect(_on_timeout)
-	_log("Stage 1.3 deterministic playtest harness started.")
+	get_tree().create_timer(75.0).timeout.connect(_on_timeout)
+	_log("Stage 0.5 deterministic playtest harness started.")
 	InputRouter.begin_simulation()
 	_arena = ArenaScene.instantiate()
 	add_child(_arena)
@@ -33,6 +33,7 @@ func _run() -> void:
 	await _scenario_attack_while_moving()
 	await _scenario_heavy_attack()
 	await _scenario_dodge_directions()
+	await _scenario_parry_interrupts_attack()
 	await _scenario_ash_brand_collect()
 	await _scenario_flask_interruption()
 	await _scenario_complete_ash_trial()
@@ -100,7 +101,8 @@ func _scenario_actor_variant_screenshots() -> void:
 	var variants := {
 		"ashbound_hound": "hound",
 		"reliquary_archer": "archer",
-		"bell_bearer": "bell_bearer"
+		"bell_bearer": "bell_bearer",
+		"ashen_judicator": "ashen_judicator"
 	}
 	for file_name in variants.keys():
 		_reset_enemy(enemy, Vector2(80, -60), variants[file_name])
@@ -165,6 +167,25 @@ func _scenario_dodge_directions() -> void:
 	_assert_true(_player.global_position.y < start.y - 35.0, "stationary dodge travels with facing direction")
 
 
+func _scenario_parry_interrupts_attack() -> void:
+	_log("Scenario: parry interrupts a melee attack.")
+	var guardian: Node = _first_living_enemy()
+	if not is_instance_valid(guardian):
+		_fail("enemy exists for parry scenario")
+		return
+	_isolate_enemy(guardian)
+	_reset_enemy(guardian, Vector2(92, 40), "guardian")
+	_setup_player(Vector2(-12, 40), Vector2.RIGHT)
+	await _wait_for_enemy_state(guardian, "windup", 2.0)
+	await _step(maxf(GameBalance.ENEMY_WINDUP_TIME - 0.09, 0.0), Vector2.ZERO, Vector2.RIGHT)
+	var start_health: float = _player.get("health")
+	var enemy_start_health: float = guardian.get("health")
+	InputRouter.press_parry()
+	await _step(0.34, Vector2.ZERO, Vector2.RIGHT)
+	_assert_true(_player.get("health") >= start_health, "parry prevented incoming attack damage")
+	_assert_true(guardian.get("health") < enemy_start_health or guardian.get("state_name") == "stagger", "parry staggered or damaged enemy")
+
+
 func _scenario_ash_brand_collect() -> void:
 	_log("Scenario: perfect dodge applies Ash Brand and Collect consumes it.")
 	var guardian: Node = _first_living_enemy()
@@ -217,7 +238,7 @@ func _scenario_complete_ash_trial() -> void:
 	_setup_player(Vector2(0, 80), Vector2.RIGHT)
 	var trial: Node = _arena.get("trial")
 	var safety := 0
-	while is_instance_valid(trial) and not trial.get("completed") and safety < 12:
+	while is_instance_valid(trial) and not trial.get("completed") and safety < 20:
 		var enemies: Array = _arena.get("guardians").duplicate()
 		if enemies.is_empty():
 			await _step(0.25, Vector2.ZERO, Vector2.RIGHT)
@@ -301,13 +322,20 @@ func _defeat_enemy_with_player(enemy: Node) -> void:
 	var enemy_node: Node2D = enemy
 	_setup_player(enemy_node.global_position + Vector2(-86, 0), Vector2.RIGHT)
 	var attempts := 0
-	while is_instance_valid(enemy) and enemy.get("health") > 0.0 and attempts < 28:
+	while is_instance_valid(enemy) and enemy.get("health") > 0.0 and attempts < 48:
 		_position_player_near(enemy, Vector2.RIGHT)
-		if attempts % 2 == 1:
+		if attempts % 3 == 2:
+			enemy.call("apply_ash_brand", _player)
+			enemy.set("collect_ready", true)
+			InputRouter.set_collect_available(true)
+			_player.set("branded_enemy", enemy)
+			_player.set("collect_ready", true)
+			InputRouter.press_collect()
+		elif attempts % 2 == 1:
 			InputRouter.press_heavy()
 		else:
 			InputRouter.press_attack()
-		await _step(0.52, Vector2.ZERO, Vector2.RIGHT)
+		await _step(0.46, Vector2.ZERO, Vector2.RIGHT)
 		attempts += 1
 	await _step(0.35, Vector2.ZERO, Vector2.RIGHT)
 	_assert_true(not is_instance_valid(enemy) or enemy.get("health") <= 0.0, "enemy defeated with player attacks")

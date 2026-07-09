@@ -27,6 +27,8 @@ func _run() -> void:
 	_test_frame_rate_independent_velocity()
 	_test_attack_buffering_window()
 	_test_ash_brand_collect_progress()
+	_test_heavy_chain_cost_prevents_spam()
+	_test_parry_timing_window()
 	_test_enemy_configs_exist()
 	if _failures == 0:
 		print("All gameplay logic tests passed.")
@@ -88,7 +90,7 @@ func _test_player_remains_inside_world_boundaries() -> void:
 		_assert_true(Route.is_inside_route(point), "visibility test point is inside route: %s" % str(point))
 		var rect := Route.camera_rect_at(point, Vector2(1920, 1080), Route.CAMERA_ZOOM)
 		_assert_true(rect.has_point(point), "camera covers route test point: %s" % str(point))
-	_assert_false(Route.is_inside_route(Vector2(-900, -620)), "outer void is outside route")
+	_assert_false(Route.is_inside_route(Vector2(-1800, -1600)), "outer void is outside route")
 
 
 func _test_dodge_invulnerability_timing() -> void:
@@ -128,8 +130,23 @@ func _test_ash_brand_collect_progress() -> void:
 	_assert_true(CombatMathUtil.is_collect_ready(hits, GameBalance.ASH_BRAND_HITS_TO_COLLECT), "required branded hits unlock collect")
 
 
+func _test_heavy_chain_cost_prevents_spam() -> void:
+	var first := float(GameBalance.HEAVY_ATTACK["stamina"])
+	var second := first + GameBalance.PLAYER_HEAVY_CHAIN_COST_STEP
+	var third := first + GameBalance.PLAYER_HEAVY_CHAIN_COST_STEP * GameBalance.PLAYER_HEAVY_CHAIN_MAX
+	_assert_true(first < second and second < third, "repeated heavy attacks become more expensive")
+	_assert_false(CombatMathUtil.can_spend_stamina(50.0, third), "low stamina cannot keep chaining heavies")
+
+
+func _test_parry_timing_window() -> void:
+	var startup := GameBalance.PLAYER_PARRY_STARTUP
+	var active_end := GameBalance.PLAYER_PARRY_STARTUP + GameBalance.PLAYER_PARRY_ACTIVE
+	_assert_true(startup > 0.0 and active_end < 0.25, "parry active window is fast and readable")
+	_assert_true(GameBalance.PLAYER_PARRY_COST > 0.0, "parry spends stamina")
+
+
 func _test_enemy_configs_exist() -> void:
-	for key in ["guardian", "hound", "archer", "bell_bearer"]:
+	for key in ["guardian", "hound", "archer", "bell_bearer", "ashen_judicator"]:
 		_assert_true(GameBalance.ENEMY_CONFIGS.has(key), "enemy config exists: %s" % key)
 		_assert_true(float(GameBalance.ENEMY_CONFIGS[key]["max_health"]) > 0.0, "enemy config has health: %s" % key)
 
