@@ -18,6 +18,7 @@ Used for:
 - Ashbound Hound sprite.
 - Reliquary Archer sprite.
 - Bell-Bearer elite sprite.
+- Base material for the generated Ashen Judicator sprite variants.
 - Small spark, flame, smoke, and blood/impact VFX textures.
 
 Runtime folders:
@@ -42,9 +43,11 @@ Runtime folder:
 
 - `assets/environment/upgrade/`
 
-## Original Runtime Prop Rasters
+## Original Runtime Prop And Variant Rasters
 
-The torch brazier, broken pillar, and broken wall chunk PNGs in `assets/environment/upgrade/` were generated inside this repository for Ashen Pity. They are original prototype assets and do not come from commercial game rips.
+The torch brazier, broken pillar, broken wall chunk, stairs, ash brazier, sealed door, bone debris, and reliquary shelf PNGs in `assets/environment/upgrade/` were generated inside this repository for Ashen Pity. They are original prototype assets and do not come from commercial game rips.
+
+The `judicator_*.png` files in `assets/sprites/upgrade/` were generated inside this repository by transforming the project-owned runtime elite silhouette into a larger cold-iron/gold boss variant for Ashen Pity v0.5.
 
 ## Runtime Sword Audio
 

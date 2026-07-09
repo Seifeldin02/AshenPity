@@ -31,6 +31,12 @@ Late attack-recovery dodge cancel is controlled by `PLAYER_DODGE_CANCEL_AFTER`.
 
 Attack-after-dodge feel is controlled by `PLAYER_DODGE_ATTACK_BUFFER_WINDOW`.
 
+Repeated heavy attack spam is controlled by:
+
+- `PLAYER_HEAVY_CHAIN_WINDOW`
+- `PLAYER_HEAVY_CHAIN_COST_STEP`
+- `PLAYER_HEAVY_CHAIN_MAX`
+
 ## Attack Damage And Impact
 
 Edit `scripts/autoload/GameBalance.gd`:
@@ -68,6 +74,24 @@ Edit `scripts/autoload/GameBalance.gd`:
 - `PLAYER_PERFECT_DODGE_STAMINA_RESTORE`
 
 The dodge state implementation is in `scripts/player/PlayerController.gd`.
+
+## Parry Timing
+
+Edit `scripts/autoload/GameBalance.gd`:
+
+- `PLAYER_PARRY_COST`
+- `PLAYER_PARRY_STARTUP`
+- `PLAYER_PARRY_ACTIVE`
+- `PLAYER_PARRY_RECOVERY`
+- `PLAYER_PARRY_STAMINA_RESTORE`
+- `PLAYER_PARRY_DAMAGE`
+- `PLAYER_PARRY_STAGGER`
+- `PLAYER_PARRY_KNOCKBACK`
+- `BOSS_PARRY_STAGGER_RESIST`
+
+Player-side timing lives in `scripts/player/PlayerController.gd`.
+
+Enemy/projectile parry checks live in `scripts/enemies/ShrineGuardian.gd` and `scripts/enemies/EnemyProjectile.gd`.
 
 ## Ash Brand Rules
 
@@ -120,6 +144,7 @@ Enemy sprites live in:
 - `assets/sprites/upgrade/hound_*.png`
 - `assets/sprites/upgrade/archer_*.png`
 - `assets/sprites/upgrade/elite_*.png`
+- `assets/sprites/upgrade/judicator_*.png`
 
 Sprite selection happens in:
 
@@ -146,7 +171,7 @@ Wall, broken wall, and altar rendering live in `scripts/world/ShrineWallVisual.g
 
 Stone tile textures live in `assets/environment/upgrade/`.
 
-Torch, pillar, and broken wall raster props also live in `assets/environment/upgrade/`.
+Torch, pillar, broken wall, stairs, brazier, sealed door, bone debris, and reliquary raster props also live in `assets/environment/upgrade/`.
 
 Natural floor slab generation lives in `scripts/world/ShrineRouteLayer.gd` in `_build_floor_cells`.
 
@@ -154,11 +179,24 @@ Natural floor slab generation lives in `scripts/world/ShrineRouteLayer.gd` in `_
 
 Edit `scripts/trial/AshTrial.gd`.
 
-Current waves:
+Current stages:
 
-- Wave 1: two `guardian`
-- Wave 2: one `hound`, one `guardian`
-- Wave 3: one `archer`, one `guardian`
-- Final: one `bell_bearer`
+- Stage 1: one `guardian`
+- Stage 2: two `guardian`, one `hound`
+- Stage 3: one `hound`, one `guardian`, one `archer`
+- Stage 4: two `archer`, one `guardian`
+- Stage 5: one `bell_bearer`, one `hound`
+- Final: one `ashen_judicator`
 
-Keep Stage 1 changes focused on this small combat trial unless the project scope changes.
+Keep new encounters inside the shrine route until the core combat survives human playtesting.
+
+## Boss Pattern Setup
+
+The Ashen Judicator uses `attack_style = "boss"` in `GameBalance.ENEMY_CONFIGS`.
+
+Pattern cycling lives in `scripts/enemies/ShrineGuardian.gd` in `_begin_attack`, `_update_attack_hitbox`, and the `EnemyState.ACTIVE` branch. Current patterns are:
+
+- `sweep`
+- `lunge`
+- `slam`
+- `toll`

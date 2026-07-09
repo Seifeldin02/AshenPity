@@ -182,3 +182,27 @@ The older Raylib prototype was not reused because it was an abandoned technical 
 - `godot_console --path . --quit-after 3`: passed.
 - Harness snapshot on the development PC: about 171 FPS reported, display refresh about 170 Hz, p95 frame time 8.33 ms under fixed 120 FPS simulation, physics 120 Hz.
 - The harness still reports the existing ObjectDB leak warning at exit.
+
+## v0.5 Shrine Expansion and Parry Pass
+
+- Added `E` parry and mobile Parry support. Parry has a short startup, active window, stamina cost, recovery, stamina restore on success, and enemy stagger/damage payoff.
+- Heavy attack spam was constrained by `PLAYER_HEAVY_CHAIN_WINDOW`, `PLAYER_HEAVY_CHAIN_COST_STEP`, and `PLAYER_HEAVY_CHAIN_MAX`. The first heavy keeps its normal cost, then repeated heavies become increasingly expensive inside the chain window.
+- Added the Ashen Judicator as a first-pass final encounter. It uses the existing enemy architecture with `attack_style = "boss"` and cycles four readable patterns: sweep, lunge, slam, and toll projectiles.
+- Expanded the shrine route into six playable beats: entrance lesson, central shrine, west ossuary, east reliquary, north nave/Bell Gate, and final sanctum. The first room remains a simpler tutorial space.
+- Added generated v0.5 raster assets for Judicator sprites, stairs, ash brazier, sealed door, bone debris, and reliquary shelves.
+- Replaced remaining hand-drawn stairs/central landmark rendering with runtime raster props in `ShrineRouteLayer.gd`.
+- Updated deterministic tests for heavy anti-spam, parry timing, Judicator config, expanded route bounds, parry interaction, Judicator screenshot coverage, and the full six-stage Ash Trial.
+
+### v0.5 Verification
+
+- `godot_console --headless --path . -s tests/test_runner.gd`: passed.
+- `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
+- `godot_console --path . --quit-after 5`: passed.
+- Harness snapshot on the development PC: 170 FPS reported, display refresh about 170 Hz, p95 frame time 8.33 ms under fixed 120 FPS simulation, physics 120 Hz.
+- Known warning remains: the display playtest harness reports ObjectDB leaked instances at exit.
+
+### v0.5 Needs Human Judgment
+
+- Whether parry timing feels fair during real keyboard/mouse combat.
+- Whether the Judicator's lunge, slam, and toll attacks are readable enough without becoming easy.
+- Whether the expanded route has the right density of fights versus movement.

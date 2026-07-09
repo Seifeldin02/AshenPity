@@ -6,25 +6,25 @@ This repository is the real Godot foundation for the project. The older Raylib t
 
 ## Current Prototype Status
 
-Stage 1.3 is a compact combat identity sandbox. The build label is:
+Version 0.5 is a shrine expansion combat sandbox. The build label is:
 
 ```text
-Ashen Pity - Combat Identity v0.3.0
+Ashen Pity - Shrine Expansion v0.5.0
 ```
 
 Current scope:
 
 - Title screen into the shrine arena.
 - One playable hooded wanderer.
-- Fast mouse-aimed movement, dodge, light combo, heavy attack, flask, and death/restart.
+- Fast mouse-aimed movement, dodge, parry, light combo, heavy attack, flask, and death/restart.
 - Ash Brand: a perfect dodge through an enemy attack marks that enemy.
 - Collect: landing follow-up hits on a Branded enemy opens a `Q` dash-through payoff.
-- One repeatable Ash Trial encounter in the existing shrine route.
-- Enemy variants for the trial: Shrine Guardian, Ashbound Hound, Reliquary Archer, and Bell-Bearer elite.
+- One repeatable six-stage Ash Trial through the expanded shrine route.
+- Enemy variants for the trial: Shrine Guardian, Ashbound Hound, Reliquary Archer, Bell-Bearer elite, and Ashen Judicator final encounter.
 - Minimal Ash Trial Complete summary with replay.
 - Desktop controls and mobile-oriented controls using the same input router.
 
-This stage does not include relic pulls, pity systems, permanent upgrades, shops, save files, procedural generation, character selection, long-term progression, or a full boss.
+This version does not include relic pulls, pity systems, permanent upgrades, shops, save files, procedural generation, character selection, or long-term progression.
 
 ## PC Controls
 
@@ -33,6 +33,7 @@ This stage does not include relic pulls, pity systems, permanent upgrades, shops
 - Left mouse: Three-hit light combo
 - Right mouse: Heavy attack
 - `Space`: Dodge roll
+- `E`: Parry
 - `Q`: Collect when Ash Brand is primed
 - `F`: Healing flask
 - `Escape`: Pause
@@ -47,6 +48,7 @@ This stage does not include relic pulls, pity systems, permanent upgrades, shops
 - Attack button: Light combo
 - Heavy button: Heavy attack
 - Dodge button: Dodge roll
+- Parry button: Parry
 - Flask button: Heal
 - Collect button: Appears when Collect is available
 - Pause button: Pause
@@ -91,13 +93,16 @@ godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn
 
 ## Shrine Route
 
-The current level remains the compact three-part shrine route from Stage 1.1:
+The current level is an expanded but still compact shrine route:
 
 - Shrine Entrance Hall: start area with broken walls, torches, and a side alcove.
 - Central Shrine Arena: irregular combat space with side paths, pillars, broken walls, and a cracked ash brazier landmark.
-- Broken Altar Platform: northern destination with stairs, a raised-looking platform, and a broken altar.
+- West Ossuary: side chamber with bone debris and pressure from fast enemies.
+- East Reliquary: side chamber with ranged crossfire and shelf props.
+- North Nave: transition area before the final gate.
+- Broken Altar and Sanctum: raised-looking destination and Ashen Judicator final encounter.
 
-Stage 1.3 keeps the world small and uses the central shrine area for the Ash Trial combat sandbox.
+The first room stays simple enough to function as a tutorial space.
 
 ## Project Structure
 
@@ -117,11 +122,11 @@ tools/            local helper scripts
 
 ## Where To Edit Core Systems
 
-- Player movement, dodge, combo, heavy, Collect, stamina, damage, and flask: `scripts/player/PlayerController.gd`.
-- Combat timing, dodge cancel, stamina costs, counter hits, rear hits, stagger, enemy health, and enemy tuning: `scripts/autoload/GameBalance.gd`.
+- Player movement, dodge, parry, combo, heavy, Collect, stamina, damage, and flask: `scripts/player/PlayerController.gd`.
+- Combat timing, dodge cancel, parry timing, heavy anti-spam costs, stamina costs, counter hits, rear hits, stagger, enemy health, and enemy tuning: `scripts/autoload/GameBalance.gd`.
 - Desktop, touch, and simulated test input: `scripts/autoload/InputRouter.gd`.
 - Ash Trial waves and enemy spawning: `scripts/trial/AshTrial.gd`.
-- Enemy behavior for Guardian, Hound, Archer, and Bell-Bearer: `scripts/enemies/ShrineGuardian.gd`.
+- Enemy behavior for Guardian, Hound, Archer, Bell-Bearer, and Ashen Judicator: `scripts/enemies/ShrineGuardian.gd`.
 - Enemy projectile behavior: `scripts/enemies/EnemyProjectile.gd`.
 - Player visual drawing and slash trails: `scripts/player/PlayerVisual.gd`.
 - Enemy visual drawing and Ash Brand indicators: `scripts/enemies/ShrineGuardianVisual.gd`.
@@ -129,7 +134,7 @@ tools/            local helper scripts
 - Lightweight combat VFX and bounded hit arcs: `scripts/effects/CombatEffect.gd`.
 - HUD, enemy bars, Ash Brand/Collect indicator, trial summary, and debug overlay: `scripts/ui/HUD.gd` and `scenes/ui/HUD.tscn`.
 - Shrine route layout, walls, obstacles, torches, spawns, and camera limits: `scripts/world/ShrineRoute.gd`.
-- Naturalized floor drawing: `scripts/world/ShrineRouteLayer.gd`.
+- Naturalized floor and room landmark drawing: `scripts/world/ShrineRouteLayer.gd`.
 - Torch, pillar, wall, and broken wall prop visuals: `scripts/world/ShrineProp.gd` and `scripts/world/ShrineWallVisual.gd`.
 
 More detail is in `docs/FILE_MAP.md` and `docs/EDITING_GUIDE.md`.
@@ -141,7 +146,7 @@ More detail is in `docs/FILE_MAP.md` and `docs/EDITING_GUIDE.md`.
 - The Ash Trial enemy variants share one configurable enemy controller and scene.
 - Touch controls need real landscape phone testing.
 - Balance is first-pass and must be judged through human playtesting.
-- The Bell-Bearer is an elite sandbox enemy, not a full boss.
+- The Ashen Judicator is a first-pass final encounter, not production boss design.
 - No Android export is produced in this stage.
 - No progression, relic, pity, shop, save, or reward economy exists yet by design.
 

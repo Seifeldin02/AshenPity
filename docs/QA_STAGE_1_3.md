@@ -1,7 +1,13 @@
-# QA Stage 1.3 Visual Combat Upgrade
+# QA v0.5 Shrine Expansion
 
 ## What Changed
 
+- Added parry on `E` and the mobile Parry button.
+- Added heavy attack chain stamina scaling so repeated heavies become expensive instead of being the default winning strategy.
+- Expanded the Ash Trial from four waves to six stages across the shrine route.
+- Added the Ashen Judicator final encounter with sweep, lunge, slam, and toll projectile patterns.
+- Expanded the shrine route with west ossuary, east reliquary, north nave, and final sanctum spaces while leaving the first room as a safer tutorial space.
+- Added generated Judicator sprite variants and generated raster shrine props for stairs, brazier, sealed door, bone debris, and reliquary shelves.
 - Replaced the previous small placeholder actor sprites with a darker Dungeon Crawl based hooded player and four distinct enemy silhouettes.
 - Replaced the weak combat cue bank with StarNinjas sword impacts and rubberduck RPG sounds.
 - Removed texture-based slash rendering from player/enemy attacks so a bad slash texture cannot cover the screen.
@@ -16,20 +22,30 @@ Run after implementation:
 ```powershell
 godot_console --headless --path . -s tests/test_runner.gd
 godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn
-godot_console --path . --quit-after 3
+godot_console --path . --quit-after 5
 ```
 
 ## Automated Coverage
 
-The logic tests cover stamina, dodge gating, 120 Hz physics, enemy damage, invulnerability, movement normalization, route/camera bounds, aim direction, frame-rate independence, attack buffering, perfect-dodge timing, Ash Brand progress, and enemy configs.
+The logic tests cover stamina, dodge gating, 120 Hz physics, enemy damage, invulnerability, movement normalization, route/camera bounds, aim direction, frame-rate independence, attack buffering, perfect-dodge timing, heavy anti-spam cost scaling, parry timing values, Ash Brand progress, and enemy configs.
 
-The playtest harness uses `InputRouter` and exercises route movement, visibility screenshots, actor variants, screen-edge aim, moving light attacks, heavy attacks, dodge direction, perfect dodge, Ash Brand, Collect, flask interruption, and clearing the Ash Trial.
+The playtest harness uses `InputRouter` and exercises route movement, visibility screenshots, actor variants including Ashen Judicator, screen-edge aim, moving light attacks, heavy attacks, dodge direction, parry, perfect dodge, Ash Brand, Collect, flask interruption, and clearing the six-stage Ash Trial.
+
+Latest local results:
+
+- `godot_console --headless --path . -s tests/test_runner.gd`: passed.
+- `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
+- `godot_console --path . --quit-after 5`: passed.
+- Harness performance snapshot: 170 FPS reported, 170 Hz display refresh, 8.33 ms p95 frame time under fixed 120 FPS simulation, physics 120 Hz.
+- Known warning: the playtest harness still reports ObjectDB leaked instances at process exit.
 
 ## What Automation Cannot Judge
 
 - Whether the new public-domain actor art is the right long-term style for Ashen Pity.
 - Whether the new hit sounds feel strong enough on real speakers/headphones.
+- Whether parry feels strict-but-fair in real fights.
 - Whether Collect feels satisfying when earned naturally in a real fight.
+- Whether the Judicator patterns are readable and punishable without feeling cheap.
 - Whether the hound, archer, guardian, and elite are clear enough under combat pressure.
 - Whether the brighter tiled shrine route has the right amount of depth without becoming visually noisy.
 
@@ -40,3 +56,5 @@ The playtest harness uses `InputRouter` and exercises route movement, visibility
 3. Confirm hit stop, screen shake, sound, flash, knockback, and particles are noticeable but not obnoxious.
 4. Confirm all four enemy sprites are distinct in motion.
 5. Confirm the map feels more like a shrine route and less like a flat rectangle.
+6. Confirm heavy spam is no longer the best strategy.
+7. Confirm the expanded stages do not feel like walking too far between fights.
