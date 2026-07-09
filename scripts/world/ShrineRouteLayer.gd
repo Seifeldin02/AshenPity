@@ -85,36 +85,40 @@ func _draw_foreground() -> void:
 
 
 func _draw_room_floor(room: Rect2) -> void:
-	var base_tint := Color(0.70, 0.66, 0.64, 0.82)
+	var base_tint := Color("#2c2927")
 	if room == Route.ALTAR:
-		base_tint = Color(0.82, 0.72, 0.66, 0.90)
+		base_tint = Color("#332b29")
 	elif room == Route.PILGRIM_COURT or room == Route.SOUTH_STEPS:
-		base_tint = Color(0.62, 0.53, 0.49, 0.86)
+		base_tint = Color("#2f2825")
 	elif room == Route.SIDE_ALCOVE or room == Route.LEFT_SIDE_PATH or room == Route.RIGHT_SIDE_PATH:
-		base_tint = Color(0.58, 0.55, 0.58, 0.82)
+		base_tint = Color("#29272b")
 	elif room == Route.WEST_OSSUARY or room == Route.WEST_DEEP_CRYPT:
-		base_tint = Color(0.60, 0.55, 0.49, 0.86)
+		base_tint = Color("#292622")
 	elif room == Route.EAST_RELIQUARY or room == Route.EAST_DEEP_CHAPEL:
-		base_tint = Color(0.64, 0.60, 0.66, 0.84)
+		base_tint = Color("#292932")
 	elif room == Route.BOSS_SANCTUM:
-		base_tint = Color(0.76, 0.56, 0.54, 0.90)
+		base_tint = Color("#332222")
 	draw_rect(room.grow(24.0), Color("#17151b"))
+	draw_rect(room, base_tint)
 	for cell in _floor_cells:
 		if cell["room"] != room:
 			continue
 		var rect: Rect2 = cell["rect"]
 		_draw_tiled_texture(_textures.get(str(cell["texture"])), rect, cell["tint"])
-		draw_rect(rect.grow(-1.0), Color(0.02, 0.018, 0.020, 0.12), false, 1.0)
 		if bool(cell["worn"]):
-			_draw_tiled_texture(_textures.get("floor_ash"), rect, Color(0.34, 0.30, 0.26, 0.22))
+			_draw_tiled_texture(_textures.get("floor_ash"), rect, Color(0.24, 0.21, 0.18, 0.12))
+	for x in range(int(room.position.x), int(room.end.x), 128):
+		draw_line(Vector2(x, room.position.y + 8.0), Vector2(x, room.end.y - 8.0), Color(0.03, 0.028, 0.030, 0.16), 1.0)
+	for y in range(int(room.position.y), int(room.end.y), 128):
+		draw_line(Vector2(room.position.x + 8.0, y), Vector2(room.end.x - 8.0, y), Color(0.03, 0.028, 0.030, 0.16), 1.0)
 	for i in 3:
 		var band_y := room.position.y + room.size.y * (0.28 + float(i) * 0.20)
 		draw_line(Vector2(room.position.x + 25, band_y), Vector2(room.end.x - 25, band_y + sin(float(i) * 1.8) * 18.0), Color(0.50, 0.42, 0.32, 0.018), 16.0)
 
 
 func _draw_room_trim(room: Rect2, color: Color) -> void:
-	draw_rect(room, color, false, 8.0)
-	draw_rect(room.grow(-12.0), Color(0.08, 0.07, 0.08, 0.45), false, 3.0)
+	var trim := Color(color.r, color.g, color.b, 0.22)
+	draw_rect(room.grow(-2.0), trim, false, 2.0)
 
 
 func _draw_exterior_courtyard() -> void:
@@ -145,11 +149,9 @@ func _draw_irregular_edges() -> void:
 	draw_colored_polygon(left_apron, Color("#25232a"))
 	draw_colored_polygon(right_apron, Color("#25232a"))
 	draw_colored_polygon(altar_apron, Color("#2b252b"))
-	draw_polyline(left_apron + PackedVector2Array([left_apron[0]]), Color("#4a4149"), 5.0)
-	draw_polyline(right_apron + PackedVector2Array([right_apron[0]]), Color("#4a4149"), 5.0)
-	draw_polyline(altar_apron + PackedVector2Array([altar_apron[0]]), Color("#56484c"), 6.0)
-	draw_line(Vector2(-640, 0), Vector2(-300, 0), Color(0.78, 0.58, 0.32, 0.12), 10.0)
-	draw_line(Vector2(300, 0), Vector2(640, 0), Color(0.78, 0.58, 0.32, 0.12), 10.0)
+	draw_polyline(left_apron + PackedVector2Array([left_apron[0]]), Color(0.32, 0.29, 0.32, 0.22), 3.0)
+	draw_polyline(right_apron + PackedVector2Array([right_apron[0]]), Color(0.32, 0.29, 0.32, 0.22), 3.0)
+	draw_polyline(altar_apron + PackedVector2Array([altar_apron[0]]), Color(0.36, 0.31, 0.32, 0.22), 3.0)
 
 
 func _draw_stairs() -> void:
@@ -216,15 +218,15 @@ func _build_floor_cells() -> void:
 						texture_key = "floor_warm" if roll < 0.62 else "floor_b"
 					elif roll > 0.78:
 						texture_key = "floor_b"
-					var tint := Color(0.62, 0.58, 0.54, floor_rng.randf_range(0.66, 0.80))
+					var tint := Color(0.56, 0.53, 0.49, floor_rng.randf_range(0.24, 0.36))
 					if room == Route.BOSS_SANCTUM:
-						tint = Color(0.70, 0.49, 0.48, floor_rng.randf_range(0.66, 0.80))
+						tint = Color(0.60, 0.39, 0.38, floor_rng.randf_range(0.24, 0.34))
 					elif room == Route.PILGRIM_COURT or room == Route.SOUTH_STEPS:
-						tint = Color(0.60, 0.51, 0.45, floor_rng.randf_range(0.64, 0.76))
+						tint = Color(0.54, 0.46, 0.40, floor_rng.randf_range(0.24, 0.34))
 					elif room == Route.EAST_RELIQUARY or room == Route.EAST_DEEP_CHAPEL:
-						tint = Color(0.56, 0.55, 0.62, floor_rng.randf_range(0.64, 0.76))
+						tint = Color(0.48, 0.48, 0.56, floor_rng.randf_range(0.24, 0.34))
 					elif room == Route.WEST_OSSUARY or room == Route.WEST_DEEP_CRYPT:
-						tint = Color(0.50, 0.47, 0.42, floor_rng.randf_range(0.64, 0.78))
+						tint = Color(0.43, 0.40, 0.36, floor_rng.randf_range(0.24, 0.34))
 					_floor_cells.append({
 						"room": room,
 						"rect": rect,

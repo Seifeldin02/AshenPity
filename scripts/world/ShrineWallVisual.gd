@@ -26,18 +26,17 @@ func _draw() -> void:
 func _draw_wall() -> void:
 	draw_rect(Rect2(-size * 0.5, size), Color(0, 0, 0, 0))
 	var rect := Rect2(-size * 0.5, size)
-	draw_rect(Rect2(-size * 0.5 + Vector2(10, 12), size), Color(0.02, 0.016, 0.020, 0.48))
-	draw_rect(rect, Color("#27232a"))
+	draw_rect(Rect2(rect.position + Vector2(8, 12), rect.size), Color(0.02, 0.016, 0.020, 0.34))
+	draw_rect(rect, Color("#30282a"))
 	if _wall_texture != null:
-		draw_texture_rect(_wall_texture, rect, true, Color(0.56, 0.50, 0.49, 0.92))
+		draw_texture_rect(_wall_texture, rect, true, Color(0.50, 0.42, 0.38, 0.20))
 	else:
 		draw_rect(Rect2(Vector2(-size.x * 0.5, -size.y * 0.5), size), Color("#302b33"))
-	draw_rect(Rect2(Vector2(-size.x * 0.5 + 8.0, -size.y * 0.5 + 7.0), size - Vector2(16, 14)), Color("#18161c"), false, 3.0)
-	draw_line(Vector2(-size.x * 0.5, -size.y * 0.5 + 9.0), Vector2(size.x * 0.5, -size.y * 0.5 + 9.0), Color(0.68, 0.58, 0.44, 0.18), 3.0)
-	draw_line(Vector2(-size.x * 0.5, size.y * 0.5 - 7.0), Vector2(size.x * 0.5, size.y * 0.5 - 7.0), Color(0.02, 0.018, 0.022, 0.38), 4.0)
-	for i in int(size.x / 96.0) + 1:
-		var x := -size.x * 0.5 + 18.0 + float(i) * 92.0
-		draw_line(Vector2(x, -size.y * 0.46), Vector2(x - 18.0, size.y * 0.35), Color(0.08, 0.07, 0.08, 0.20), 2.0)
+	var inner := Rect2(Vector2(-size.x * 0.5 + 5.0, -size.y * 0.5 + 5.0), size - Vector2(10, 10))
+	draw_rect(inner, Color(0.02, 0.018, 0.022, 0.42), false, 2.0)
+	draw_line(Vector2(-size.x * 0.5, -size.y * 0.5 + 7.0), Vector2(size.x * 0.5, -size.y * 0.5 + 7.0), Color(0.72, 0.55, 0.40, 0.16), 3.0)
+	draw_line(Vector2(-size.x * 0.5, size.y * 0.5 - 5.0), Vector2(size.x * 0.5, size.y * 0.5 - 5.0), Color(0.02, 0.018, 0.022, 0.34), 4.0)
+	_draw_block_lines(rect, 72.0, 34.0, Color(0.08, 0.065, 0.065, 0.18))
 
 
 func _draw_broken_wall() -> void:
@@ -45,11 +44,15 @@ func _draw_broken_wall() -> void:
 	var left := Rect2(-size.x * 0.5, -size.y * 0.5, size.x * 0.43, size.y)
 	var right := Rect2(size.x * 0.06, -size.y * 0.42, size.x * 0.43, size.y * 0.86)
 	if _broken_wall_texture != null:
-		draw_texture_rect(_broken_wall_texture, left, true, Color(0.52, 0.48, 0.46, 0.90))
-		draw_texture_rect(_broken_wall_texture, right, true, Color(0.44, 0.40, 0.41, 0.90))
+		draw_rect(left, Color("#342d2e"))
+		draw_texture_rect(_broken_wall_texture, left, true, Color(0.50, 0.43, 0.39, 0.18))
+		draw_rect(right, Color("#2b2629"))
+		draw_texture_rect(_broken_wall_texture, right, true, Color(0.44, 0.38, 0.36, 0.16))
 	else:
 		draw_rect(left, Color("#343039"))
 		draw_rect(right, Color("#29252d"))
+	_draw_block_lines(left, 46.0, 28.0, Color(0.08, 0.065, 0.065, 0.20))
+	_draw_block_lines(right, 46.0, 28.0, Color(0.08, 0.065, 0.065, 0.18))
 	draw_line(Vector2(-size.x * 0.18, -size.y * 0.45), Vector2(-size.x * 0.02, size.y * 0.26), Color("#151319"), 4.0)
 	draw_line(Vector2(size.x * 0.2, -size.y * 0.34), Vector2(size.x * 0.38, size.y * 0.16), Color("#4e4649"), 3.0)
 
@@ -59,7 +62,8 @@ func _draw_altar() -> void:
 	draw_rect(Rect2(-size * 0.5, size), Color(0, 0, 0, 0))
 	var body := Rect2(Vector2(-size.x * 0.5, -size.y * 0.45), Vector2(size.x, size.y * 0.9))
 	if _brick_texture != null:
-		draw_texture_rect(_brick_texture, body, true, Color(0.72, 0.58, 0.52, 0.92))
+		draw_rect(body, Color("#46393a"))
+		draw_texture_rect(_brick_texture, body, true, Color(0.62, 0.52, 0.46, 0.20))
 	else:
 		draw_rect(body, Color("#46393a"))
 	draw_rect(Rect2(Vector2(-size.x * 0.38, -size.y * 0.62), Vector2(size.x * 0.76, size.y * 0.34)), Color("#67544a"))
@@ -77,6 +81,23 @@ func _load_texture(path: String) -> Texture2D:
 func _draw_texture_centered(texture: Texture2D, offset: Vector2, scale_value: Vector2, tint: Color) -> void:
 	var size_value := texture.get_size() * scale_value
 	draw_texture_rect(texture, Rect2(offset - size_value * 0.5, size_value), false, tint)
+
+
+func _draw_block_lines(rect: Rect2, block_width: float, row_height: float, color: Color) -> void:
+	var y := rect.position.y + row_height
+	var row := 0
+	while y < rect.end.y - 4.0:
+		draw_line(Vector2(rect.position.x + 4.0, y), Vector2(rect.end.x - 4.0, y), color, 1.0)
+		y += row_height
+	while row * row_height < rect.size.y:
+		var offset := 0.0 if row % 2 == 0 else block_width * 0.5
+		var x := rect.position.x + offset + block_width
+		var y0 := rect.position.y + float(row) * row_height + 4.0
+		var y1 := minf(y0 + row_height - 8.0, rect.end.y - 4.0)
+		while x < rect.end.x - 4.0:
+			draw_line(Vector2(x, y0), Vector2(x, y1), color, 1.0)
+			x += block_width
+		row += 1
 
 
 func _ellipse(center: Vector2, radius_x: float, radius_y: float) -> PackedVector2Array:
