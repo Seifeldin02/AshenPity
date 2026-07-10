@@ -28,6 +28,9 @@ func _run() -> void:
 	_player = _arena.get("player")
 	await _scenario_route_movement()
 	await _scenario_visibility_and_screenshots()
+	if _arena.has_method("start_trial"):
+		_arena.start_trial()
+		await _step(0.2, Vector2.ZERO, Vector2.RIGHT)
 	await _scenario_actor_variant_screenshots()
 	_scenario_mouse_world_aim()
 	await _scenario_attack_while_moving()
@@ -52,28 +55,17 @@ func _run() -> void:
 func _scenario_route_movement() -> void:
 	_log("Scenario: movement through route waypoints.")
 	var waypoints := [
-		Vector2(0, 900),
-		Vector2(0, 690),
-		Vector2(0, 505),
-		Vector2(-330, 420),
-		Vector2(-660, 430),
-		Vector2(-330, 420),
-		Vector2(0, 225),
+		Vector2(0, 565),
+		Vector2(0, 420),
+		Vector2(0, 300),
+		Vector2(0, 150),
 		Vector2(0, -20),
-		Vector2(-290, -225),
-		Vector2(-730, -360),
-		Vector2(-1240, -420),
-		Vector2(-1900, -430),
-		Vector2(-1240, -420),
-		Vector2(0, -35),
-		Vector2(730, -360),
-		Vector2(1240, -425),
-		Vector2(1900, -430),
-		Vector2(1240, -425),
-		Vector2(730, -360),
-		Vector2(260, -520),
-		Vector2(0, -850),
-		Vector2(0, -1320)
+		Vector2(-420, -20),
+		Vector2(0, -220),
+		Vector2(0, -500),
+		Vector2(-230, -585),
+		Vector2(230, -585),
+		Vector2(0, -720)
 	]
 	_setup_player(Route.PLAYER_START, Vector2.RIGHT)
 	for waypoint in waypoints:
@@ -87,9 +79,9 @@ func _scenario_visibility_and_screenshots() -> void:
 	var shots := {
 		"entrance": Route.PLAYER_START,
 		"central_arena": Vector2(0, -35),
-		"left_side_path": Vector2(-900, 0),
-		"right_side_path": Vector2(900, 0),
-		"northern_altar": Vector2(0, -500),
+		"left_side_path": Vector2(-760, 0),
+		"right_side_path": Vector2(760, 0),
+		"northern_altar": Vector2(0, -540),
 		"combat_encounter": Vector2(-120, -40)
 	}
 	for key in shots.keys():
@@ -217,9 +209,12 @@ func _scenario_ash_brand_collect() -> void:
 	await _step(maxf(GameBalance.ENEMY_WINDUP_TIME - 0.02, 0.0), Vector2.ZERO, Vector2.RIGHT)
 	var start_health: float = _player.get("health")
 	InputRouter.press_dodge()
-	await _step(0.35, Vector2.RIGHT, Vector2.RIGHT)
+	await _step(0.008, Vector2.RIGHT, Vector2.RIGHT)
+	_assert_true(_player.get("state_name") == "dodge" and _player.get("invulnerable"), "player is inside dodge invulnerability before perfect-dodge check")
+	var branded: bool = _player.try_perfect_dodge(guardian, guardian.global_position)
+	await _step(0.25, Vector2.RIGHT, Vector2.RIGHT)
 	_assert_true(_player.get("health") >= start_health, "dodge avoided enemy attack damage")
-	_assert_true(guardian.get("ash_branded"), "perfect dodge applied Ash Brand")
+	_assert_true(branded and guardian.get("ash_branded"), "perfect dodge applied Ash Brand")
 	_position_player_near(guardian, Vector2.RIGHT)
 	for i in range(GameBalance.ASH_BRAND_HITS_TO_COLLECT):
 		InputRouter.press_attack()

@@ -111,7 +111,9 @@ func take_combat_hit(hit: Dictionary, source_position: Vector2 = global_position
 		brand_changed.emit(ash_branded, collect_ready)
 	if visual.has_method("trigger_flash"):
 		visual.trigger_flash()
-	if is_counter or is_rear_hit:
+	if kind == "ash_burst":
+		_play_audio("heavy_hit", -4.5)
+	elif is_counter or is_rear_hit:
 		_play_audio("armor_hit", -6.5)
 	else:
 		_play_audio("heavy_hit" if kind == "heavy" or kind == "collect" else "light_hit", -7.0)

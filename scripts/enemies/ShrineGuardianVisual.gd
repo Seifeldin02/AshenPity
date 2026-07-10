@@ -132,12 +132,12 @@ func _select_frame() -> Texture2D:
 
 func _sprite_scale() -> Vector2:
 	if enemy_kind == "hound":
-		return Vector2(0.58, 0.58)
+		return Vector2(0.64, 0.64)
 	if enemy_kind == "bell_bearer":
-		return Vector2(0.66, 0.66)
+		return Vector2(0.76, 0.76)
 	if enemy_kind == "ashen_judicator":
 		return Vector2(0.76, 0.76)
-	return Vector2(0.60, 0.60)
+	return Vector2(0.68, 0.68)
 
 
 func _bob_offset() -> float:
@@ -179,13 +179,13 @@ func _body_scale() -> Vector2:
 
 func _draw_shadow() -> void:
 	var width := 44.0
-	var y := 23.0
+	var y := 25.0
 	if enemy_kind == "hound":
-		width = 52.0
-		y = 20.0
+		width = 58.0
+		y = 22.0
 	elif enemy_kind == "bell_bearer":
-		width = 60.0
-		y = 27.0
+		width = 72.0
+		y = 31.0
 	elif enemy_kind == "ashen_judicator":
 		width = 76.0
 		y = 32.0

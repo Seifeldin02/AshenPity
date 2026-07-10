@@ -6,75 +6,24 @@ signal enemies_changed(enemies: Array[Node])
 
 const WAVES := [
 	{
-		"label": "Stage 1 - Pilgrim Court",
+		"label": "Stage 1 - Shrine Wake",
 		"spawns": [
-			{"kind": "guardian", "pos": Vector2(140, 850)}
+			{"kind": "guardian", "pos": Vector2(-210, -40)},
+			{"kind": "hound", "pos": Vector2(230, 20)}
 		]
 	},
 	{
-		"label": "Stage 2 - Entrance Lesson",
+		"label": "Stage 2 - Reliquary Pressure",
 		"spawns": [
-			{"kind": "guardian", "pos": Vector2(-210, 150)},
-			{"kind": "hound", "pos": Vector2(85, 390)}
+			{"kind": "archer", "pos": Vector2(420, -120)},
+			{"kind": "guardian", "pos": Vector2(-380, 130)}
 		]
 	},
 	{
-		"label": "Stage 3 - Central Shrine",
+		"label": "Final - Bell-Bearer Trial",
 		"spawns": [
-			{"kind": "guardian", "pos": Vector2(-320, -85)},
-			{"kind": "guardian", "pos": Vector2(310, -100)},
-			{"kind": "hound", "pos": Vector2(55, 155)}
-		]
-	},
-	{
-		"label": "Stage 4 - Deep Ossuary",
-		"spawns": [
-			{"kind": "hound", "pos": Vector2(-1880, -430)},
-			{"kind": "hound", "pos": Vector2(-1720, -245)},
-			{"kind": "guardian", "pos": Vector2(-1240, -420)},
-			{"kind": "archer", "pos": Vector2(-2020, -555)}
-		]
-	},
-	{
-		"label": "Stage 5 - Reliquary Crossfire",
-		"spawns": [
-			{"kind": "archer", "pos": Vector2(1050, -520)},
-			{"kind": "archer", "pos": Vector2(1900, -525)},
-			{"kind": "archer", "pos": Vector2(1310, -330)},
-			{"kind": "guardian", "pos": Vector2(1770, -265)}
-		]
-	},
-	{
-		"label": "Stage 6 - Bell Gate",
-		"spawns": [
-			{"kind": "bell_bearer", "pos": Vector2(0, -830)},
-			{"kind": "hound", "pos": Vector2(-380, -820)},
-			{"kind": "archer", "pos": Vector2(410, -880)}
-		]
-	},
-	{
-		"label": "Stage 7 - Split Crypts",
-		"spawns": [
-			{"kind": "hound", "pos": Vector2(-1880, -500)},
-			{"kind": "guardian", "pos": Vector2(-1710, -280)},
-			{"kind": "archer", "pos": Vector2(1810, -500)},
-			{"kind": "hound", "pos": Vector2(2020, -305)}
-		]
-	},
-	{
-		"label": "Stage 8 - Nave Pressure",
-		"spawns": [
-			{"kind": "bell_bearer", "pos": Vector2(-360, -885)},
-			{"kind": "guardian", "pos": Vector2(360, -850)},
-			{"kind": "archer", "pos": Vector2(0, -1010)}
-		]
-	},
-	{
-		"label": "Final - Ashen Judicator",
-		"spawns": [
-			{"kind": "ashen_judicator", "pos": Vector2(0, -1295)},
-			{"kind": "guardian", "pos": Vector2(-315, -1170)},
-			{"kind": "guardian", "pos": Vector2(315, -1170)}
+			{"kind": "bell_bearer", "pos": Vector2(0, -365)},
+			{"kind": "hound", "pos": Vector2(-290, -190)}
 		]
 	}
 ]

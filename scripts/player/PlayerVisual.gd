@@ -48,7 +48,7 @@ func _draw() -> void:
 	var bob := _bob_offset()
 	var flip := -1.0 if facing.x < -0.12 else 1.0
 	var tint := Color.WHITE.lerp(Color(1.0, 0.34, 0.24), flash)
-	draw_colored_polygon(_ellipse(Vector2(0, 21), 27.0, 8.0), Color(0.02, 0.018, 0.022, 0.52))
+	draw_colored_polygon(_ellipse(Vector2(0, 24), 31.0, 9.0), Color(0.02, 0.018, 0.022, 0.52))
 	if state_name == "dodge":
 		_draw_dodge_afterimages(flip, tint)
 	if attack_alpha > 0.0:
@@ -58,9 +58,9 @@ func _draw() -> void:
 	var body_rotation := _body_rotation(flip)
 	var body_scale := _body_scale()
 	draw_set_transform(Vector2(0, bob), body_rotation, Vector2(flip * body_scale.x, body_scale.y))
-	_draw_texture_centered(frame, Vector2(0, -18), Vector2(0.56, 0.56), tint)
+	_draw_texture_centered(frame, Vector2(0, -22), Vector2(0.66, 0.66), tint)
 	if state_name == "idle" or state_name == "move":
-		_draw_texture_centered(_sprites["weapon"], Vector2(22, -22), Vector2(0.42, 0.42), Color.WHITE)
+		_draw_texture_centered(_sprites["weapon"], Vector2(27, -26), Vector2(0.48, 0.48), Color.WHITE)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
@@ -173,7 +173,7 @@ func _draw_dodge_afterimages(flip: float, tint: Color) -> void:
 		var offset := -facing * float(i + 1) * 22.0
 		var alpha := 0.20 - float(i) * 0.045
 		draw_set_transform(offset + Vector2(0, 3), 0.0, Vector2(flip, 1.0) * (1.0 - float(i) * 0.08))
-		_draw_texture_centered(_sprites["dodge"], Vector2(0, -18), Vector2(0.56, 0.56), Color(tint.r, tint.g, tint.b, alpha))
+		_draw_texture_centered(_sprites["dodge"], Vector2(0, -22), Vector2(0.66, 0.66), Color(tint.r, tint.g, tint.b, alpha))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 

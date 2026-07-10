@@ -85,8 +85,17 @@ const BOON_EMBER_STEP_KNOCKBACK_BONUS := 90.0
 const BOON_GRAVE_GUARD_STAMINA_RESTORE := 18.0
 const BOON_REAPER_VOW_STAMINA_RESTORE := 28.0
 const BOON_REAPER_VOW_FLASK_RESTORE := 1
+const ASH_BURST_COOLDOWN := 7.5
+const ASH_BURST_RADIUS := 185.0
+const ASH_BURST_DAMAGE := 42.0
+const ASH_BURST_STAGGER := 3.4
+const ASH_BURST_KNOCKBACK := 430.0
 
 const BOON_DATA := {
+	"ash_burst": {
+		"display_name": "Ash Burst",
+		"description": "Press R to detonate a close-range ash shockwave. Best used when surrounded or to stagger an elite."
+	},
 	"ember_step": {
 		"display_name": "Ember Step",
 		"description": "After a perfect dodge, your next left-click light hit burns harder and staggers more."

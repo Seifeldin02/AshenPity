@@ -25,6 +25,7 @@ var _hud: CanvasLayer
 var _mobile_controls: CanvasLayer
 var _screen_shake := 0.0
 var _shake_offset := Vector2.ZERO
+var _trial_started := false
 
 func _ready() -> void:
 	_rng.seed = 1312
@@ -199,7 +200,6 @@ func _spawn_combatants() -> void:
 	trial.enemies_changed.connect(_on_trial_enemies_changed)
 	trial.trial_completed.connect(_on_trial_completed)
 	trial.wave_started.connect(_on_trial_wave_started)
-	trial.start()
 	_apply_performance_mode()
 
 
@@ -232,6 +232,10 @@ func _on_hit_confirmed(kind: String = "light", hit_position: Vector2 = Vector2.Z
 		shake = 0.36
 		stop = 0.046
 		effect = "brand"
+	if kind == "ash_burst":
+		shake = 0.58
+		stop = 0.055
+		effect = "ash_burst"
 	if kind == "heavy":
 		shake = 0.42
 		stop = 0.050
@@ -278,6 +282,14 @@ func _on_loot_collected(_boon_id: String, display_name: String) -> void:
 		var data: Dictionary = GameBalance.BOON_DATA.get(_boon_id, {})
 		_hud.show_pickup("BOON CLAIMED: %s\n%s" % [display_name, str(data.get("description", "Run-only combat boon claimed."))])
 	EFFECT_SCRIPT.spawn(actors_and_tall_props, player.global_position if is_instance_valid(player) else Vector2.ZERO, "brand", Vector2.RIGHT, Color("#ff8f2a"))
+	start_trial.call_deferred()
+
+
+func start_trial() -> void:
+	if _trial_started or not is_instance_valid(trial):
+		return
+	_trial_started = true
+	trial.start()
 
 
 func _on_trial_completed() -> void:

@@ -97,6 +97,10 @@ func _on_collect_pressed() -> void:
 	InputRouter.press_collect()
 
 
+func _on_ash_burst_pressed() -> void:
+	InputRouter.press_ash_burst()
+
+
 func _on_parry_pressed() -> void:
 	InputRouter.press_parry()
 

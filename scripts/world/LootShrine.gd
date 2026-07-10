@@ -42,6 +42,7 @@ func _draw() -> void:
 	var sigil := _sigil_points()
 	draw_colored_polygon(sigil, Color(0.94, 0.55, 0.20, 0.88))
 	draw_polyline(sigil + PackedVector2Array([sigil[0]]), Color(1.0, 0.86, 0.48, 0.62), 2.0)
+	_draw_prompt()
 
 
 func _on_body_entered(body: Node) -> void:
@@ -69,6 +70,22 @@ func _sigil_points() -> PackedVector2Array:
 			return PackedVector2Array([Vector2(-18, -2), Vector2(-2, -18), Vector2(17, -8), Vector2(10, 12), Vector2(-10, 18)])
 		_:
 			return PackedVector2Array([Vector2(0, -20), Vector2(15, -2), Vector2(4, 19), Vector2(-16, 3)])
+
+
+func _draw_prompt() -> void:
+	var title := "CLAIM ASH BURST"
+	var subtitle := "R - close shockwave"
+	var font := ThemeDB.fallback_font
+	var title_size := 14
+	var sub_size := 11
+	var title_width := font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, title_size).x
+	var sub_width := font.get_string_size(subtitle, HORIZONTAL_ALIGNMENT_LEFT, -1, sub_size).x
+	var width := maxf(title_width, sub_width) + 32.0
+	var rect := Rect2(Vector2(-width * 0.5, -86), Vector2(width, 48))
+	draw_rect(rect, Color(0.025, 0.018, 0.014, 0.72))
+	draw_rect(rect, Color(0.92, 0.56, 0.22, 0.35), false, 1.0)
+	draw_string(font, Vector2(-title_width * 0.5, -66), title, HORIZONTAL_ALIGNMENT_LEFT, -1, title_size, Color(1.0, 0.76, 0.36, 0.95))
+	draw_string(font, Vector2(-sub_width * 0.5, -48), subtitle, HORIZONTAL_ALIGNMENT_LEFT, -1, sub_size, Color(0.88, 0.78, 0.64, 0.92))
 
 
 func _ellipse(center: Vector2, radius_x: float, radius_y: float, count: int) -> PackedVector2Array:

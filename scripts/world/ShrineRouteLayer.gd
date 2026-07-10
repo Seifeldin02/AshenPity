@@ -33,6 +33,8 @@ func _draw() -> void:
 func _draw_ground() -> void:
 	_draw_exterior_courtyard()
 	for room in Route.ROOMS:
+		if room.size.x <= 2.0 or room.size.y <= 2.0:
+			continue
 		_draw_room_floor(room)
 	_draw_irregular_edges()
 	_draw_room_trim(Route.ENTRANCE, Color("#413944"))
@@ -76,13 +78,13 @@ func _draw_shadows() -> void:
 		var center: Vector2 = obstacle[1]
 		var size: Vector2 = obstacle[2]
 		draw_colored_polygon(_ellipse(center + Vector2(0, size.y * 0.54), size.x * 0.62, 14.0), Color(0.02, 0.016, 0.020, 0.42))
-	draw_colored_polygon(PackedVector2Array([Vector2(-1030, -170), Vector2(-760, -260), Vector2(-720, 230), Vector2(-1025, 230)]), Color(0.02, 0.016, 0.02, 0.12))
-	draw_colored_polygon(PackedVector2Array([Vector2(760, -275), Vector2(1030, -190), Vector2(1025, 245), Vector2(720, 230)]), Color(0.02, 0.016, 0.02, 0.12))
+	draw_colored_polygon(PackedVector2Array([Vector2(-760, -220), Vector2(-610, -260), Vector2(-560, 220), Vector2(-770, 250)]), Color(0.02, 0.016, 0.02, 0.12))
+	draw_colored_polygon(PackedVector2Array([Vector2(610, -260), Vector2(760, -220), Vector2(770, 250), Vector2(560, 220)]), Color(0.02, 0.016, 0.02, 0.12))
 
 
 func _draw_foreground() -> void:
-	draw_rect(Rect2(-430, Route.CAMERA_LIMIT_TOP - 40, 860, 52), Color("#121015"))
-	draw_line(Vector2(-395, Route.CAMERA_LIMIT_TOP + 14), Vector2(395, Route.CAMERA_LIMIT_TOP + 14), Color(0.52, 0.43, 0.35, 0.22), 4.0)
+	draw_rect(Rect2(-500, Route.CAMERA_LIMIT_TOP - 36, 1000, 48), Color("#100e13"))
+	draw_line(Vector2(-440, Route.CAMERA_LIMIT_TOP + 12), Vector2(440, Route.CAMERA_LIMIT_TOP + 12), Color(0.52, 0.43, 0.35, 0.18), 4.0)
 
 
 func _draw_room_floor(room: Rect2) -> void:
@@ -150,13 +152,10 @@ func _draw_irregular_edges() -> void:
 
 
 func _draw_route_runners() -> void:
-	_draw_runner(Rect2(-132, -1160, 264, 2040), Color(0.16, 0.105, 0.085, 0.38))
-	_draw_runner(Rect2(-760, -120, 1520, 228), Color(0.12, 0.095, 0.105, 0.30))
-	_draw_runner(Rect2(-1320, -520, 680, 170), Color(0.15, 0.105, 0.075, 0.30))
-	_draw_runner(Rect2(640, -520, 680, 170), Color(0.14, 0.10, 0.095, 0.30))
-	_draw_runner(Rect2(-440, -920, 880, 180), Color(0.17, 0.12, 0.11, 0.34))
-	_draw_runner(Rect2(-385, -1345, 770, 190), Color(0.19, 0.10, 0.095, 0.36))
-	for marker in [Vector2(0, 500), Vector2(0, -38), Vector2(0, -850), Vector2(0, -1260)]:
+	_draw_runner(Rect2(-118, -620, 236, 1185), Color(0.16, 0.105, 0.085, 0.36))
+	_draw_runner(Rect2(-650, -110, 1300, 220), Color(0.12, 0.095, 0.105, 0.28))
+	_draw_runner(Rect2(-345, -585, 690, 155), Color(0.17, 0.12, 0.11, 0.32))
+	for marker in [Vector2(0, 420), Vector2(0, -38), Vector2(0, -505)]:
 		_draw_floor_medallion(marker)
 
 
@@ -179,27 +178,21 @@ func _draw_floor_medallion(center: Vector2) -> void:
 
 
 func _draw_stairs() -> void:
-	_draw_texture_centered(_textures.get("stairs"), Vector2(0, 690), Vector2(1.1, 0.54), Color(0.86, 0.78, 0.72, 0.82))
-	_draw_texture_centered(_textures.get("stairs"), Vector2(0, -360), Vector2(1.18, 0.72), Color(0.95, 0.90, 0.86, 0.90))
-	_draw_texture_centered(_textures.get("stairs"), Vector2(0, -1125), Vector2(1.35, 0.78), Color(0.95, 0.84, 0.78, 0.92))
+	_draw_texture_centered(_textures.get("stairs"), Vector2(0, 300), Vector2(1.08, 0.58), Color(0.86, 0.78, 0.72, 0.82))
+	_draw_texture_centered(_textures.get("stairs"), Vector2(0, -388), Vector2(1.12, 0.66), Color(0.95, 0.90, 0.86, 0.88))
 
 
 func _draw_landmark() -> void:
-	_draw_texture_centered(_textures.get("brazier"), Vector2(0, -36), Vector2(1.2, 1.2), Color.WHITE)
+	_draw_texture_centered(_textures.get("brazier"), Vector2(0, -42), Vector2(1.22, 1.22), Color.WHITE)
 
 
 func _draw_room_landmarks() -> void:
-	_draw_texture_centered(_textures.get("bone_debris"), Vector2(-1260, -410), Vector2(1.0, 1.0), Color(0.90, 0.84, 0.78, 0.78))
-	_draw_texture_centered(_textures.get("bone_debris"), Vector2(-1040, -540), Vector2(0.78, 0.78), Color(0.80, 0.76, 0.70, 0.62))
-	_draw_texture_centered(_textures.get("bone_debris"), Vector2(-1960, -440), Vector2(1.15, 1.15), Color(0.88, 0.80, 0.72, 0.80))
-	_draw_texture_centered(_textures.get("bone_debris"), Vector2(-1710, -250), Vector2(0.86, 0.86), Color(0.82, 0.76, 0.68, 0.72))
-	_draw_texture_centered(_textures.get("reliquary"), Vector2(1095, -470), Vector2(0.82, 0.82), Color(0.90, 0.84, 0.78, 0.92))
-	_draw_texture_centered(_textures.get("reliquary"), Vector2(1325, -305), Vector2(0.70, 0.70), Color(0.86, 0.80, 0.74, 0.88))
-	_draw_texture_centered(_textures.get("reliquary"), Vector2(1815, -480), Vector2(0.88, 0.88), Color(0.90, 0.84, 0.78, 0.92))
-	_draw_texture_centered(_textures.get("reliquary"), Vector2(2020, -305), Vector2(0.72, 0.72), Color(0.86, 0.80, 0.74, 0.88))
-	_draw_texture_centered(_textures.get("sealed_door"), Vector2(0, -1405), Vector2(1.35, 1.15), Color(0.90, 0.78, 0.72, 0.92))
-	_draw_texture_centered(_textures.get("brazier"), Vector2(0, -1260), Vector2(0.92, 0.92), Color(1.0, 0.88, 0.78, 0.88))
-	_draw_texture_centered(_textures.get("brazier"), Vector2(0, 900), Vector2(0.82, 0.82), Color(1.0, 0.86, 0.72, 0.80))
+	_draw_texture_centered(_textures.get("bone_debris"), Vector2(-650, -410), Vector2(0.82, 0.82), Color(0.90, 0.84, 0.78, 0.62))
+	_draw_texture_centered(_textures.get("bone_debris"), Vector2(650, -410), Vector2(0.82, 0.82), Color(0.90, 0.84, 0.78, 0.62))
+	_draw_texture_centered(_textures.get("reliquary"), Vector2(-708, 0), Vector2(0.58, 0.58), Color(0.88, 0.82, 0.76, 0.82))
+	_draw_texture_centered(_textures.get("reliquary"), Vector2(708, 0), Vector2(0.58, 0.58), Color(0.88, 0.82, 0.76, 0.82))
+	_draw_texture_centered(_textures.get("sealed_door"), Vector2(0, -775), Vector2(1.18, 0.96), Color(0.90, 0.78, 0.72, 0.92))
+	_draw_texture_centered(_textures.get("brazier"), Vector2(0, -522), Vector2(0.94, 0.94), Color(1.0, 0.88, 0.78, 0.88))
 
 
 func _draw_light_pool(center: Vector2, radius: float) -> void:

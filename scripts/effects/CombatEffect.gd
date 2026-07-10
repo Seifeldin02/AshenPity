@@ -32,6 +32,8 @@ func _ready() -> void:
 	match kind:
 		"heavy":
 			lifetime = 0.28
+		"ash_burst":
+			lifetime = 0.36
 		"collect":
 			lifetime = 0.34
 		"death":
@@ -57,6 +59,8 @@ func _draw() -> void:
 			_draw_spark(alpha)
 		"heavy":
 			_draw_impact(alpha, 1.25)
+		"ash_burst":
+			_draw_ash_burst(alpha)
 		"collect":
 			_draw_collect(alpha)
 		"brand":
@@ -91,6 +95,17 @@ func _draw_collect(alpha: float) -> void:
 		_draw_blade_cut(cut_dir, 58.0, 4.0, Color(1.0, 0.92, 0.64, alpha * 0.45))
 	draw_colored_polygon(_burst(74.0 + (1.0 - alpha) * 28.0, 16), Color(1.0, 0.26, 0.08, alpha * 0.28))
 	_draw_texture(_textures.get("flame"), Vector2.ZERO, Vector2(1.15, 1.15), Color(1.0, 0.35, 0.12, alpha * 0.46), _age * 8.0)
+
+
+func _draw_ash_burst(alpha: float) -> void:
+	for i in 3:
+		var radius := 68.0 + float(i) * 42.0 + (1.0 - alpha) * 36.0
+		draw_arc(Vector2.ZERO, radius, _age * 2.4 + float(i), _age * 2.4 + float(i) + PI * 1.55, 56, Color(1.0, 0.48, 0.16, alpha * (0.52 - float(i) * 0.10)), 8.0 - float(i) * 1.5)
+	for i in 12:
+		var angle := float(i) * TAU / 12.0 + _age * 2.0
+		var dir := Vector2.RIGHT.rotated(angle)
+		_draw_blade_cut(dir, 54.0 + (1.0 - alpha) * 52.0, 7.0, Color(1.0, 0.72, 0.28, alpha * 0.38))
+		_draw_texture(_textures.get("smoke"), dir * (42.0 + float(i % 3) * 18.0), Vector2(0.48, 0.48), Color(0.58, 0.45, 0.34, alpha * 0.34), angle)
 
 
 func _draw_ring(alpha: float, texture: Texture2D, scale_value: float, tint: Color) -> void:

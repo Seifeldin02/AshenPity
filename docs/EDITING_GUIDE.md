@@ -114,6 +114,25 @@ Enemy-side Brand storage and Collect readiness are in `scripts/enemies/ShrineGua
 
 Parry-created Brands intentionally use the shorter `PLAYER_PARRY_BRAND_DURATION` timeout. The current value is 3 seconds, so waiting too long after a successful parry loses the free Collect punish.
 
+## Ash Burst Active Ability
+
+Edit `scripts/autoload/GameBalance.gd`:
+
+- `ASH_BURST_COOLDOWN`
+- `ASH_BURST_RADIUS`
+- `ASH_BURST_DAMAGE`
+- `ASH_BURST_STAGGER`
+- `ASH_BURST_KNOCKBACK`
+- `BOON_DATA["ash_burst"]`
+
+Input is bound in `project.godot` as `ash_burst`, routed through `scripts/autoload/InputRouter.gd`, and executed in `scripts/player/PlayerController.gd` in `_use_ash_burst`.
+
+The HUD cooldown display lives in `scripts/ui/HUD.gd` and `scenes/ui/HUD.tscn`.
+
+The mobile button lives in `scenes/ui/MobileControls.tscn` and calls `InputRouter.press_ash_burst` through `scripts/ui/MobileControls.gd`.
+
+The shockwave VFX lives in `scripts/effects/CombatEffect.gd` under the `ash_burst` kind. Hit stop, shake, and effect spawning are handled in `scripts/world/ShrineArena.gd`.
+
 ## Run Boons And Loot
 
 Run-only boon data lives in `scripts/autoload/GameBalance.gd`:
@@ -129,6 +148,8 @@ Run-only boon data lives in `scripts/autoload/GameBalance.gd`:
 World placement lives in `scripts/world/ShrineRoute.gd` under `LOOT_SHRINES`.
 
 Pickup behavior lives in `scripts/world/LootShrine.gd`.
+
+The current shrine prompt is drawn in `scripts/world/LootShrine.gd` so the pickup teaches its own button and purpose in world space.
 
 Player-side boon effects live in `scripts/player/PlayerController.gd`:
 
@@ -208,21 +229,17 @@ Run boon pickup placement lives in `scripts/world/ShrineRoute.gd` in `LOOT_SHRIN
 
 Stage flask restoration is triggered in `scripts/world/ShrineArena.gd` in `_on_trial_wave_started`. The player-side clamp is `restore_flask_charge` in `scripts/player/PlayerController.gd`.
 
+The combat trial no longer starts immediately on arena load. It starts from `scripts/world/ShrineArena.gd` after the Ash Burst shrine is collected, or from the playtest harness by calling `start_trial`.
+
 ## Wave Setup
 
 Edit `scripts/trial/AshTrial.gd`.
 
 Current stages:
 
-- Stage 1: one `guardian` in the Pilgrim Court
-- Stage 2: one `guardian`, one `hound` in the entrance route
-- Stage 3: two `guardian`, one `hound` in the central shrine
-- Stage 4: two `hound`, one `guardian`, one `archer` in the deep ossuary
-- Stage 5: three `archer`, one `guardian` in the reliquary side route
-- Stage 6: one `bell_bearer`, one `hound`, one `archer` at the Bell Gate
-- Stage 7: split crypt pressure with west-side melee/hounds and east-side ranged pressure
-- Stage 8: nave pressure with Bell-Bearer, Guardian, and Archer
-- Final: one `ashen_judicator`, two `guardian` in the sanctum
+- Stage 1: one `guardian`, one `hound` in the central shrine
+- Stage 2: one `archer`, one `guardian` pressuring from opposite sides
+- Final: one `bell_bearer`, one `hound` around the altar approach
 
 Keep new encounters inside the shrine route until the core combat survives human playtesting.
 

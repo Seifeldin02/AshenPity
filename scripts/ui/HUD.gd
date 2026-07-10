@@ -22,6 +22,7 @@ var _enemies: Array[Node] = []
 var _hint_timer := 7.0
 var _wave_timer := 0.0
 var _pickup_timer := 0.0
+var _ability_unlocked := false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -31,9 +32,9 @@ func _ready() -> void:
 	trial_panel.hide()
 	enemy_panel.hide()
 	build_label.text = BuildInfo.label()
-	brand_label.text = "Ash Brand: perfect dodge or parry to mark"
-	boon_label.text = "Run Boons: none"
-	boon_help_label.text = "Find ember shrines. Each boon changes one combat rule for this run."
+	brand_label.hide()
+	boon_label.hide()
+	boon_help_label.hide()
 	pickup_label.hide()
 	wave_label.hide()
 
@@ -49,6 +50,8 @@ func bind(player: Node, enemies: Array[Node]) -> void:
 		player.flask_changed.connect(_on_flask_changed)
 	if player.has_signal("ash_brand_changed"):
 		player.ash_brand_changed.connect(_on_ash_brand_changed)
+	if player.has_signal("ability_changed"):
+		player.ability_changed.connect(_on_ability_changed)
 	if player.has_signal("boons_changed"):
 		player.boons_changed.connect(_on_boons_changed)
 	for enemy in enemies:
@@ -59,6 +62,7 @@ func bind(player: Node, enemies: Array[Node]) -> void:
 	_on_flask_changed(player.get("flask_charges"), 2)
 	_on_ash_brand_changed(player.get("branded_enemy"), player.get("collect_ready"))
 	_on_boons_changed(player.get("boons"))
+	_on_ability_changed(bool(player.get("ash_burst_unlocked")), bool(player.get("ash_burst_unlocked")), 0.0)
 
 
 func bind_enemies(enemies: Array[Node]) -> void:
@@ -126,6 +130,7 @@ func _on_flask_changed(current: int, maximum: int) -> void:
 
 func _on_ash_brand_changed(enemy: Node, collect_ready: bool) -> void:
 	if is_instance_valid(enemy):
+		brand_label.show()
 		var name: String = str(enemy.get("display_name"))
 		var seconds := 0.0
 		if enemy.has_method("brand_time_remaining"):
@@ -133,25 +138,30 @@ func _on_ash_brand_changed(enemy: Node, collect_ready: bool) -> void:
 		brand_label.text = "Q COLLECT READY  %.1fs  - %s" % [seconds, name] if collect_ready else "ASH BRAND  %.1fs  - hit %s twice to prime Q" % [seconds, name]
 		brand_label.modulate = Color(1.0, 0.78, 0.32, 1.0) if collect_ready else Color(1.0, 0.43, 0.20, 0.92)
 	else:
-		brand_label.text = "Ash Brand: perfect dodge or parry to mark"
-		brand_label.modulate = Color(0.78, 0.72, 0.64, 0.82)
+		brand_label.hide()
 
 
 func _on_boons_changed(boons: Dictionary) -> void:
-	if boons.is_empty():
-		boon_label.text = "Run Boons: none"
-		boon_help_label.text = "Find ember shrines. Each boon changes one combat rule for this run."
-		boon_label.modulate = Color(0.78, 0.72, 0.64, 0.76)
+	if boons.has("ash_burst"):
+		_ability_unlocked = true
+		_update_ability_label(true, true, 0.0)
+
+
+func _on_ability_changed(unlocked: bool, ready: bool, cooldown_remaining: float) -> void:
+	_ability_unlocked = unlocked
+	_update_ability_label(unlocked, ready, cooldown_remaining)
+
+
+func _update_ability_label(unlocked: bool, ready: bool, cooldown_remaining: float) -> void:
+	if not unlocked:
+		boon_label.hide()
+		boon_help_label.hide()
 		return
-	var names: Array[String] = []
-	var descriptions: Array[String] = []
-	for boon_id in boons.keys():
-		var data: Dictionary = GameBalance.BOON_DATA.get(str(boon_id), {})
-		names.append(str(data.get("display_name", boon_id)))
-		descriptions.append("%s: %s" % [str(data.get("display_name", boon_id)), str(data.get("description", ""))])
-	boon_label.text = "Run Boons: %s" % ", ".join(PackedStringArray(names))
-	boon_help_label.text = "\n".join(PackedStringArray(descriptions))
-	boon_label.modulate = Color(0.92, 0.74, 0.43, 0.92)
+	boon_label.show()
+	boon_help_label.show()
+	boon_label.text = "R  Ash Burst  READY" if ready else "R  Ash Burst  %.0fs" % ceil(cooldown_remaining)
+	boon_label.modulate = Color(1.0, 0.70, 0.28, 0.96) if ready else Color(0.68, 0.62, 0.54, 0.82)
+	boon_help_label.text = "Close-range shockwave. Staggers enemies around you."
 
 
 func _on_enemy_health_changed(current: float, maximum: float, enemy: Node) -> void:
@@ -211,18 +221,18 @@ func _build_backplates() -> void:
 	left.color = Color(0.025, 0.020, 0.018, 0.58)
 	left.anchor_left = 0.018
 	left.anchor_top = 0.022
-	left.anchor_right = 0.385
-	left.anchor_bottom = 0.34
+	left.anchor_right = 0.34
+	left.anchor_bottom = 0.145
 	left.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(left)
 	root.move_child(left, 0)
 	var enemy := ColorRect.new()
 	enemy.name = "EnemyBackplate"
 	enemy.color = Color(0.025, 0.018, 0.017, 0.50)
-	enemy.anchor_left = 0.30
+	enemy.anchor_left = 0.34
 	enemy.anchor_top = 0.03
-	enemy.anchor_right = 0.70
-	enemy.anchor_bottom = 0.115
+	enemy.anchor_right = 0.66
+	enemy.anchor_bottom = 0.105
 	enemy.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(enemy)
 	root.move_child(enemy, 1)

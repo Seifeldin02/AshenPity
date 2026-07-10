@@ -7,6 +7,7 @@ signal state_changed(state: String)
 signal hit_confirmed(kind: String, position: Vector2)
 signal perfect_dodge(enemy: Node)
 signal ash_brand_changed(enemy: Node, collect_ready: bool)
+signal ability_changed(unlocked: bool, ready: bool, cooldown_remaining: float)
 signal boons_changed(boons: Dictionary)
 signal died
 
@@ -29,6 +30,7 @@ var invulnerable := false
 var collect_ready := false
 var branded_enemy: Node
 var boons := {}
+var ash_burst_unlocked := false
 
 var _state_timer := 0.0
 var _state_duration := 0.0
@@ -52,6 +54,7 @@ var _parry_success := false
 var _parry_collect_bonus := false
 var _ember_step_charged := false
 var _collect_target: Node
+var _ash_burst_cooldown := 0.0
 
 func _ready() -> void:
 	add_to_group("player")
@@ -63,6 +66,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	_update_aim()
 	_update_stamina(delta)
+	_update_ash_burst(delta)
 	_combo_timer = maxf(_combo_timer - delta, 0.0)
 	_heavy_chain_timer = maxf(_heavy_chain_timer - delta, 0.0)
 	if _heavy_chain_timer <= 0.0:
@@ -113,6 +117,10 @@ func apply_boon(boon_id: String) -> bool:
 	if not GameBalance.BOON_DATA.has(boon_id) or boons.has(boon_id):
 		return false
 	boons[boon_id] = true
+	if boon_id == "ash_burst":
+		ash_burst_unlocked = true
+		_ash_burst_cooldown = 0.0
+		ability_changed.emit(true, true, 0.0)
 	boons_changed.emit(boons.duplicate())
 	return true
 
@@ -253,6 +261,9 @@ func _tick_state(delta: float, move_input: Vector2) -> void:
 
 
 func _handle_actions(move_input: Vector2) -> void:
+	if _action_ash_burst_pressed() and _can_use_ash_burst():
+		_use_ash_burst()
+		return
 	if _action_collect_pressed() and _can_start_collect():
 		_start_collect()
 		return
@@ -278,7 +289,9 @@ func _handle_actions(move_input: Vector2) -> void:
 
 func _capture_attack_buffer() -> void:
 	if CombatMathUtil.is_attack_buffer_allowed(_state_timer, GameBalance.PLAYER_ATTACK_BUFFER_WINDOW):
-		if _action_collect_pressed() and _can_start_collect():
+		if _action_ash_burst_pressed() and _can_use_ash_burst():
+			_use_ash_burst()
+		elif _action_collect_pressed() and _can_start_collect():
 			_start_collect()
 		elif _action_parry_pressed() and _can_start_parry():
 			_start_parry()
@@ -298,6 +311,10 @@ func _action_heavy_pressed() -> bool:
 
 func _action_collect_pressed() -> bool:
 	return Input.is_action_just_pressed("collect") or InputRouter.consume_collect()
+
+
+func _action_ash_burst_pressed() -> bool:
+	return Input.is_action_just_pressed("ash_burst") or InputRouter.consume_ash_burst()
 
 
 func _action_parry_pressed() -> bool:
@@ -324,6 +341,10 @@ func _can_start_parry() -> bool:
 func _can_start_collect() -> bool:
 	_update_collect_status()
 	return collect_ready and is_instance_valid(branded_enemy) and global_position.distance_to(branded_enemy.global_position) <= GameBalance.COLLECT_TARGET_RANGE and CombatMathUtil.can_spend_stamina(stamina, float(GameBalance.COLLECT_ATTACK["stamina"]))
+
+
+func _can_use_ash_burst() -> bool:
+	return ash_burst_unlocked and _ash_burst_cooldown <= 0.0 and state not in [PlayerState.DEAD, PlayerState.HURT, PlayerState.HEAL, PlayerState.COLLECT_ACTIVE]
 
 
 func _next_combo_index() -> int:
@@ -403,6 +424,35 @@ func _start_collect() -> void:
 	_set_state(PlayerState.COLLECT_WINDUP, float(GameBalance.COLLECT_ATTACK["windup"]))
 
 
+func _use_ash_burst() -> void:
+	_ash_burst_cooldown = GameBalance.ASH_BURST_COOLDOWN
+	ability_changed.emit(true, false, _ash_burst_cooldown)
+	_play_audio("ash_brand", -3.5)
+	var hit_any := false
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if not is_instance_valid(enemy) or not enemy.has_method("take_combat_hit"):
+			continue
+		var enemy_node := enemy as Node2D
+		if enemy_node == null:
+			continue
+		var distance := global_position.distance_to(enemy_node.global_position)
+		if distance > GameBalance.ASH_BURST_RADIUS:
+			continue
+		var direction := (enemy_node.global_position - global_position).normalized()
+		enemy.take_combat_hit({
+			"damage": GameBalance.ASH_BURST_DAMAGE,
+			"stagger": GameBalance.ASH_BURST_STAGGER,
+			"knockback": GameBalance.ASH_BURST_KNOCKBACK,
+			"kind": "ash_burst",
+			"direction": direction,
+			"source": self
+		}, global_position)
+		hit_any = true
+	hit_confirmed.emit("ash_burst", global_position)
+	if hit_any:
+		velocity += facing * 80.0
+
+
 func _get_move_input() -> Vector2:
 	return InputRouter.get_move_vector()
 
@@ -425,6 +475,15 @@ func _update_stamina(delta: float) -> void:
 	if stamina < GameBalance.PLAYER_MAX_STAMINA and state not in [PlayerState.ATTACK_WINDUP, PlayerState.ATTACK_ACTIVE, PlayerState.DODGE, PlayerState.PARRY, PlayerState.COLLECT_ACTIVE]:
 		stamina = CombatMathUtil.regenerate_stamina(stamina, GameBalance.PLAYER_MAX_STAMINA, GameBalance.PLAYER_STAMINA_REGEN, delta)
 		stamina_changed.emit(stamina, GameBalance.PLAYER_MAX_STAMINA)
+
+
+func _update_ash_burst(delta: float) -> void:
+	if not ash_burst_unlocked or _ash_burst_cooldown <= 0.0:
+		return
+	var previous := _ash_burst_cooldown
+	_ash_burst_cooldown = maxf(_ash_burst_cooldown - delta, 0.0)
+	if int(ceil(previous)) != int(ceil(_ash_burst_cooldown)) or _ash_burst_cooldown <= 0.0:
+		ability_changed.emit(true, _ash_burst_cooldown <= 0.0, _ash_burst_cooldown)
 
 
 func _update_attack_hitbox() -> void:
@@ -561,6 +620,8 @@ func playtest_reset(position_value: Vector2, aim: Vector2) -> void:
 	_parry_collect_bonus = false
 	_ember_step_charged = false
 	boons.clear()
+	ash_burst_unlocked = false
+	_ash_burst_cooldown = 0.0
 	_combo_index = 0
 	_combo_timer = 0.0
 	branded_enemy = null
@@ -623,6 +684,7 @@ func _emit_all() -> void:
 	state_changed.emit(state_name)
 	ash_brand_changed.emit(branded_enemy, collect_ready)
 	boons_changed.emit(boons.duplicate())
+	ability_changed.emit(ash_burst_unlocked, ash_burst_unlocked and _ash_burst_cooldown <= 0.0, _ash_burst_cooldown)
 
 
 func _play_audio(cue: String, volume_db: float) -> void:
