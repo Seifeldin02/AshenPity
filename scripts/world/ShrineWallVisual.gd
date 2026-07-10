@@ -10,7 +10,7 @@ var _broken_wall_texture: Texture2D
 func _ready() -> void:
 	_wall_texture = _load_texture("res://assets/environment/sbs_dungeon/wall_brick_a.png")
 	_brick_texture = _load_texture("res://assets/environment/sbs_dungeon/wall_stone_a.png")
-	_broken_wall_texture = _load_texture("res://assets/environment/sbs_dungeon/wall_brick_b.png")
+	_broken_wall_texture = _load_texture("res://assets/environment/upgrade/broken_wall_chunk.png")
 
 
 func _draw() -> void:
@@ -37,6 +37,10 @@ func _draw_wall() -> void:
 
 
 func _draw_broken_wall() -> void:
+	if _broken_wall_texture != null:
+		var scale_value := Vector2(size.x / maxf(_broken_wall_texture.get_width(), 1.0), size.y / maxf(_broken_wall_texture.get_height(), 1.0))
+		_draw_texture_centered(_broken_wall_texture, Vector2.ZERO, scale_value, Color(0.88, 0.84, 0.88, 1.0))
+		return
 	draw_colored_polygon(_ellipse(Vector2(0, 27), size.x * 0.52, 10.0), Color(0.02, 0.016, 0.02, 0.38))
 	var left := Rect2(-size.x * 0.5, -size.y * 0.5, size.x * 0.43, size.y)
 	var right := Rect2(size.x * 0.06, -size.y * 0.42, size.x * 0.43, size.y * 0.86)

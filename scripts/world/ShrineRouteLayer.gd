@@ -56,8 +56,7 @@ func _draw_ground() -> void:
 
 func _draw_decals() -> void:
 	for crack in _cracks:
-		draw_polyline(crack, Color(0.035, 0.030, 0.034, 0.78), 3.0)
-		draw_polyline(crack, Color(0.56, 0.49, 0.39, 0.12), 1.0)
+		_draw_crack_shape(crack)
 	for point in _ash:
 		if PerformanceStats.lightweight_mode and int(point.x + point.y) % 2 == 0:
 			continue
@@ -105,13 +104,9 @@ func _draw_room_floor(room: Rect2) -> void:
 			continue
 		var rect: Rect2 = cell["rect"]
 		draw_rect(rect, cell["color"])
-		draw_rect(rect.grow(-1.0), Color(0.04, 0.035, 0.035, 0.16), false, 1.0)
+		draw_rect(rect.grow(-1.0), Color(0.04, 0.035, 0.035, 0.07), false, 1.0)
 		if bool(cell["worn"]):
 			draw_circle(rect.get_center() + Vector2(9, -7), minf(rect.size.x, rect.size.y) * 0.28, Color(0.10, 0.085, 0.070, 0.12))
-	for x in range(int(room.position.x), int(room.end.x), 192):
-		draw_line(Vector2(x, room.position.y + 8.0), Vector2(x, room.end.y - 8.0), Color(0.03, 0.028, 0.030, 0.16), 1.0)
-	for y in range(int(room.position.y), int(room.end.y), 192):
-		draw_line(Vector2(room.position.x + 8.0, y), Vector2(room.end.x - 8.0, y), Color(0.03, 0.028, 0.030, 0.16), 1.0)
 	for i in 3:
 		var band_y := room.position.y + room.size.y * (0.28 + float(i) * 0.20)
 		draw_line(Vector2(room.position.x + 25, band_y), Vector2(room.end.x - 25, band_y + sin(float(i) * 1.8) * 18.0), Color(0.50, 0.42, 0.32, 0.018), 16.0)
@@ -273,3 +268,28 @@ func _ellipse(center: Vector2, radius_x: float, radius_y: float) -> PackedVector
 		var angle := TAU * float(i) / 32.0
 		points.append(center + Vector2(cos(angle) * radius_x, sin(angle) * radius_y))
 	return points
+
+
+func _draw_crack_shape(points: PackedVector2Array) -> void:
+	if points.size() < 2:
+		return
+	for i in range(points.size() - 1):
+		var a := points[i]
+		var b := points[i + 1]
+		var dir := (b - a).normalized()
+		var side := dir.orthogonal()
+		var width := 3.0 + float(i % 2)
+		draw_colored_polygon(PackedVector2Array([
+			a - side * width,
+			a + side * width * 0.6,
+			b + side * width,
+			b - side * width * 0.5,
+		]), Color(0.025, 0.022, 0.026, 0.60))
+		if i % 2 == 0:
+			var mid := a.lerp(b, 0.55)
+			var chip := PackedVector2Array([
+				mid,
+				mid + side * width * 2.8 + dir * 7.0,
+				mid + side * width * 1.2 - dir * 9.0,
+			])
+			draw_colored_polygon(chip, Color(0.09, 0.075, 0.064, 0.20))
