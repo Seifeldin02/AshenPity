@@ -208,41 +208,34 @@ func _draw_telegraph() -> void:
 	if enemy_kind == "ashen_judicator":
 		match attack_pattern:
 			"lunge":
-				var end := facing * 210.0
-				draw_line(Vector2.ZERO, end, Color(1.0, 0.22, 0.12, 0.48), 18.0)
-				draw_line(Vector2.ZERO, end, Color(1.0, 0.72, 0.30, 0.28), 7.0)
+				_draw_warning_lane(230.0, 44.0, Color(1.0, 0.24, 0.10, 0.46))
 			"slam":
-				draw_arc(Vector2.ZERO, 128.0, 0.0, TAU, 52, Color(1.0, 0.24, 0.12, 0.48), 8.0)
-				draw_arc(Vector2.ZERO, 82.0, 0.0, TAU, 44, Color(1.0, 0.68, 0.24, 0.22), 4.0)
+				_draw_warning_burst(142.0, Color(1.0, 0.24, 0.10, 0.38))
 			"toll":
 				for i in 3:
-					draw_arc(Vector2.ZERO, 78.0 + float(i) * 34.0, 0.0, TAU, 54, Color(0.96, 0.66, 0.24, 0.20 + float(i) * 0.06), 5.0)
+					_draw_warning_burst(82.0 + float(i) * 34.0, Color(0.96, 0.58, 0.18, 0.14 + float(i) * 0.04), 10 + i * 2)
 			_:
-				draw_arc(Vector2.ZERO, 142.0, dir_angle - 0.88, dir_angle + 0.88, 34, Color(0.92, 0.20, 0.12, 0.50), 8.0)
+				_draw_warning_sweep(152.0, 1.04, Color(1.0, 0.24, 0.10, 0.42))
 		return
 	var radius := 92.0 if enemy_kind != "bell_bearer" else 132.0
 	if attack_pattern == "fan":
 		for offset in [-0.22, 0.0, 0.22]:
-			draw_line(Vector2.ZERO, facing.rotated(offset) * 500.0, Color(0.92, 0.20, 0.12, 0.36), 7.0)
+			_draw_warning_lane(510.0, 22.0, Color(1.0, 0.30, 0.10, 0.26), facing.rotated(offset))
 		return
 	if attack_pattern == "shield_bash":
-		draw_arc(Vector2.ZERO, 82.0, dir_angle - 0.45, dir_angle + 0.45, 24, Color(0.92, 0.20, 0.12, 0.50), 11.0)
-		draw_line(facing.rotated(-PI * 0.5) * 44.0 + facing * 55.0, facing.rotated(PI * 0.5) * 44.0 + facing * 55.0, Color(0.95, 0.70, 0.25, 0.25), 6.0)
+		_draw_warning_lane(98.0, 86.0, Color(1.0, 0.28, 0.12, 0.38))
 		return
 	if attack_pattern == "thrust" or attack_pattern == "shot" or attack_pattern == "pounce" or attack_pattern == "snap":
 		var reach := 142.0 if attack_pattern != "shot" else 520.0
 		if attack_pattern == "snap":
 			reach = 80.0
-		var width := 9.0 if attack_pattern != "pounce" else 16.0
-		draw_line(Vector2.ZERO, facing * reach, Color(0.92, 0.20, 0.12, 0.46), width)
-		draw_line(Vector2.ZERO, facing * reach, Color(0.95, 0.70, 0.25, 0.24), maxf(width * 0.38, 3.0))
+		var width := 28.0 if attack_pattern != "pounce" else 46.0
+		_draw_warning_lane(reach, width, Color(1.0, 0.30, 0.10, 0.36))
 		return
 	if attack_pattern == "bell_slam":
-		draw_arc(Vector2.ZERO, 118.0, 0.0, TAU, 52, Color(0.92, 0.20, 0.12, 0.48), 8.0)
-		draw_arc(Vector2.ZERO, 72.0, 0.0, TAU, 44, Color(0.95, 0.70, 0.25, 0.24), 4.0)
+		_draw_warning_burst(126.0, Color(1.0, 0.24, 0.10, 0.34))
 		return
-	draw_arc(Vector2.ZERO, radius, dir_angle - 0.72, dir_angle + 0.72, 30, Color(0.92, 0.20, 0.12, 0.50), 7.0)
-	draw_arc(Vector2.ZERO, radius + 8.0, dir_angle - 0.72, dir_angle + 0.72, 30, Color(0.95, 0.70, 0.25, 0.25), 3.0)
+	_draw_warning_sweep(radius, 0.86, Color(1.0, 0.24, 0.10, 0.40))
 
 
 func _draw_swing() -> void:
@@ -251,48 +244,40 @@ func _draw_swing() -> void:
 	var spread := 0.72 if enemy_kind != "bell_bearer" else 0.92
 	if attack_pattern == "fan":
 		for offset in [-0.22, 0.0, 0.22]:
-			draw_line(Vector2.ZERO, facing.rotated(offset) * 170.0, Color(1.0, 0.68, 0.24, 0.34), 4.0)
+			_draw_active_lane(180.0, 18.0, Color(1.0, 0.66, 0.22, 0.42), facing.rotated(offset))
 		return
 	if attack_pattern == "shield_bash":
-		draw_arc(Vector2.ZERO, 86.0, facing.angle() - 0.48, facing.angle() + 0.48, 28, Color(1.0, 0.45, 0.18, 0.48), 13.0)
+		_draw_active_lane(104.0, 92.0, Color(1.0, 0.46, 0.18, 0.50))
 		return
 	if attack_pattern == "thrust" or attack_pattern == "pounce" or attack_pattern == "snap":
 		var thrust_reach := 126.0 if attack_pattern == "thrust" else 102.0
 		if attack_pattern == "snap":
 			thrust_reach = 78.0
 		var line_width := 10.0 if attack_pattern == "thrust" else 18.0
-		draw_line(facing * 18.0, facing * thrust_reach, Color(0.05, 0.025, 0.018, 0.36), line_width + 6.0)
-		draw_line(facing * 22.0, facing * thrust_reach, Color(1.0, 0.44, 0.16, 0.54), line_width)
-		draw_line(facing * 42.0, facing * (thrust_reach - 12.0), Color(1.0, 0.78, 0.34, 0.30), maxf(line_width * 0.35, 3.0))
+		_draw_active_lane(thrust_reach, line_width * 2.4, Color(1.0, 0.44, 0.16, 0.54))
 		return
 	if attack_pattern == "shot":
-		draw_line(Vector2.ZERO, facing * 160.0, Color(1.0, 0.68, 0.24, 0.40), 5.0)
+		_draw_active_lane(168.0, 18.0, Color(1.0, 0.68, 0.24, 0.40))
 		return
 	if attack_pattern == "bell_slam":
-		draw_arc(Vector2.ZERO, 130.0, 0.0, TAU, 58, Color(1.0, 0.40, 0.16, 0.44), 13.0)
-		draw_arc(Vector2.ZERO, 82.0, 0.0, TAU, 44, Color(0.22, 0.08, 0.05, 0.42), 8.0)
+		_draw_warning_burst(136.0, Color(1.0, 0.40, 0.16, 0.42), 16)
 		return
 	if enemy_kind == "ashen_judicator":
 		if attack_pattern == "slam":
-			draw_arc(Vector2.ZERO, 132.0, 0.0, TAU, 60, Color(1.0, 0.40, 0.16, 0.46), 14.0)
-			draw_arc(Vector2.ZERO, 88.0, 0.0, TAU, 54, Color(0.22, 0.08, 0.05, 0.52), 8.0)
+			_draw_warning_burst(146.0, Color(1.0, 0.40, 0.16, 0.46), 18)
 			return
 		if attack_pattern == "lunge":
 			reach = 105.0
 			radius = 90.0
 			spread = 0.42
 		elif attack_pattern == "toll":
-			draw_arc(Vector2.ZERO, 142.0, 0.0, TAU, 60, Color(0.95, 0.70, 0.22, 0.34), 8.0)
+			_draw_warning_burst(150.0, Color(0.95, 0.70, 0.22, 0.30), 18)
 			return
 		else:
 			reach = 92.0
 			radius = 118.0
 			spread = 0.96
-	var center := facing * reach
-	var angle := facing.angle()
-	draw_arc(center, radius, angle - spread, angle + spread, 30, Color(0.05, 0.025, 0.018, 0.34), 13.0)
-	draw_arc(center, radius, angle - spread, angle + spread, 30, Color(1.0, 0.42, 0.18, 0.54), 7.0)
-	draw_arc(center, radius - 11.0, angle - spread * 0.66, angle + spread * 0.66, 22, Color(1.0, 0.72, 0.28, 0.30), 3.0)
+	_draw_active_sweep(radius, reach, spread, Color(1.0, 0.42, 0.18, 0.54))
 
 
 func _draw_stagger_flash() -> void:
@@ -305,6 +290,86 @@ func _draw_death_smoke() -> void:
 	for i in 5:
 		var angle := float(i) * TAU / 5.0 + _time
 		_draw_texture(_effects.get("smoke"), Vector2.RIGHT.rotated(angle) * (18.0 + float(i) * 8.0), Vector2(0.52, 0.52), Color(0.64, 0.56, 0.48, 0.42), angle)
+
+
+func _draw_warning_lane(reach: float, width: float, tint: Color, direction_value: Vector2 = Vector2.ZERO) -> void:
+	var dir := direction_value.normalized() if direction_value.length() > 0.01 else facing
+	var side := dir.orthogonal()
+	var start := dir * 18.0
+	var end := dir * reach
+	var outer := PackedVector2Array([
+		start - side * width * 0.38,
+		start + side * width * 0.38,
+		end + side * width * 0.62,
+		end - side * width * 0.62,
+	])
+	draw_colored_polygon(outer, Color(0.06, 0.012, 0.006, tint.a * 0.34))
+	var inner := PackedVector2Array([
+		start - side * width * 0.18,
+		start + side * width * 0.18,
+		end + side * width * 0.36,
+		end - side * width * 0.36,
+	])
+	draw_colored_polygon(inner, tint)
+	for i in 3:
+		var center := start.lerp(end, 0.32 + float(i) * 0.22)
+		var chevron := PackedVector2Array([
+			center + dir * 15.0,
+			center - dir * 11.0 + side * width * 0.18,
+			center - dir * 5.0,
+			center - dir * 11.0 - side * width * 0.18,
+		])
+		draw_colored_polygon(chevron, Color(1.0, 0.72, 0.24, tint.a * 0.42))
+
+
+func _draw_active_lane(reach: float, width: float, tint: Color, direction_value: Vector2 = Vector2.ZERO) -> void:
+	var dir := direction_value.normalized() if direction_value.length() > 0.01 else facing
+	_draw_warning_lane(reach, width, Color(tint.r, tint.g, tint.b, tint.a * 0.75), dir)
+	_draw_texture(_effects.get("spark"), dir * (reach * 0.62), Vector2(0.58, 0.58), Color(1.0, 0.74, 0.28, tint.a), dir.angle())
+
+
+func _draw_warning_sweep(radius: float, spread: float, tint: Color) -> void:
+	var angle := facing.angle()
+	var center := facing * 48.0
+	draw_colored_polygon(_sector(center, radius + 16.0, angle - spread, angle + spread, 22), Color(0.05, 0.012, 0.006, tint.a * 0.32))
+	draw_colored_polygon(_sector(center, radius, angle - spread, angle + spread, 24), tint)
+	draw_colored_polygon(_sector(center, radius * 0.63, angle - spread * 0.62, angle + spread * 0.62, 18), Color(1.0, 0.68, 0.22, tint.a * 0.28))
+
+
+func _draw_active_sweep(radius: float, reach: float, spread: float, tint: Color) -> void:
+	var angle := facing.angle()
+	var center := facing * reach
+	draw_colored_polygon(_sector(center, radius + 12.0, angle - spread, angle + spread, 24), Color(0.05, 0.012, 0.006, tint.a * 0.34))
+	draw_colored_polygon(_sector(center, radius, angle - spread, angle + spread, 28), tint)
+	draw_colored_polygon(_sector(center, radius * 0.76, angle - spread * 0.54, angle + spread * 0.54, 20), Color(1.0, 0.78, 0.32, tint.a * 0.30))
+
+
+func _draw_warning_burst(radius: float, tint: Color, points_count: int = 14) -> void:
+	var points := PackedVector2Array()
+	for i in points_count:
+		var angle := TAU * float(i) / float(points_count) + _time * 0.10
+		var wobble := 0.78 if i % 2 == 0 else 1.0
+		points.append(Vector2.RIGHT.rotated(angle) * radius * wobble)
+	draw_colored_polygon(points, Color(0.05, 0.012, 0.006, tint.a * 0.34))
+	var inner := PackedVector2Array()
+	for i in points_count:
+		var angle := TAU * float(i) / float(points_count) - _time * 0.08
+		var wobble := 0.54 if i % 2 == 0 else 0.74
+		inner.append(Vector2.RIGHT.rotated(angle) * radius * wobble)
+	draw_colored_polygon(inner, tint)
+	for i in min(points_count, 10):
+		var angle := TAU * float(i) / float(min(points_count, 10))
+		_draw_texture(_effects.get("flame"), Vector2.RIGHT.rotated(angle) * radius * 0.55, Vector2(0.34, 0.34), Color(1.0, 0.45, 0.16, tint.a * 0.42), angle)
+
+
+func _sector(center: Vector2, radius: float, start_angle: float, end_angle: float, steps: int) -> PackedVector2Array:
+	var points := PackedVector2Array()
+	points.append(center)
+	for i in range(steps + 1):
+		var t := float(i) / float(steps)
+		var angle := lerpf(start_angle, end_angle, t)
+		points.append(center + Vector2.RIGHT.rotated(angle) * radius)
+	return points
 
 
 func _draw_texture_centered(texture: Texture2D, offset: Vector2, scale_value: Vector2, tint: Color) -> void:
