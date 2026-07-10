@@ -79,23 +79,23 @@ func _draw_spark(alpha: float) -> void:
 func _draw_impact(alpha: float, scale_value: float) -> void:
 	_draw_texture(_textures.get("blood"), Vector2.ZERO, Vector2(scale_value, scale_value), Color(1.0, 0.58, 0.34, alpha * 0.58), _age * 9.0)
 	_draw_texture(_textures.get("spark"), direction * 32.0, Vector2(0.72, 0.72), Color(1.0, 0.76, 0.36, alpha * 0.76), direction.angle())
-	draw_arc(Vector2.ZERO, 36.0 + (1.0 - alpha) * 28.0, 0.0, TAU, 28, Color(1.0, 0.70, 0.34, alpha * 0.38), 4.0)
+	draw_colored_polygon(_burst(42.0 + (1.0 - alpha) * 24.0, 12), Color(1.0, 0.70, 0.34, alpha * 0.25))
 
 
 func _draw_collect(alpha: float) -> void:
 	var angle := direction.angle()
 	for offset in [-0.34, 0.34]:
 		var cut_dir := Vector2.RIGHT.rotated(angle + offset)
-		draw_line(-cut_dir * 78.0, cut_dir * 78.0, Color(0.10, 0.03, 0.01, alpha * 0.32), 14.0)
-		draw_line(-cut_dir * 70.0, cut_dir * 70.0, Color(1.0, 0.52, 0.16, alpha * 0.84), 7.0)
-		draw_line(-cut_dir * 54.0, cut_dir * 54.0, Color(1.0, 0.92, 0.64, alpha * 0.50), 3.0)
-	draw_arc(Vector2.ZERO, 62.0 + (1.0 - alpha) * 36.0, 0.0, TAU, 44, Color(1.0, 0.26, 0.08, alpha * 0.44), 6.0)
+		_draw_blade_cut(cut_dir, 88.0, 18.0, Color(0.10, 0.03, 0.01, alpha * 0.30))
+		_draw_blade_cut(cut_dir, 76.0, 8.0, Color(1.0, 0.52, 0.16, alpha * 0.78))
+		_draw_blade_cut(cut_dir, 58.0, 4.0, Color(1.0, 0.92, 0.64, alpha * 0.45))
+	draw_colored_polygon(_burst(74.0 + (1.0 - alpha) * 28.0, 16), Color(1.0, 0.26, 0.08, alpha * 0.28))
 	_draw_texture(_textures.get("flame"), Vector2.ZERO, Vector2(1.15, 1.15), Color(1.0, 0.35, 0.12, alpha * 0.46), _age * 8.0)
 
 
 func _draw_ring(alpha: float, texture: Texture2D, scale_value: float, tint: Color) -> void:
 	_draw_texture(texture, Vector2.ZERO, Vector2(scale_value + (1.0 - alpha) * 0.45, scale_value + (1.0 - alpha) * 0.45), tint, _age * 5.0)
-	draw_arc(Vector2.ZERO, 54.0 + (1.0 - alpha) * 28.0, 0.0, TAU, 48, tint, 5.0)
+	draw_colored_polygon(_burst(58.0 + (1.0 - alpha) * 24.0, 14), Color(tint.r, tint.g, tint.b, tint.a * 0.24))
 
 
 func _draw_death(alpha: float) -> void:
@@ -124,3 +124,23 @@ func _load_texture(path: String) -> Texture2D:
 
 func _with_alpha(source: Color, alpha: float) -> Color:
 	return Color(source.r, source.g, source.b, alpha)
+
+
+func _draw_blade_cut(dir: Vector2, length: float, width: float, tint: Color) -> void:
+	var side := dir.orthogonal()
+	draw_colored_polygon(PackedVector2Array([
+		-dir * length + side * width * 0.35,
+		dir * length + side * width,
+		dir * (length + width * 0.45),
+		dir * length - side * width,
+		-dir * length - side * width * 0.35,
+	]), tint)
+
+
+func _burst(radius: float, points_count: int) -> PackedVector2Array:
+	var points := PackedVector2Array()
+	for i in points_count:
+		var angle := TAU * float(i) / float(points_count) + _age * 0.8
+		var wobble := 0.58 if i % 2 == 0 else 1.0
+		points.append(Vector2.RIGHT.rotated(angle) * radius * wobble)
+	return points

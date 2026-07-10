@@ -121,7 +121,6 @@ func _body_scale() -> Vector2:
 func _draw_slash() -> void:
 	var alpha := clampf(attack_alpha, 0.0, 1.0)
 	var radius := 70.0
-	var width := 8.0
 	var spread := 0.86
 	var reach := 64.0
 	var color := Color(1.0, 0.76, 0.34, 0.74 * alpha)
@@ -131,38 +130,40 @@ func _draw_slash() -> void:
 		spread = 0.98
 	elif attack_name == "light_3":
 		radius = 92.0
-		width = 9.0
 		spread = 1.12
 		reach = 74.0
 	elif attack_name == "heavy":
 		radius = 106.0
-		width = 12.0
 		spread = 0.94
 		reach = 84.0
 		color = Color(1.0, 0.50, 0.20, 0.78 * alpha)
 	elif attack_name == "collect":
 		radius = 128.0
-		width = 13.0
 		spread = 0.58
 		reach = 98.0
 		color = Color(1.0, 0.34, 0.12, 0.84 * alpha)
 	var center := facing * reach
 	var angle := facing.angle()
-	draw_arc(center, radius, angle - spread, angle + spread, 34, Color(0.12, 0.08, 0.04, 0.20 * alpha), width + 6.0)
-	draw_arc(center, radius, angle - spread, angle + spread, 34, color, width)
-	draw_arc(center, radius - 13.0, angle - spread * 0.72, angle + spread * 0.72, 24, core, maxf(width - 4.0, 2.0))
+	draw_colored_polygon(_crescent(center, radius + 8.0, radius * 0.62, angle - spread, angle + spread, 34), Color(0.09, 0.04, 0.015, 0.22 * alpha))
+	draw_colored_polygon(_crescent(center, radius, radius * 0.72, angle - spread, angle + spread, 34), color)
+	draw_colored_polygon(_crescent(center, radius * 0.84, radius * 0.70, angle - spread * 0.62, angle + spread * 0.62, 22), core)
 	for i in 4:
-		var t := float(i) / 3.0
-		var a := lerpf(angle - spread, angle + spread, t)
-		var p := center + Vector2.RIGHT.rotated(a) * (radius - 8.0)
-		draw_line(p - facing * 13.0, p + facing * 16.0, Color(1.0, 0.80, 0.45, 0.36 * alpha), 2.0)
+		var a := lerpf(angle - spread, angle + spread, float(i) / 3.0)
+		_draw_shard(center + Vector2.RIGHT.rotated(a) * (radius - 9.0), Vector2.RIGHT.rotated(a), alpha)
 
 
 func _draw_parry_guard() -> void:
 	var center := facing * 42.0
-	var angle := facing.angle()
-	draw_arc(center, 52.0, angle - 0.72, angle + 0.72, 24, Color(0.95, 0.80, 0.42, 0.62), 5.0)
-	draw_arc(center, 36.0, angle - 0.52, angle + 0.52, 18, Color(0.96, 0.96, 0.82, 0.34), 3.0)
+	var side := facing.orthogonal()
+	var shield := PackedVector2Array([
+		center + facing * 38.0,
+		center + side * 34.0 + facing * 6.0,
+		center + side * 18.0 - facing * 28.0,
+		center - side * 18.0 - facing * 28.0,
+		center - side * 34.0 + facing * 6.0,
+	])
+	draw_colored_polygon(shield, Color(0.95, 0.80, 0.42, 0.34))
+	draw_colored_polygon(PackedVector2Array([shield[0], shield[1].lerp(shield[2], 0.35), center, shield[4].lerp(shield[3], 0.35)]), Color(0.96, 0.96, 0.82, 0.24))
 
 
 func _draw_dodge_afterimages(flip: float, tint: Color) -> void:
@@ -195,3 +196,24 @@ func _ellipse(center: Vector2, radius_x: float, radius_y: float) -> PackedVector
 		var angle := TAU * float(i) / 28.0
 		points.append(center + Vector2(cos(angle) * radius_x, sin(angle) * radius_y))
 	return points
+
+
+func _crescent(center: Vector2, outer_radius: float, inner_radius: float, start_angle: float, end_angle: float, steps: int) -> PackedVector2Array:
+	var points := PackedVector2Array()
+	for i in range(steps + 1):
+		var t := float(i) / float(steps)
+		points.append(center + Vector2.RIGHT.rotated(lerpf(start_angle, end_angle, t)) * outer_radius)
+	for i in range(steps, -1, -1):
+		var t := float(i) / float(steps)
+		points.append(center + Vector2.RIGHT.rotated(lerpf(start_angle, end_angle, t)) * inner_radius)
+	return points
+
+
+func _draw_shard(center: Vector2, dir: Vector2, alpha: float) -> void:
+	var side := dir.orthogonal()
+	draw_colored_polygon(PackedVector2Array([
+		center + dir * 15.0,
+		center - dir * 8.0 + side * 4.0,
+		center - dir * 2.0,
+		center - dir * 8.0 - side * 4.0,
+	]), Color(1.0, 0.80, 0.45, 0.36 * alpha))
