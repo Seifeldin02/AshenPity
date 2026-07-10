@@ -6,10 +6,10 @@ This repository is the real Godot foundation for the project. The older Raylib t
 
 ## Current Prototype Status
 
-Version 0.5.4 is a shrine expansion combat sandbox with run-only boon pickups. The build label is:
+Version 0.5.5 is a shrine expansion combat sandbox with run-only boon pickups and a combat presentation polish pass. The build label is:
 
 ```text
-Ashen Pity - Run Boons v0.5.4
+Ashen Pity - Combat Polish v0.5.5
 ```
 
 Current scope:
@@ -21,6 +21,8 @@ Current scope:
 - Collect: landing follow-up hits on a Branded enemy opens a `Q` dash-through payoff. Collect is tuned as the hardest hit, heavy is second, light combo hits are weakest.
 - Two healing flasks, with one flask charge restored after each cleared stage.
 - Three in-world run boons: Ember Step, Grave Guard, and Reaper Vow.
+- Clearer combat UX: boon descriptions, Ash Brand countdown, red enemy/boss health bars, and more readable pickup banners.
+- Filled attack telegraphs, slash shapes, impact bursts, and cleaner hurt/death sprite transparency.
 - One repeatable nine-stage Ash Trial through the expanded shrine route.
 - Enemy variants for the trial: Shrine Guardian, Ashbound Hound, Reliquary Archer, Bell-Bearer elite, and Ashen Judicator final encounter.
 - Minimal Ash Trial Complete summary with replay.

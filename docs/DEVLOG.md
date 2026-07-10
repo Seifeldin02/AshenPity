@@ -274,3 +274,20 @@ The older Raylib prototype was not reused because it was an abandoned technical 
 - `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
 - Harness snapshot on the development PC: 170 FPS reported, display refresh about 170 Hz, p95 frame time 8.33 ms under fixed 120 FPS simulation, physics 120 Hz.
 - Known warning remains: the display playtest harness reports ObjectDB leaked instances at exit.
+
+## v0.5.5 Combat Polish and UX Pass
+
+- Fixed the glitched red-box hurt presentation by removing accidental opaque red backing from the active hurt/death runtime sprites.
+- Reworked combat HUD readability: enemy and boss health now use red rectangular bars, Ash Brand displays a countdown, active boons show functional descriptions, and loot pickup banners explain the gained effect.
+- Replaced debug-looking enemy line/circle telegraphs with filled directional danger lanes, sweep wedges, fan lanes, and jagged boss burst zones.
+- Replaced player slash and impact line art with filled crescent slashes, blade-cut polygons, and jagged impact bursts.
+- Switched runtime pillars, torches, and broken wall chunks to stronger raster prop assets already present in the project.
+- Reduced cheap map linework by removing the large floor seam grid and drawing cracks as filled fissures instead of scribble polylines.
+- Sharpened responsiveness without changing stamina costs or damage: acceleration, deceleration, attack buffer, heavy buffer, and dodge recovery were tuned slightly.
+
+### v0.5.5 Verification
+
+- `godot_console --headless --path . -s tests/test_runner.gd`: passed.
+- `godot_console --path . --quit-after 4`: passed after each pushed chunk.
+- `godot_console --path . --fixed-fps 120 --scene res://tests/PlaytestHarness.tscn`: passed.
+- Harness snapshot on the development PC: 170 FPS reported, display refresh about 170 Hz, p95 frame time 8.33 ms under fixed 120 FPS simulation, physics 120 Hz.

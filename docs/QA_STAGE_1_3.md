@@ -21,6 +21,7 @@
 - v0.5.4 gives Guardian a shield bash, Hound a short snap, and Archer a fan-shot pattern.
 - v0.5.4 makes the HUD explicitly show `F Flask`, active boons, and pickup banners.
 - v0.5.4 further reduces repeated floor texture noise with larger uneven authored slabs.
+- v0.5.5 fixes red-box hurt sprites, upgrades enemy/boss health bars to red rectangles, adds Ash Brand countdown UX, replaces line/circle telegraphs with filled danger shapes, and swaps runtime shrine props to stronger raster assets.
 - Replaced the weak combat cue bank with StarNinjas sword impacts and rubberduck RPG sounds.
 - Removed texture-based slash rendering from player/enemy attacks so a bad slash texture cannot cover the screen.
 - Added bounded vector weapon arcs, tighter spark/impact bursts, death smoke, and Collect cross-cut feedback.
@@ -61,6 +62,7 @@ Latest local results:
 - Whether the hound, archer, guardian, and elite are clear enough under combat pressure.
 - Whether the brighter tiled shrine route has the right amount of depth without becoming visually noisy.
 - Whether the new run boons create real decision-making or are just automatic power creep.
+- Whether the new filled telegraphs are cool and readable under actual combat pressure.
 
 ## Manual Playtest Checklist
 
@@ -72,3 +74,4 @@ Latest local results:
 6. Confirm heavy spam is no longer the best strategy.
 7. Confirm the expanded stages do not feel like walking too far between fights.
 8. Confirm the three loot shrines are discoverable without becoming mandatory chores.
+9. Confirm the new HUD explains boons without adding too much left-side clutter.

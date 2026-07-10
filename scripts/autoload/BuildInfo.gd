@@ -1,6 +1,6 @@
 extends Node
 
-const VERSION := "Ashen Pity - Run Boons v0.5.4"
+const VERSION := "Ashen Pity - Combat Polish v0.5.5"
 const FALLBACK_COMMIT := "unknown"
 
 var commit_short := FALLBACK_COMMIT

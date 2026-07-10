@@ -16,7 +16,7 @@
 - `scripts/enemies/ShrineGuardian.gd`
   - Shared enemy controller for Shrine Guardian, Ashbound Hound, Reliquary Archer, Bell-Bearer, and Ashen Judicator. Owns AI states, lateral pressure, parry response, attacks, projectiles, boss attack patterns, counter/rear-hit punish rules, Brand state, stagger, death, and enemy audio cues.
 - `scripts/enemies/ShrineGuardianVisual.gd`
-  - Sprite-based enemy visuals using `assets/sprites/ashen_runtime/melee_*`, `hound_*`, `archer_*`, `elite_*`, and `judicator_*`, plus telegraphs, Brand rings, bounded attack arcs, boss pattern tells, stagger sparks, and death smoke.
+  - Sprite-based enemy visuals using `assets/sprites/ashen_runtime/melee_*`, `hound_*`, `archer_*`, `elite_*`, and `judicator_*`, plus filled danger telegraphs, Brand rings, attack shapes, boss pattern tells, stagger sparks, and death smoke.
 - `scripts/enemies/EnemyProjectile.gd`
   - Reliquary Archer and Judicator projectile movement, hit detection, player damage, parry, and perfect-dodge interaction.
 - `scenes/enemies/ShrineGuardian.tscn`
@@ -36,7 +36,7 @@
 - `scripts/autoload/CombatAudio.gd`
   - Loads curated OGG files from `assets/audio/upgrade/` and plays named cues. Procedural tones remain as fallback if files are missing.
 - `scripts/effects/CombatEffect.gd`
-  - Bounded hit sparks, heavy impact, Collect cross-cut, Ash Brand pulse, perfect-dodge flash, and death smoke using `assets/effects/upgrade/` plus vector lines/arcs.
+  - Bounded hit sparks, heavy impact, Collect cross-cut, Ash Brand pulse, perfect-dodge flash, and death smoke using `assets/effects/upgrade/` plus filled impact polygons.
 
 ## Assets
 
