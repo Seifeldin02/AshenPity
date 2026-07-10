@@ -25,14 +25,15 @@ var _pickup_timer := 0.0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_build_backplates()
 	death_panel.hide()
 	pause_panel.hide()
 	trial_panel.hide()
 	enemy_panel.hide()
 	build_label.text = BuildInfo.label()
-	brand_label.text = "Ash Brand: -"
-	boon_label.text = "Boons: -"
-	boon_help_label.text = "Loot shrines grant run-only combat boons."
+	brand_label.text = "Ash Brand: perfect dodge or parry to mark"
+	boon_label.text = "Run Boons: none"
+	boon_help_label.text = "Find ember shrines. Each boon changes one combat rule for this run."
 	pickup_label.hide()
 	wave_label.hide()
 
@@ -94,7 +95,7 @@ func set_pause_visible(value: bool) -> void:
 
 
 func show_wave(label: String) -> void:
-	wave_label.text = label
+	wave_label.text = label.replace(" - ", "\n")
 	wave_label.show()
 	_wave_timer = 2.4
 
@@ -102,7 +103,7 @@ func show_wave(label: String) -> void:
 func show_pickup(label: String) -> void:
 	pickup_label.text = label
 	pickup_label.show()
-	_pickup_timer = 3.0
+	_pickup_timer = 5.2
 
 
 func show_trial_complete() -> void:
@@ -120,7 +121,7 @@ func _on_player_stamina_changed(current: float, maximum: float) -> void:
 
 
 func _on_flask_changed(current: int, maximum: int) -> void:
-	flask_label.text = "F  Flask %d/%d" % [current, maximum]
+	flask_label.text = "F  Flask  %d/%d  - heals if not hit" % [current, maximum]
 
 
 func _on_ash_brand_changed(enemy: Node, collect_ready: bool) -> void:
@@ -129,17 +130,17 @@ func _on_ash_brand_changed(enemy: Node, collect_ready: bool) -> void:
 		var seconds := 0.0
 		if enemy.has_method("brand_time_remaining"):
 			seconds = float(enemy.brand_time_remaining())
-		brand_label.text = "Ash Brand: %s  %.1fs  %s" % [name, seconds, "Q COLLECT" if collect_ready else "strike to prime"]
+		brand_label.text = "Q COLLECT READY  %.1fs  - %s" % [seconds, name] if collect_ready else "ASH BRAND  %.1fs  - hit %s twice to prime Q" % [seconds, name]
 		brand_label.modulate = Color(1.0, 0.78, 0.32, 1.0) if collect_ready else Color(1.0, 0.43, 0.20, 0.92)
 	else:
-		brand_label.text = "Ash Brand: -"
+		brand_label.text = "Ash Brand: perfect dodge or parry to mark"
 		brand_label.modulate = Color(0.78, 0.72, 0.64, 0.82)
 
 
 func _on_boons_changed(boons: Dictionary) -> void:
 	if boons.is_empty():
-		boon_label.text = "Boons: -"
-		boon_help_label.text = "Find loot shrines to unlock run-only combat boons."
+		boon_label.text = "Run Boons: none"
+		boon_help_label.text = "Find ember shrines. Each boon changes one combat rule for this run."
 		boon_label.modulate = Color(0.78, 0.72, 0.64, 0.76)
 		return
 	var names: Array[String] = []
@@ -148,7 +149,7 @@ func _on_boons_changed(boons: Dictionary) -> void:
 		var data: Dictionary = GameBalance.BOON_DATA.get(str(boon_id), {})
 		names.append(str(data.get("display_name", boon_id)))
 		descriptions.append("%s: %s" % [str(data.get("display_name", boon_id)), str(data.get("description", ""))])
-	boon_label.text = "Boons: %s" % ", ".join(PackedStringArray(names))
+	boon_label.text = "Run Boons: %s" % ", ".join(PackedStringArray(names))
 	boon_help_label.text = "\n".join(PackedStringArray(descriptions))
 	boon_label.modulate = Color(0.92, 0.74, 0.43, 0.92)
 
@@ -201,3 +202,27 @@ func _on_resume_pressed() -> void:
 
 func _on_replay_pressed() -> void:
 	SceneFlow.start_game()
+
+
+func _build_backplates() -> void:
+	var root := $Root
+	var left := ColorRect.new()
+	left.name = "HudBackplate"
+	left.color = Color(0.025, 0.020, 0.018, 0.58)
+	left.anchor_left = 0.018
+	left.anchor_top = 0.022
+	left.anchor_right = 0.385
+	left.anchor_bottom = 0.34
+	left.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(left)
+	root.move_child(left, 0)
+	var enemy := ColorRect.new()
+	enemy.name = "EnemyBackplate"
+	enemy.color = Color(0.025, 0.018, 0.017, 0.50)
+	enemy.anchor_left = 0.30
+	enemy.anchor_top = 0.03
+	enemy.anchor_right = 0.70
+	enemy.anchor_bottom = 0.115
+	enemy.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(enemy)
+	root.move_child(enemy, 1)

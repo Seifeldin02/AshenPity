@@ -82,12 +82,12 @@ func _select_frame() -> Texture2D:
 
 func _bob_offset() -> float:
 	if state_name == "move":
-		return sin(_time * 18.0) * 3.2
+		return sin(_time * 20.0) * 1.35
 	if state_name == "dodge":
-		return -5.0
+		return -1.5
 	if state_name.begins_with("collect"):
-		return -4.0
-	return sin(_time * 5.0) * 1.5
+		return -2.0
+	return sin(_time * 5.0) * 0.75
 
 
 func _body_rotation(flip: float) -> float:
@@ -144,9 +144,11 @@ func _draw_slash() -> void:
 		color = Color(1.0, 0.34, 0.12, 0.84 * alpha)
 	var center := facing * reach
 	var angle := facing.angle()
-	draw_colored_polygon(_crescent(center, radius + 8.0, radius * 0.62, angle - spread, angle + spread, 34), Color(0.09, 0.04, 0.015, 0.22 * alpha))
+	draw_colored_polygon(_crescent(center, radius + 12.0, radius * 0.58, angle - spread, angle + spread, 34), Color(0.07, 0.018, 0.006, 0.30 * alpha))
 	draw_colored_polygon(_crescent(center, radius, radius * 0.72, angle - spread, angle + spread, 34), color)
 	draw_colored_polygon(_crescent(center, radius * 0.84, radius * 0.70, angle - spread * 0.62, angle + spread * 0.62, 22), core)
+	if attack_name == "heavy" or attack_name == "collect":
+		_draw_blade_line(center, facing, radius, alpha)
 	for i in 4:
 		var a := lerpf(angle - spread, angle + spread, float(i) / 3.0)
 		_draw_shard(center + Vector2.RIGHT.rotated(a) * (radius - 9.0), Vector2.RIGHT.rotated(a), alpha)
@@ -217,3 +219,16 @@ func _draw_shard(center: Vector2, dir: Vector2, alpha: float) -> void:
 		center - dir * 2.0,
 		center - dir * 8.0 - side * 4.0,
 	]), Color(1.0, 0.80, 0.45, 0.36 * alpha))
+
+
+func _draw_blade_line(center: Vector2, dir: Vector2, radius: float, alpha: float) -> void:
+	var side := dir.orthogonal()
+	var start := center - dir * radius * 0.34
+	var end := center + dir * radius * 0.92
+	draw_colored_polygon(PackedVector2Array([
+		start - side * 7.0,
+		end - side * 2.0,
+		end + dir * 16.0,
+		end + side * 2.0,
+		start + side * 7.0,
+	]), Color(1.0, 0.90, 0.62, 0.34 * alpha))

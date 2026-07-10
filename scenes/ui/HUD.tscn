@@ -93,7 +93,7 @@ anchor_top = 0.14
 anchor_right = 0.20
 anchor_bottom = 0.18
 theme_override_font_sizes/font_size = 22
-text = "Flask 2/2"
+text = "F  Flask  2/2  - heals if not hit"
 
 [node name="BrandLabel" type="Label" parent="Root"]
 unique_name_in_owner = true
@@ -105,7 +105,7 @@ anchor_right = 0.45
 anchor_bottom = 0.225
 theme_override_colors/font_color = Color(0.78, 0.72, 0.64, 0.82)
 theme_override_font_sizes/font_size = 20
-text = "Ash Brand: -"
+text = "Ash Brand: perfect dodge or parry to mark"
 
 [node name="BoonLabel" type="Label" parent="Root"]
 unique_name_in_owner = true
@@ -117,7 +117,7 @@ anchor_right = 0.45
 anchor_bottom = 0.265
 theme_override_colors/font_color = Color(0.78, 0.72, 0.64, 0.76)
 theme_override_font_sizes/font_size = 18
-text = "Boons: -"
+text = "Run Boons: none"
 
 [node name="BoonHelpLabel" type="Label" parent="Root"]
 unique_name_in_owner = true
@@ -129,7 +129,7 @@ anchor_right = 0.36
 anchor_bottom = 0.34
 theme_override_colors/font_color = Color(0.86, 0.80, 0.68, 0.78)
 theme_override_font_sizes/font_size = 15
-text = "Find loot shrines to unlock run-only combat boons."
+text = "Find ember shrines. Each boon changes one combat rule for this run."
 autowrap_mode = 3
 
 [node name="EnemyPanel" type="VBoxContainer" parent="Root"]
@@ -164,13 +164,16 @@ unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.35
-anchor_top = 0.88
+anchor_top = 0.855
 anchor_right = 0.65
 anchor_bottom = 0.94
 theme_override_colors/font_color = Color(0.82, 0.75, 0.64, 0.92)
-theme_override_font_sizes/font_size = 20
-text = "WASD move  |  Mouse aim  |  Click combo  |  Right heavy  |  Space dodge  |  E parry  |  Q collect  |  F flask"
+theme_override_font_sizes/font_size = 18
+text = "WASD move  |  Mouse aim  |  Left combo  |  Right heavy
+Space dodge through attacks or E parry, then Q Collect
+F drinks a flask. Getting hit interrupts it."
 horizontal_alignment = 1
+autowrap_mode = 3
 
 [node name="WaveLabel" type="Label" parent="Root"]
 unique_name_in_owner = true
@@ -192,11 +195,12 @@ anchors_preset = -1
 anchor_left = 0.35
 anchor_top = 0.22
 anchor_right = 0.65
-anchor_bottom = 0.27
+anchor_bottom = 0.33
 theme_override_colors/font_color = Color(1, 0.72, 0.32, 0.95)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 22
 text = "Boon claimed"
 horizontal_alignment = 1
+autowrap_mode = 3
 
 [node name="BuildLabel" type="Label" parent="Root"]
 unique_name_in_owner = true

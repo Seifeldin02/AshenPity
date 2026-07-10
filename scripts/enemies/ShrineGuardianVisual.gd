@@ -143,12 +143,12 @@ func _sprite_scale() -> Vector2:
 func _bob_offset() -> float:
 	if state_name == "chase" or state_name == "patrol":
 		var pace := 18.0 if enemy_kind == "hound" else 12.0
-		return sin(_time * pace) * (3.0 if enemy_kind != "bell_bearer" else 2.0)
+		return sin(_time * pace) * (1.4 if enemy_kind != "bell_bearer" else 0.9)
 	if state_name == "stagger":
-		return sin(_time * 40.0) * 3.0
+		return sin(_time * 40.0) * 2.0
 	if state_name == "windup":
-		return -3.0
-	return sin(_time * 4.0) * 1.5
+		return -1.0
+	return sin(_time * 4.0) * 0.7
 
 
 func _body_rotation(flip: float) -> float:
@@ -345,21 +345,28 @@ func _draw_active_sweep(radius: float, reach: float, spread: float, tint: Color)
 
 
 func _draw_warning_burst(radius: float, tint: Color, points_count: int = 14) -> void:
-	var points := PackedVector2Array()
-	for i in points_count:
-		var angle := TAU * float(i) / float(points_count) + _time * 0.10
-		var wobble := 0.78 if i % 2 == 0 else 1.0
-		points.append(Vector2.RIGHT.rotated(angle) * radius * wobble)
-	draw_colored_polygon(points, Color(0.05, 0.012, 0.006, tint.a * 0.34))
-	var inner := PackedVector2Array()
-	for i in points_count:
-		var angle := TAU * float(i) / float(points_count) - _time * 0.08
-		var wobble := 0.54 if i % 2 == 0 else 0.74
-		inner.append(Vector2.RIGHT.rotated(angle) * radius * wobble)
-	draw_colored_polygon(inner, tint)
-	for i in min(points_count, 10):
-		var angle := TAU * float(i) / float(min(points_count, 10))
-		_draw_texture(_effects.get("flame"), Vector2.RIGHT.rotated(angle) * radius * 0.55, Vector2(0.34, 0.34), Color(1.0, 0.45, 0.16, tint.a * 0.42), angle)
+	draw_colored_polygon(_ellipse(Vector2.ZERO, radius * 0.84, radius * 0.34), Color(0.05, 0.012, 0.006, tint.a * 0.26))
+	for ring in 3:
+		var ring_radius := radius * (0.42 + float(ring) * 0.20)
+		var start := _time * 0.7 + float(ring) * 0.9
+		draw_arc(Vector2.ZERO, ring_radius, start, start + PI * 1.42, 42, Color(tint.r, tint.g, tint.b, tint.a * (0.72 - float(ring) * 0.16)), 4.0 - float(ring) * 0.7)
+	for i in min(points_count, 12):
+		var angle := TAU * float(i) / float(min(points_count, 12)) + _time * 0.16
+		var dir := Vector2.RIGHT.rotated(angle)
+		var pos := dir * radius * (0.44 + float(i % 3) * 0.09)
+		_draw_texture(_effects.get("flame"), pos, Vector2(0.28, 0.28), Color(1.0, 0.45, 0.16, tint.a * 0.46), angle)
+		if i % 2 == 0:
+			_draw_ground_tear(pos, dir, tint)
+
+
+func _draw_ground_tear(center: Vector2, dir: Vector2, tint: Color) -> void:
+	var side := dir.orthogonal()
+	draw_colored_polygon(PackedVector2Array([
+		center + dir * 24.0,
+		center - dir * 14.0 + side * 5.0,
+		center - dir * 6.0,
+		center - dir * 14.0 - side * 5.0,
+	]), Color(tint.r, tint.g * 0.75, tint.b * 0.55, tint.a * 0.34))
 
 
 func _sector(center: Vector2, radius: float, start_angle: float, end_angle: float, steps: int) -> PackedVector2Array:

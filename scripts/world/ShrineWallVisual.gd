@@ -24,16 +24,14 @@ func _draw() -> void:
 
 
 func _draw_wall() -> void:
-	draw_rect(Rect2(-size * 0.5, size), Color(0, 0, 0, 0))
 	var rect := Rect2(-size * 0.5, size)
 	draw_rect(Rect2(rect.position + Vector2(8, 12), rect.size), Color(0.02, 0.016, 0.020, 0.34))
-	draw_rect(rect, Color("#30282a"))
-	_draw_wall_grain(rect, Color(0.16, 0.13, 0.12, 0.18))
+	draw_rect(rect, Color("#241f22"))
+	_draw_texture_tiled(_wall_texture, rect.grow(-3.0), Color(0.54, 0.45, 0.42, 0.92))
 	var inner := Rect2(Vector2(-size.x * 0.5 + 5.0, -size.y * 0.5 + 5.0), size - Vector2(10, 10))
-	draw_rect(inner, Color(0.02, 0.018, 0.022, 0.42), false, 2.0)
-	draw_line(Vector2(-size.x * 0.5, -size.y * 0.5 + 7.0), Vector2(size.x * 0.5, -size.y * 0.5 + 7.0), Color(0.72, 0.55, 0.40, 0.16), 3.0)
-	draw_line(Vector2(-size.x * 0.5, size.y * 0.5 - 5.0), Vector2(size.x * 0.5, size.y * 0.5 - 5.0), Color(0.02, 0.018, 0.022, 0.34), 4.0)
-	_draw_block_lines(rect, 72.0, 34.0, Color(0.08, 0.065, 0.065, 0.18))
+	draw_rect(inner, Color(0.02, 0.018, 0.022, 0.36), false, 2.0)
+	draw_line(Vector2(-size.x * 0.5, -size.y * 0.5 + 7.0), Vector2(size.x * 0.5, -size.y * 0.5 + 7.0), Color(0.82, 0.66, 0.48, 0.12), 3.0)
+	draw_line(Vector2(-size.x * 0.5, size.y * 0.5 - 5.0), Vector2(size.x * 0.5, size.y * 0.5 - 5.0), Color(0.02, 0.018, 0.022, 0.42), 5.0)
 
 
 func _draw_broken_wall() -> void:
@@ -56,13 +54,12 @@ func _draw_broken_wall() -> void:
 
 func _draw_altar() -> void:
 	draw_colored_polygon(_ellipse(Vector2(0, 44), size.x * 0.54, 14.0), Color(0.02, 0.016, 0.02, 0.45))
-	draw_rect(Rect2(-size * 0.5, size), Color(0, 0, 0, 0))
 	var body := Rect2(Vector2(-size.x * 0.5, -size.y * 0.45), Vector2(size.x, size.y * 0.9))
-	draw_rect(body, Color("#46393a"))
-	_draw_wall_grain(body, Color(0.18, 0.13, 0.11, 0.16))
-	draw_rect(Rect2(Vector2(-size.x * 0.38, -size.y * 0.62), Vector2(size.x * 0.76, size.y * 0.34)), Color("#67544a"))
+	draw_rect(body, Color("#33292a"))
+	_draw_texture_tiled(_brick_texture, body.grow(-2.0), Color(0.70, 0.57, 0.48, 0.82))
+	draw_rect(Rect2(Vector2(-size.x * 0.38, -size.y * 0.62), Vector2(size.x * 0.76, size.y * 0.34)), Color("#5d4c42"))
 	draw_line(Vector2(-size.x * 0.38, -size.y * 0.60), Vector2(size.x * 0.38, -size.y * 0.60), Color(0.86, 0.70, 0.48, 0.28), 3.0)
-	draw_line(Vector2(-24, -size.y * 0.60), Vector2(18, size.y * 0.34), Color("#17141a"), 5.0)
+	draw_rect(Rect2(Vector2(-size.x * 0.42, size.y * 0.24), Vector2(size.x * 0.84, 6.0)), Color(0.05, 0.035, 0.032, 0.55))
 
 
 func _load_texture(path: String) -> Texture2D:
@@ -75,6 +72,12 @@ func _load_texture(path: String) -> Texture2D:
 func _draw_texture_centered(texture: Texture2D, offset: Vector2, scale_value: Vector2, tint: Color) -> void:
 	var size_value := texture.get_size() * scale_value
 	draw_texture_rect(texture, Rect2(offset - size_value * 0.5, size_value), false, tint)
+
+
+func _draw_texture_tiled(texture: Texture2D, rect: Rect2, tint: Color) -> void:
+	if texture == null:
+		return
+	draw_texture_rect(texture, rect, true, tint)
 
 
 func _draw_block_lines(rect: Rect2, block_width: float, row_height: float, color: Color) -> void:

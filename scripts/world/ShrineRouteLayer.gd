@@ -49,6 +49,7 @@ func _draw_ground() -> void:
 	_draw_room_trim(Route.EAST_DEEP_CHAPEL, Color("#393540"))
 	_draw_room_trim(Route.NORTH_NAVE, Color("#403940"))
 	_draw_room_trim(Route.BOSS_SANCTUM, Color("#4a3537"))
+	_draw_route_runners()
 	_draw_stairs()
 	_draw_landmark()
 	_draw_room_landmarks()
@@ -57,12 +58,13 @@ func _draw_ground() -> void:
 func _draw_decals() -> void:
 	for crack in _cracks:
 		_draw_crack_shape(crack)
-	for point in _ash:
+	for i in _ash.size():
+		var point := _ash[i]
 		if PerformanceStats.lightweight_mode and int(point.x + point.y) % 2 == 0:
 			continue
-		draw_circle(point, _rng.randf_range(1.0, 2.2), Color(0.75, 0.70, 0.62, 0.13))
+		draw_circle(point, 1.0 + float(i % 3) * 0.35, Color(0.78, 0.70, 0.58, 0.075))
 	for torch_pos in Route.TORCHES:
-		_draw_light_pool(torch_pos, 170.0)
+		_draw_light_pool(torch_pos, 145.0)
 
 
 func _draw_shadows() -> void:
@@ -85,31 +87,30 @@ func _draw_foreground() -> void:
 
 func _draw_room_floor(room: Rect2) -> void:
 	var base_tint := Color("#2c2927")
+	var texture_tint := Color(0.60, 0.56, 0.50, 0.82)
 	if room == Route.ALTAR:
 		base_tint = Color("#332b29")
+		texture_tint = Color(0.68, 0.58, 0.52, 0.88)
 	elif room == Route.PILGRIM_COURT or room == Route.SOUTH_STEPS:
 		base_tint = Color("#2f2825")
+		texture_tint = Color(0.64, 0.54, 0.46, 0.84)
 	elif room == Route.SIDE_ALCOVE or room == Route.LEFT_SIDE_PATH or room == Route.RIGHT_SIDE_PATH:
 		base_tint = Color("#29272b")
+		texture_tint = Color(0.52, 0.52, 0.56, 0.82)
 	elif room == Route.WEST_OSSUARY or room == Route.WEST_DEEP_CRYPT:
 		base_tint = Color("#292622")
+		texture_tint = Color(0.54, 0.49, 0.42, 0.82)
 	elif room == Route.EAST_RELIQUARY or room == Route.EAST_DEEP_CHAPEL:
 		base_tint = Color("#292932")
+		texture_tint = Color(0.52, 0.53, 0.59, 0.82)
 	elif room == Route.BOSS_SANCTUM:
 		base_tint = Color("#332222")
+		texture_tint = Color(0.70, 0.45, 0.42, 0.86)
 	draw_rect(room.grow(24.0), Color("#17151b"))
 	draw_rect(room, base_tint)
-	for cell in _floor_cells:
-		if cell["room"] != room:
-			continue
-		var rect: Rect2 = cell["rect"]
-		draw_rect(rect, cell["color"])
-		draw_rect(rect.grow(-1.0), Color(0.04, 0.035, 0.035, 0.07), false, 1.0)
-		if bool(cell["worn"]):
-			draw_circle(rect.get_center() + Vector2(9, -7), minf(rect.size.x, rect.size.y) * 0.28, Color(0.10, 0.085, 0.070, 0.12))
-	for i in 3:
-		var band_y := room.position.y + room.size.y * (0.28 + float(i) * 0.20)
-		draw_line(Vector2(room.position.x + 25, band_y), Vector2(room.end.x - 25, band_y + sin(float(i) * 1.8) * 18.0), Color(0.50, 0.42, 0.32, 0.018), 16.0)
+	_draw_tiled_texture(_room_floor_texture(room), room, texture_tint)
+	draw_rect(room, Color(0.03, 0.026, 0.026, 0.20))
+	_draw_floor_edge_shade(room)
 
 
 func _draw_room_trim(room: Rect2, color: Color) -> void:
@@ -131,9 +132,9 @@ func _draw_exterior_courtyard() -> void:
 			draw_rect(Rect2(x + 3, y + 3, tile - 6, tile - 6), Color(0.02, 0.018, 0.022, 0.12), false, 2.0)
 			x += tile
 		y += tile
-	for i in 18:
-		var x_pos := -1120.0 + float(i) * 132.0
-		draw_line(Vector2(x_pos, Route.CAMERA_LIMIT_TOP - 140), Vector2(x_pos + 76.0, Route.CAMERA_LIMIT_BOTTOM + 125), Color(0.04, 0.035, 0.042, 0.42), 2.0)
+	for i in 10:
+		var x_pos := Route.CAMERA_LIMIT_LEFT - 160.0 + float(i) * 520.0
+		draw_rect(Rect2(x_pos, Route.CAMERA_LIMIT_TOP - 90.0, 180.0, Route.CAMERA_LIMIT_BOTTOM - Route.CAMERA_LIMIT_TOP + 180.0), Color(0.025, 0.022, 0.028, 0.18))
 
 
 func _draw_irregular_edges() -> void:
@@ -146,6 +147,35 @@ func _draw_irregular_edges() -> void:
 	draw_polyline(left_apron + PackedVector2Array([left_apron[0]]), Color(0.32, 0.29, 0.32, 0.22), 3.0)
 	draw_polyline(right_apron + PackedVector2Array([right_apron[0]]), Color(0.32, 0.29, 0.32, 0.22), 3.0)
 	draw_polyline(altar_apron + PackedVector2Array([altar_apron[0]]), Color(0.36, 0.31, 0.32, 0.22), 3.0)
+
+
+func _draw_route_runners() -> void:
+	_draw_runner(Rect2(-132, -1160, 264, 2040), Color(0.16, 0.105, 0.085, 0.38))
+	_draw_runner(Rect2(-760, -120, 1520, 228), Color(0.12, 0.095, 0.105, 0.30))
+	_draw_runner(Rect2(-1320, -520, 680, 170), Color(0.15, 0.105, 0.075, 0.30))
+	_draw_runner(Rect2(640, -520, 680, 170), Color(0.14, 0.10, 0.095, 0.30))
+	_draw_runner(Rect2(-440, -920, 880, 180), Color(0.17, 0.12, 0.11, 0.34))
+	_draw_runner(Rect2(-385, -1345, 770, 190), Color(0.19, 0.10, 0.095, 0.36))
+	for marker in [Vector2(0, 500), Vector2(0, -38), Vector2(0, -850), Vector2(0, -1260)]:
+		_draw_floor_medallion(marker)
+
+
+func _draw_runner(rect: Rect2, tint: Color) -> void:
+	draw_rect(rect, Color(0.025, 0.020, 0.022, tint.a * 0.52))
+	_draw_tiled_texture(_textures.get("floor_warm"), rect.grow(-8.0), tint)
+	draw_rect(rect.grow(-8.0), Color(0.03, 0.018, 0.016, 0.12))
+	draw_line(rect.position + Vector2(10, 8), Vector2(rect.end.x - 10, rect.position.y + 8), Color(0.74, 0.50, 0.32, 0.10), 3.0)
+	draw_line(Vector2(rect.position.x + 10, rect.end.y - 8), rect.end - Vector2(10, 8), Color(0.02, 0.014, 0.012, 0.24), 4.0)
+
+
+func _draw_floor_medallion(center: Vector2) -> void:
+	draw_colored_polygon(_ellipse(center + Vector2(18, 20), 138.0, 38.0), Color(0.02, 0.014, 0.013, 0.30))
+	draw_arc(center, 82.0, 0.2, TAU - 0.2, 58, Color(0.72, 0.38, 0.18, 0.30), 8.0)
+	draw_arc(center, 52.0, -0.7, PI * 1.28, 42, Color(0.90, 0.58, 0.26, 0.22), 4.0)
+	var dir_a := Vector2.RIGHT.rotated(0.72)
+	var dir_b := Vector2.RIGHT.rotated(-0.72)
+	draw_line(center - dir_a * 70.0, center + dir_a * 70.0, Color(0.04, 0.025, 0.022, 0.44), 5.0)
+	draw_line(center - dir_b * 70.0, center + dir_b * 70.0, Color(0.04, 0.025, 0.022, 0.44), 5.0)
 
 
 func _draw_stairs() -> void:
@@ -173,13 +203,13 @@ func _draw_room_landmarks() -> void:
 
 
 func _draw_light_pool(center: Vector2, radius: float) -> void:
-	for i in 7:
+	for i in 5:
 		var t := float(i) / 7.0
-		draw_circle(center, radius * (1.0 - t * 0.1), Color(0.96, 0.42, 0.16, 0.026 * (1.0 - t)))
+		draw_circle(center, radius * (1.0 - t * 0.12), Color(0.96, 0.42, 0.16, 0.020 * (1.0 - t)))
 
 
 func _build_marks() -> void:
-	for i in 46:
+	for i in 18:
 		var room: Rect2 = Route.ROOMS[_rng.randi_range(0, Route.ROOMS.size() - 1)]
 		var origin := room.position + Vector2(_rng.randf_range(30.0, room.size.x - 30.0), _rng.randf_range(30.0, room.size.y - 30.0))
 		var crack := PackedVector2Array()
@@ -188,7 +218,7 @@ func _build_marks() -> void:
 		for s in range(1, _rng.randi_range(3, 6)):
 			crack.append(origin + direction * float(s) * _rng.randf_range(15.0, 31.0) + Vector2(_rng.randf_range(-8, 8), _rng.randf_range(-8, 8)))
 		_cracks.append(crack)
-	for i in 260:
+	for i in 150:
 		var room: Rect2 = Route.ROOMS[_rng.randi_range(0, Route.ROOMS.size() - 1)]
 		_ash.append(room.position + Vector2(_rng.randf_range(0.0, room.size.x), _rng.randf_range(0.0, room.size.y)))
 
@@ -248,6 +278,23 @@ func _draw_tiled_texture(texture: Texture2D, rect: Rect2, tint: Color) -> void:
 	draw_texture_rect(texture, rect, true, tint)
 
 
+func _room_floor_texture(room: Rect2) -> Texture2D:
+	if room == Route.WEST_OSSUARY or room == Route.WEST_DEEP_CRYPT:
+		return _textures.get("floor_ash")
+	if room == Route.ALTAR or room == Route.BOSS_SANCTUM:
+		return _textures.get("floor_warm")
+	if room == Route.EAST_RELIQUARY or room == Route.EAST_DEEP_CHAPEL:
+		return _textures.get("floor_b")
+	return _textures.get("floor_a")
+
+
+func _draw_floor_edge_shade(room: Rect2) -> void:
+	draw_rect(Rect2(room.position, Vector2(room.size.x, 28.0)), Color(0.03, 0.026, 0.024, 0.26))
+	draw_rect(Rect2(Vector2(room.position.x, room.end.y - 30.0), Vector2(room.size.x, 30.0)), Color(0.01, 0.009, 0.011, 0.28))
+	draw_rect(Rect2(room.position, Vector2(26.0, room.size.y)), Color(0.01, 0.009, 0.011, 0.20))
+	draw_rect(Rect2(Vector2(room.end.x - 26.0, room.position.y), Vector2(26.0, room.size.y)), Color(0.01, 0.009, 0.011, 0.20))
+
+
 func _draw_texture_centered(texture: Texture2D, center: Vector2, scale_value: Vector2, tint: Color) -> void:
 	if texture == null:
 		return
@@ -284,7 +331,7 @@ func _draw_crack_shape(points: PackedVector2Array) -> void:
 			a + side * width * 0.6,
 			b + side * width,
 			b - side * width * 0.5,
-		]), Color(0.025, 0.022, 0.026, 0.60))
+		]), Color(0.025, 0.022, 0.026, 0.32))
 		if i % 2 == 0:
 			var mid := a.lerp(b, 0.55)
 			var chip := PackedVector2Array([
@@ -292,4 +339,4 @@ func _draw_crack_shape(points: PackedVector2Array) -> void:
 				mid + side * width * 2.8 + dir * 7.0,
 				mid + side * width * 1.2 - dir * 9.0,
 			])
-			draw_colored_polygon(chip, Color(0.09, 0.075, 0.064, 0.20))
+			draw_colored_polygon(chip, Color(0.09, 0.075, 0.064, 0.12))

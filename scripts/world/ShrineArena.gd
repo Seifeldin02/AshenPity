@@ -276,7 +276,7 @@ func _on_trial_wave_started(index: int, label: String) -> void:
 func _on_loot_collected(_boon_id: String, display_name: String) -> void:
 	if is_instance_valid(_hud) and _hud.has_method("show_pickup"):
 		var data: Dictionary = GameBalance.BOON_DATA.get(_boon_id, {})
-		_hud.show_pickup("%s: %s" % [display_name, str(data.get("description", "run-only boon claimed"))])
+		_hud.show_pickup("BOON CLAIMED: %s\n%s" % [display_name, str(data.get("description", "Run-only combat boon claimed."))])
 	EFFECT_SCRIPT.spawn(actors_and_tall_props, player.global_position if is_instance_valid(player) else Vector2.ZERO, "brand", Vector2.RIGHT, Color("#ff8f2a"))
 
 

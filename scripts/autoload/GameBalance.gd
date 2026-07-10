@@ -89,15 +89,15 @@ const BOON_REAPER_VOW_FLASK_RESTORE := 1
 const BOON_DATA := {
 	"ember_step": {
 		"display_name": "Ember Step",
-		"description": "Perfect dodge charges the next light strike with ash fire."
+		"description": "After a perfect dodge, your next left-click light hit burns harder and staggers more."
 	},
 	"grave_guard": {
 		"display_name": "Grave Guard",
-		"description": "Successful parries restore extra stamina."
+		"description": "Press E to parry. A successful parry refunds extra stamina and primes Q Collect."
 	},
 	"reaper_vow": {
 		"display_name": "Reaper Vow",
-		"description": "Collect kills restore stamina and one flask charge."
+		"description": "Kill with Q Collect to restore stamina and recover one flask charge."
 	}
 }
 
