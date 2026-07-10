@@ -179,17 +179,17 @@ func _body_scale() -> Vector2:
 
 func _draw_shadow() -> void:
 	var width := 44.0
-	var y := 37.0
+	var y := 23.0
 	if enemy_kind == "hound":
 		width = 52.0
-		y = 32.0
+		y = 20.0
 	elif enemy_kind == "bell_bearer":
 		width = 60.0
-		y = 42.0
+		y = 27.0
 	elif enemy_kind == "ashen_judicator":
 		width = 76.0
-		y = 46.0
-	draw_colored_polygon(_ellipse(Vector2(0, y), width, 11.0), Color(0.02, 0.018, 0.02, 0.66))
+		y = 32.0
+	draw_colored_polygon(_ellipse(Vector2(0, y), width, 9.0), Color(0.02, 0.018, 0.02, 0.56))
 
 
 func _draw_brand() -> void:

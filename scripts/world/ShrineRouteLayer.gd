@@ -163,10 +163,10 @@ func _draw_room_landmarks() -> void:
 	_draw_texture_centered(_textures.get("bone_debris"), Vector2(-1040, -540), Vector2(0.78, 0.78), Color(0.80, 0.76, 0.70, 0.62))
 	_draw_texture_centered(_textures.get("bone_debris"), Vector2(-1960, -440), Vector2(1.15, 1.15), Color(0.88, 0.80, 0.72, 0.80))
 	_draw_texture_centered(_textures.get("bone_debris"), Vector2(-1710, -250), Vector2(0.86, 0.86), Color(0.82, 0.76, 0.68, 0.72))
-	_draw_texture_centered(_textures.get("reliquary"), Vector2(1095, -470), Vector2(1.05, 1.05), Color(0.84, 0.80, 0.88, 0.86))
-	_draw_texture_centered(_textures.get("reliquary"), Vector2(1325, -305), Vector2(0.90, 0.90), Color(0.82, 0.78, 0.86, 0.82))
-	_draw_texture_centered(_textures.get("reliquary"), Vector2(1815, -480), Vector2(1.12, 1.12), Color(0.82, 0.78, 0.88, 0.86))
-	_draw_texture_centered(_textures.get("reliquary"), Vector2(2020, -305), Vector2(0.92, 0.92), Color(0.78, 0.74, 0.84, 0.78))
+	_draw_texture_centered(_textures.get("reliquary"), Vector2(1095, -470), Vector2(0.82, 0.82), Color(0.90, 0.84, 0.78, 0.92))
+	_draw_texture_centered(_textures.get("reliquary"), Vector2(1325, -305), Vector2(0.70, 0.70), Color(0.86, 0.80, 0.74, 0.88))
+	_draw_texture_centered(_textures.get("reliquary"), Vector2(1815, -480), Vector2(0.88, 0.88), Color(0.90, 0.84, 0.78, 0.92))
+	_draw_texture_centered(_textures.get("reliquary"), Vector2(2020, -305), Vector2(0.72, 0.72), Color(0.86, 0.80, 0.74, 0.88))
 	_draw_texture_centered(_textures.get("sealed_door"), Vector2(0, -1405), Vector2(1.35, 1.15), Color(0.90, 0.78, 0.72, 0.92))
 	_draw_texture_centered(_textures.get("brazier"), Vector2(0, -1260), Vector2(0.92, 0.92), Color(1.0, 0.88, 0.78, 0.88))
 	_draw_texture_centered(_textures.get("brazier"), Vector2(0, 900), Vector2(0.82, 0.82), Color(1.0, 0.86, 0.72, 0.80))
@@ -235,10 +235,10 @@ func _load_textures() -> void:
 		"floor_warm": _load_texture("res://assets/environment/sbs_dungeon/floor_stone_warm.png"),
 		"floor_ash": _load_texture("res://assets/environment/sbs_dungeon/floor_ash_dirt.png"),
 		"stairs": _load_texture("res://assets/environment/upgrade/altar_stairs.png"),
-		"brazier": _load_texture("res://assets/environment/simple_souls/brazier.png"),
+		"brazier": _load_texture("res://assets/environment/upgrade/ash_brazier.png"),
 		"sealed_door": _load_texture("res://assets/environment/upgrade/sealed_door.png"),
-		"bone_debris": _load_texture("res://assets/environment/simple_souls/bones.png"),
-		"reliquary": _load_texture("res://assets/environment/simple_souls/reliquary.png"),
+		"bone_debris": _load_texture("res://assets/environment/upgrade/bone_debris.png"),
+		"reliquary": _load_texture("res://assets/environment/upgrade/reliquary_shelf.png"),
 	}
 
 

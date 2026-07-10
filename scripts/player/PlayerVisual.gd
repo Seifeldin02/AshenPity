@@ -48,7 +48,7 @@ func _draw() -> void:
 	var bob := _bob_offset()
 	var flip := -1.0 if facing.x < -0.12 else 1.0
 	var tint := Color.WHITE.lerp(Color(1.0, 0.34, 0.24), flash)
-	draw_colored_polygon(_ellipse(Vector2(0, 35), 31.0, 10.0), Color(0.02, 0.018, 0.022, 0.58))
+	draw_colored_polygon(_ellipse(Vector2(0, 21), 27.0, 8.0), Color(0.02, 0.018, 0.022, 0.52))
 	if state_name == "dodge":
 		_draw_dodge_afterimages(flip, tint)
 	if attack_alpha > 0.0:
