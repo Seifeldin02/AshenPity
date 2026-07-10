@@ -29,7 +29,7 @@ corner_radius_bottom_right = 0
 corner_radius_bottom_left = 0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_enemy_fill"]
-bg_color = Color(0.62, 0.60, 0.56, 1)
+bg_color = Color(0.54, 0.045, 0.035, 1)
 corner_radius_top_left = 0
 corner_radius_top_right = 0
 corner_radius_bottom_right = 0
@@ -101,7 +101,7 @@ layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.025
 anchor_top = 0.185
-anchor_right = 0.34
+anchor_right = 0.45
 anchor_bottom = 0.225
 theme_override_colors/font_color = Color(0.78, 0.72, 0.64, 0.82)
 theme_override_font_sizes/font_size = 20
@@ -113,30 +113,45 @@ layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.025
 anchor_top = 0.225
-anchor_right = 0.42
+anchor_right = 0.45
 anchor_bottom = 0.265
 theme_override_colors/font_color = Color(0.78, 0.72, 0.64, 0.76)
 theme_override_font_sizes/font_size = 18
 text = "Boons: -"
 
+[node name="BoonHelpLabel" type="Label" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.025
+anchor_top = 0.265
+anchor_right = 0.36
+anchor_bottom = 0.34
+theme_override_colors/font_color = Color(0.86, 0.80, 0.68, 0.78)
+theme_override_font_sizes/font_size = 15
+text = "Find loot shrines to unlock run-only combat boons."
+autowrap_mode = 3
+
 [node name="EnemyPanel" type="VBoxContainer" parent="Root"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.37
+anchor_left = 0.31
 anchor_top = 0.035
-anchor_right = 0.63
-anchor_bottom = 0.105
+anchor_right = 0.69
+anchor_bottom = 0.112
 theme_override_constants/separation = 4
 
 [node name="EnemyLabel" type="Label" parent="Root/EnemyPanel"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_font_sizes/font_size = 18
 text = "Shrine Guardian"
 horizontal_alignment = 1
 
 [node name="EnemyBar" type="ProgressBar" parent="Root/EnemyPanel"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(620, 18)
 layout_mode = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_health_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_enemy_fill")

@@ -9,6 +9,7 @@ extends CanvasLayer
 @onready var hints: Label = %Hints
 @onready var brand_label: Label = %BrandLabel
 @onready var boon_label: Label = %BoonLabel
+@onready var boon_help_label: Label = %BoonHelpLabel
 @onready var pickup_label: Label = %PickupLabel
 @onready var wave_label: Label = %WaveLabel
 @onready var death_panel: Control = %DeathPanel
@@ -31,6 +32,7 @@ func _ready() -> void:
 	build_label.text = BuildInfo.label()
 	brand_label.text = "Ash Brand: -"
 	boon_label.text = "Boons: -"
+	boon_help_label.text = "Loot shrines grant run-only combat boons."
 	pickup_label.hide()
 	wave_label.hide()
 
@@ -78,6 +80,8 @@ func _process(delta: float) -> void:
 		_pickup_timer -= delta
 		if _pickup_timer <= 0.0:
 			pickup_label.hide()
+	if is_instance_valid(_player):
+		_on_ash_brand_changed(_player.get("branded_enemy"), bool(_player.get("collect_ready")))
 	_update_enemy_panel()
 
 
@@ -122,7 +126,10 @@ func _on_flask_changed(current: int, maximum: int) -> void:
 func _on_ash_brand_changed(enemy: Node, collect_ready: bool) -> void:
 	if is_instance_valid(enemy):
 		var name: String = str(enemy.get("display_name"))
-		brand_label.text = "Ash Brand: %s  %s" % [name, "Q COLLECT" if collect_ready else "strike to prime"]
+		var seconds := 0.0
+		if enemy.has_method("brand_time_remaining"):
+			seconds = float(enemy.brand_time_remaining())
+		brand_label.text = "Ash Brand: %s  %.1fs  %s" % [name, seconds, "Q COLLECT" if collect_ready else "strike to prime"]
 		brand_label.modulate = Color(1.0, 0.78, 0.32, 1.0) if collect_ready else Color(1.0, 0.43, 0.20, 0.92)
 	else:
 		brand_label.text = "Ash Brand: -"
@@ -132,13 +139,17 @@ func _on_ash_brand_changed(enemy: Node, collect_ready: bool) -> void:
 func _on_boons_changed(boons: Dictionary) -> void:
 	if boons.is_empty():
 		boon_label.text = "Boons: -"
+		boon_help_label.text = "Find loot shrines to unlock run-only combat boons."
 		boon_label.modulate = Color(0.78, 0.72, 0.64, 0.76)
 		return
 	var names: Array[String] = []
+	var descriptions: Array[String] = []
 	for boon_id in boons.keys():
 		var data: Dictionary = GameBalance.BOON_DATA.get(str(boon_id), {})
 		names.append(str(data.get("display_name", boon_id)))
+		descriptions.append("%s: %s" % [str(data.get("display_name", boon_id)), str(data.get("description", ""))])
 	boon_label.text = "Boons: %s" % ", ".join(PackedStringArray(names))
+	boon_help_label.text = "\n".join(PackedStringArray(descriptions))
 	boon_label.modulate = Color(0.92, 0.74, 0.43, 0.92)
 
 
@@ -162,6 +173,17 @@ func _update_enemy_panel() -> void:
 	enemy_label.text = str(target.get("display_name"))
 	enemy_bar.max_value = target.get("max_health")
 	enemy_bar.value = target.get("health")
+	_apply_enemy_bar_style(str(target.get("enemy_kind")))
+
+
+func _apply_enemy_bar_style(enemy_kind: String) -> void:
+	var fill := StyleBoxFlat.new()
+	fill.corner_radius_top_left = 0
+	fill.corner_radius_top_right = 0
+	fill.corner_radius_bottom_left = 0
+	fill.corner_radius_bottom_right = 0
+	fill.bg_color = Color(0.68, 0.04, 0.03, 1.0) if enemy_kind == "ashen_judicator" or enemy_kind == "bell_bearer" else Color(0.54, 0.045, 0.035, 1.0)
+	enemy_bar.add_theme_stylebox_override("fill", fill)
 
 
 func _on_restart_pressed() -> void:

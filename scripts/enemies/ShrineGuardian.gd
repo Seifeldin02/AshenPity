@@ -158,6 +158,10 @@ func is_collect_ready() -> bool:
 	return ash_branded and collect_ready
 
 
+func brand_time_remaining() -> float:
+	return maxf(_brand_timer, 0.0) if ash_branded else 0.0
+
+
 func _update_brand(delta: float) -> void:
 	if not ash_branded:
 		return
