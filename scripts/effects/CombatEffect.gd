@@ -30,10 +30,14 @@ func _ready() -> void:
 	for key in TEXTURE_PATHS:
 		_textures[key] = _load_texture(str(TEXTURE_PATHS[key]))
 	match kind:
+		"blood":
+			lifetime = 0.26
 		"heavy":
 			lifetime = 0.28
 		"ash_burst":
 			lifetime = 0.36
+		"boss_spawn":
+			lifetime = 0.82
 		"collect":
 			lifetime = 0.34
 		"death":
@@ -55,12 +59,16 @@ func _draw() -> void:
 	var t := clampf(_age / lifetime, 0.0, 1.0)
 	var alpha := 1.0 - t
 	match kind:
+		"blood":
+			_draw_blood(alpha)
 		"spark":
 			_draw_spark(alpha)
 		"heavy":
 			_draw_impact(alpha, 1.25)
 		"ash_burst":
 			_draw_ash_burst(alpha)
+		"boss_spawn":
+			_draw_boss_spawn(alpha)
 		"collect":
 			_draw_collect(alpha)
 		"brand":
@@ -78,6 +86,15 @@ func _draw_spark(alpha: float) -> void:
 		var angle := direction.angle() + lerpf(-0.85, 0.85, float(i) / 4.0)
 		var pos := Vector2.RIGHT.rotated(angle) * (15.0 + float(i % 2) * 11.0)
 		_draw_texture(_textures.get("spark"), pos, Vector2(0.46, 0.46), _with_alpha(color, alpha * 0.82), angle)
+
+
+func _draw_blood(alpha: float) -> void:
+	for i in 7:
+		var angle := direction.angle() + lerpf(-0.95, 0.95, float(i) / 6.0)
+		var dir := Vector2.RIGHT.rotated(angle)
+		var pos := dir * (12.0 + float(i % 3) * 10.0 + (1.0 - alpha) * 24.0)
+		_draw_texture(_textures.get("blood"), pos, Vector2(0.34, 0.34), Color(0.68, 0.015, 0.012, alpha * 0.72), angle)
+	draw_colored_polygon(_burst(32.0 + (1.0 - alpha) * 16.0, 10), Color(0.55, 0.01, 0.008, alpha * 0.22))
 
 
 func _draw_impact(alpha: float, scale_value: float) -> void:
@@ -106,6 +123,18 @@ func _draw_ash_burst(alpha: float) -> void:
 		var dir := Vector2.RIGHT.rotated(angle)
 		_draw_blade_cut(dir, 54.0 + (1.0 - alpha) * 52.0, 7.0, Color(1.0, 0.72, 0.28, alpha * 0.38))
 		_draw_texture(_textures.get("smoke"), dir * (42.0 + float(i % 3) * 18.0), Vector2(0.48, 0.48), Color(0.58, 0.45, 0.34, alpha * 0.34), angle)
+
+
+func _draw_boss_spawn(alpha: float) -> void:
+	var grow := 1.0 - alpha
+	for i in 4:
+		var radius := 62.0 + float(i) * 42.0 + grow * 56.0
+		draw_arc(Vector2.ZERO, radius, -_age * 2.2 + float(i) * 0.7, -_age * 2.2 + float(i) * 0.7 + PI * 1.75, 72, Color(1.0, 0.34, 0.10, alpha * (0.58 - float(i) * 0.09)), 8.0 - float(i))
+	for i in 14:
+		var angle := float(i) * TAU / 14.0 + _age * 1.4
+		var dir := Vector2.RIGHT.rotated(angle)
+		_draw_texture(_textures.get("smoke"), dir * (34.0 + grow * 96.0 + float(i % 4) * 12.0), Vector2(0.68, 0.68), Color(0.50, 0.34, 0.25, alpha * 0.38), angle)
+	draw_colored_polygon(_burst(98.0 + grow * 88.0, 18), Color(0.70, 0.08, 0.03, alpha * 0.22))
 
 
 func _draw_ring(alpha: float, texture: Texture2D, scale_value: float, tint: Color) -> void:

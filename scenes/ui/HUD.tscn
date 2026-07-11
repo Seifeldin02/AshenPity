@@ -92,8 +92,8 @@ anchor_left = 0.025
 anchor_top = 0.105
 anchor_right = 0.20
 anchor_bottom = 0.14
-theme_override_font_sizes/font_size = 22
-text = "F  Flask  2/2  - heals if not hit"
+theme_override_font_sizes/font_size = 18
+text = "F  Flask  2/2"
 
 [node name="BrandLabel" type="Label" parent="Root"]
 unique_name_in_owner = true
@@ -136,22 +136,23 @@ autowrap_mode = 3
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.34
+anchor_left = 0.30
 anchor_top = 0.035
-anchor_right = 0.66
+anchor_right = 0.70
 anchor_bottom = 0.105
 theme_override_constants/separation = 4
 
 [node name="EnemyLabel" type="Label" parent="Root/EnemyPanel"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "Shrine Guardian"
+theme_override_colors/font_color = Color(0.88, 0.76, 0.64, 0.96)
+theme_override_font_sizes/font_size = 20
+text = "Bell-Bearer"
 horizontal_alignment = 1
 
 [node name="EnemyBar" type="ProgressBar" parent="Root/EnemyPanel"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(520, 16)
+custom_minimum_size = Vector2(720, 18)
 layout_mode = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_health_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_enemy_fill")
@@ -163,15 +164,14 @@ value = 86.0
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.35
-anchor_top = 0.855
-anchor_right = 0.65
+anchor_left = 0.32
+anchor_top = 0.86
+anchor_right = 0.68
 anchor_bottom = 0.94
 theme_override_colors/font_color = Color(0.82, 0.75, 0.64, 0.92)
-theme_override_font_sizes/font_size = 18
-text = "WASD move  |  Mouse aim  |  Left combo  |  Right heavy
-Space dodge through attacks or E parry, then Q Collect
-F drinks a flask. Getting hit interrupts it."
+theme_override_font_sizes/font_size = 16
+text = "WASD move | Mouse aim | Left combo | Right heavy
+Space dodge | E parry | Q Collect | R Ash Burst | F Flask"
 horizontal_alignment = 1
 autowrap_mode = 3
 

@@ -272,6 +272,9 @@ func _on_trial_enemies_changed(enemies: Array[Node]) -> void:
 func _on_trial_wave_started(index: int, label: String) -> void:
 	if index > 0 and is_instance_valid(player) and player.has_method("restore_flask_charge"):
 		player.restore_flask_charge(1)
+	if label.to_lower().contains("bell"):
+		_screen_shake = maxf(_screen_shake, 0.84)
+		EFFECT_SCRIPT.spawn(actors_and_tall_props, Vector2(0, -365), "boss_spawn", Vector2.DOWN, Color("#ff6a24"))
 	if is_instance_valid(_hud) and _hud.has_method("show_wave"):
 		var total: int = int(trial.wave_count()) if is_instance_valid(trial) and trial.has_method("wave_count") else index + 1
 		_hud.show_wave("%s  %d/%d" % [label, index + 1, total])

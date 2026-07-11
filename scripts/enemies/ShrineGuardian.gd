@@ -3,12 +3,14 @@ extends CharacterBody2D
 signal health_changed(current: float, maximum: float)
 signal brand_changed(branded: bool, collect_ready: bool)
 signal died
+signal spawned(enemy: Node)
 
 enum EnemyState { IDLE, PATROL, CHASE, WINDUP, ACTIVE, RECOVERY, STAGGER, DYING, DEAD }
 
 const EnemyBrainUtil := preload("res://scripts/enemies/EnemyBrain.gd")
 const CombatMathUtil := preload("res://scripts/combat/CombatMath.gd")
 const ProjectileScript := preload("res://scripts/enemies/EnemyProjectile.gd")
+const EFFECT_SCRIPT := preload("res://scripts/effects/CombatEffect.gd")
 
 @export_enum("guardian", "hound", "archer", "bell_bearer", "ashen_judicator") var enemy_kind := "guardian"
 
@@ -56,6 +58,7 @@ func _ready() -> void:
 	attack_area.monitoring = false
 	attack_area.body_entered.connect(_on_attack_body_entered)
 	health_changed.emit(health, max_health)
+	spawned.emit(self)
 
 
 func _physics_process(delta: float) -> void:
@@ -111,6 +114,11 @@ func take_combat_hit(hit: Dictionary, source_position: Vector2 = global_position
 		brand_changed.emit(ash_branded, collect_ready)
 	if visual.has_method("trigger_flash"):
 		visual.trigger_flash()
+	if is_instance_valid(get_parent()):
+		var effect_kind := "blood" if kind.begins_with("light") else "heavy"
+		if kind == "collect" or kind == "ash_burst":
+			effect_kind = kind
+		EFFECT_SCRIPT.spawn(get_parent(), global_position + hit_direction.normalized() * -18.0, effect_kind, hit_direction)
 	if kind == "ash_burst":
 		_play_audio("heavy_hit", -4.5)
 	elif is_counter or is_rear_hit:
@@ -356,6 +364,8 @@ func _die() -> void:
 	attack_area.set_deferred("monitoring", false)
 	collision_shape.set_deferred("disabled", true)
 	ash.emitting = true
+	if is_instance_valid(get_parent()):
+		EFFECT_SCRIPT.spawn(get_parent(), global_position, "death", facing)
 	_play_audio("enemy_death", -7.0)
 	_set_state(EnemyState.DYING, 0.9)
 	if not _died_emitted:

@@ -36,6 +36,7 @@ func _draw_ground() -> void:
 		if room.size.x <= 2.0 or room.size.y <= 2.0:
 			continue
 		_draw_room_floor(room)
+	_draw_floor_cell_overlay()
 	_draw_irregular_edges()
 	_draw_room_trim(Route.ENTRANCE, Color("#413944"))
 	_draw_room_trim(Route.PILGRIM_COURT, Color("#3d3636"))
@@ -54,6 +55,7 @@ func _draw_ground() -> void:
 	_draw_route_runners()
 	_draw_stairs()
 	_draw_landmark()
+	_draw_boss_dais()
 	_draw_room_landmarks()
 
 
@@ -159,6 +161,18 @@ func _draw_route_runners() -> void:
 		_draw_floor_medallion(marker)
 
 
+func _draw_floor_cell_overlay() -> void:
+	for cell in _floor_cells:
+		var rect: Rect2 = cell["rect"]
+		var tint: Color = cell["color"]
+		draw_rect(rect, tint)
+		draw_rect(rect, Color(0.02, 0.018, 0.017, 0.20), false, 1.0)
+		if bool(cell["worn"]):
+			draw_rect(rect.grow(-12.0), Color(0.05, 0.040, 0.034, 0.26))
+			var center := rect.get_center()
+			draw_colored_polygon(_ellipse(center, rect.size.x * 0.23, rect.size.y * 0.12), Color(0.10, 0.075, 0.055, 0.18))
+
+
 func _draw_runner(rect: Rect2, tint: Color) -> void:
 	draw_rect(rect, Color(0.025, 0.020, 0.022, tint.a * 0.52))
 	_draw_tiled_texture(_textures.get("floor_warm"), rect.grow(-8.0), tint)
@@ -184,6 +198,18 @@ func _draw_stairs() -> void:
 
 func _draw_landmark() -> void:
 	_draw_texture_centered(_textures.get("brazier"), Vector2(0, -42), Vector2(1.22, 1.22), Color.WHITE)
+
+
+func _draw_boss_dais() -> void:
+	var center := Vector2(0, -365)
+	draw_colored_polygon(_ellipse(center + Vector2(26, 28), 260.0, 72.0), Color(0.015, 0.010, 0.009, 0.42))
+	draw_arc(center, 170.0, 0.02, TAU - 0.02, 72, Color(0.68, 0.24, 0.14, 0.34), 12.0)
+	draw_arc(center, 116.0, -0.5, PI * 1.35, 58, Color(1.0, 0.56, 0.24, 0.22), 5.0)
+	draw_colored_polygon(_ellipse(center, 120.0, 34.0), Color(0.10, 0.052, 0.040, 0.26))
+	for i in 6:
+		var angle := float(i) * TAU / 6.0 + 0.35
+		var dir := Vector2.RIGHT.rotated(angle)
+		draw_line(center + dir * 46.0, center + dir * 146.0, Color(0.05, 0.022, 0.017, 0.42), 4.0)
 
 
 func _draw_room_landmarks() -> void:

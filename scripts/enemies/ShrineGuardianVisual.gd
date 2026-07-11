@@ -2,44 +2,44 @@ extends Node2D
 
 const SPRITE_PATHS := {
 	"guardian": {
-		"idle": "res://assets/sprites/ashen_runtime/melee_idle.png",
-		"run_1": "res://assets/sprites/ashen_runtime/melee_run_1.png",
-		"run_2": "res://assets/sprites/ashen_runtime/melee_run_2.png",
-		"attack": "res://assets/sprites/ashen_runtime/melee_attack.png",
-		"hurt": "res://assets/sprites/ashen_runtime/melee_hurt.png",
-		"death": "res://assets/sprites/ashen_runtime/melee_death.png",
+		"idle": "res://assets/sprites/upgrade/melee_idle.png",
+		"run_1": "res://assets/sprites/upgrade/melee_run_1.png",
+		"run_2": "res://assets/sprites/upgrade/melee_run_2.png",
+		"attack": "res://assets/sprites/upgrade/melee_attack.png",
+		"hurt": "res://assets/sprites/upgrade/melee_hurt.png",
+		"death": "res://assets/sprites/upgrade/melee_death.png",
 	},
 	"hound": {
-		"idle": "res://assets/sprites/ashen_runtime/hound_idle.png",
-		"run_1": "res://assets/sprites/ashen_runtime/hound_run_1.png",
-		"run_2": "res://assets/sprites/ashen_runtime/hound_run_2.png",
-		"attack": "res://assets/sprites/ashen_runtime/hound_attack.png",
-		"hurt": "res://assets/sprites/ashen_runtime/hound_hurt.png",
-		"death": "res://assets/sprites/ashen_runtime/hound_death.png",
+		"idle": "res://assets/sprites/upgrade/hound_idle.png",
+		"run_1": "res://assets/sprites/upgrade/hound_run_1.png",
+		"run_2": "res://assets/sprites/upgrade/hound_run_2.png",
+		"attack": "res://assets/sprites/upgrade/hound_attack.png",
+		"hurt": "res://assets/sprites/upgrade/hound_hurt.png",
+		"death": "res://assets/sprites/upgrade/hound_death.png",
 	},
 	"archer": {
-		"idle": "res://assets/sprites/ashen_runtime/archer_idle.png",
-		"run_1": "res://assets/sprites/ashen_runtime/archer_run_1.png",
-		"run_2": "res://assets/sprites/ashen_runtime/archer_run_2.png",
-		"attack": "res://assets/sprites/ashen_runtime/archer_attack.png",
-		"hurt": "res://assets/sprites/ashen_runtime/archer_hurt.png",
-		"death": "res://assets/sprites/ashen_runtime/archer_death.png",
+		"idle": "res://assets/sprites/upgrade/archer_idle.png",
+		"run_1": "res://assets/sprites/upgrade/archer_run_1.png",
+		"run_2": "res://assets/sprites/upgrade/archer_run_2.png",
+		"attack": "res://assets/sprites/upgrade/archer_attack.png",
+		"hurt": "res://assets/sprites/upgrade/archer_hurt.png",
+		"death": "res://assets/sprites/upgrade/archer_death.png",
 	},
 	"bell_bearer": {
-		"idle": "res://assets/sprites/ashen_runtime/elite_idle.png",
-		"run_1": "res://assets/sprites/ashen_runtime/elite_run_1.png",
-		"run_2": "res://assets/sprites/ashen_runtime/elite_run_2.png",
-		"attack": "res://assets/sprites/ashen_runtime/elite_attack.png",
-		"hurt": "res://assets/sprites/ashen_runtime/elite_hurt.png",
-		"death": "res://assets/sprites/ashen_runtime/elite_death.png",
+		"idle": "res://assets/sprites/upgrade/elite_idle.png",
+		"run_1": "res://assets/sprites/upgrade/elite_run_1.png",
+		"run_2": "res://assets/sprites/upgrade/elite_run_2.png",
+		"attack": "res://assets/sprites/upgrade/elite_attack.png",
+		"hurt": "res://assets/sprites/upgrade/elite_hurt.png",
+		"death": "res://assets/sprites/upgrade/elite_death.png",
 	},
 	"ashen_judicator": {
-		"idle": "res://assets/sprites/ashen_runtime/judicator_idle.png",
-		"run_1": "res://assets/sprites/ashen_runtime/judicator_run_1.png",
-		"run_2": "res://assets/sprites/ashen_runtime/judicator_run_2.png",
-		"attack": "res://assets/sprites/ashen_runtime/judicator_attack.png",
-		"hurt": "res://assets/sprites/ashen_runtime/judicator_hurt.png",
-		"death": "res://assets/sprites/ashen_runtime/judicator_death.png",
+		"idle": "res://assets/sprites/upgrade/judicator_idle.png",
+		"run_1": "res://assets/sprites/upgrade/judicator_run_1.png",
+		"run_2": "res://assets/sprites/upgrade/judicator_run_2.png",
+		"attack": "res://assets/sprites/upgrade/judicator_attack.png",
+		"hurt": "res://assets/sprites/upgrade/judicator_hurt.png",
+		"death": "res://assets/sprites/upgrade/judicator_death.png",
 	},
 }
 
@@ -59,6 +59,7 @@ var flash := 0.0
 var attack_pattern := "sweep"
 
 var _time := 0.0
+var _spawn_age := 0.0
 var _sprites := {}
 var _effects := {}
 
@@ -74,6 +75,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
+	_spawn_age += delta
 	flash = maxf(flash - delta * 7.0, 0.0)
 	queue_redraw()
 
@@ -99,6 +101,8 @@ func _draw() -> void:
 	var bob := _bob_offset()
 	var tint := Color.WHITE.lerp(Color(1.0, 0.30, 0.20), flash)
 	_draw_shadow()
+	if _spawn_age < 0.62:
+		_draw_spawn_arrival()
 	if ash_branded:
 		_draw_brand()
 	if state_name == "windup":
@@ -113,6 +117,8 @@ func _draw() -> void:
 		_draw_stagger_flash()
 	elif state_name == "dying":
 		_draw_death_smoke()
+	if _should_draw_local_health():
+		_draw_local_health_bar()
 
 
 func _select_frame() -> Texture2D:
@@ -290,6 +296,33 @@ func _draw_death_smoke() -> void:
 	for i in 5:
 		var angle := float(i) * TAU / 5.0 + _time
 		_draw_texture(_effects.get("smoke"), Vector2.RIGHT.rotated(angle) * (18.0 + float(i) * 8.0), Vector2(0.52, 0.52), Color(0.64, 0.56, 0.48, 0.42), angle)
+
+
+func _draw_spawn_arrival() -> void:
+	var t := clampf(_spawn_age / 0.62, 0.0, 1.0)
+	var alpha := 1.0 - t
+	draw_colored_polygon(_ellipse(Vector2(0, 20), 60.0 + t * 44.0, 15.0 + t * 9.0), Color(0.05, 0.018, 0.012, alpha * 0.42))
+	for i in 7:
+		var angle := float(i) * TAU / 7.0 + _time * 1.5
+		var dir := Vector2.RIGHT.rotated(angle)
+		_draw_texture(_effects.get("smoke"), dir * (14.0 + t * 52.0), Vector2(0.42, 0.42), Color(0.66, 0.54, 0.42, alpha * 0.34), angle)
+	draw_arc(Vector2.ZERO, 46.0 + t * 34.0, _time, _time + PI * 1.6, 42, Color(1.0, 0.38, 0.12, alpha * 0.45), 5.0)
+
+
+func _should_draw_local_health() -> bool:
+	if enemy_kind == "bell_bearer" or enemy_kind == "ashen_judicator":
+		return false
+	return health_ratio < 0.999 and state_name != "dead"
+
+
+func _draw_local_health_bar() -> void:
+	var width := 68.0 if enemy_kind != "hound" else 54.0
+	var y := -74.0 if enemy_kind != "hound" else -54.0
+	var bg := Rect2(Vector2(-width * 0.5, y), Vector2(width, 6.0))
+	draw_rect(bg.grow(2.0), Color(0.015, 0.010, 0.008, 0.78))
+	draw_rect(bg, Color(0.06, 0.035, 0.032, 0.92))
+	draw_rect(Rect2(bg.position, Vector2(bg.size.x * health_ratio, bg.size.y)), Color(0.66, 0.035, 0.025, 0.96))
+	draw_line(bg.position + Vector2(0, bg.size.y + 2), bg.position + Vector2(bg.size.x, bg.size.y + 2), Color(0.92, 0.72, 0.45, 0.18), 1.0)
 
 
 func _draw_warning_lane(reach: float, width: float, tint: Color, direction_value: Vector2 = Vector2.ZERO) -> void:

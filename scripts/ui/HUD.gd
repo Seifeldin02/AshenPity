@@ -70,6 +70,7 @@ func bind_enemies(enemies: Array[Node]) -> void:
 	for enemy in enemies:
 		if enemy.has_signal("health_changed") and not enemy.health_changed.is_connected(_on_enemy_health_changed.bind(enemy)):
 			enemy.health_changed.connect(_on_enemy_health_changed.bind(enemy))
+	_update_enemy_panel()
 
 
 func _process(delta: float) -> void:
@@ -125,7 +126,7 @@ func _on_player_stamina_changed(current: float, maximum: float) -> void:
 
 
 func _on_flask_changed(current: int, maximum: int) -> void:
-	flask_label.text = "F  Flask  %d/%d  - heals if not hit" % [current, maximum]
+	flask_label.text = "F  Flask  %d/%d" % [current, maximum]
 
 
 func _on_ash_brand_changed(enemy: Node, collect_ready: bool) -> void:
@@ -165,17 +166,19 @@ func _update_ability_label(unlocked: bool, ready: bool, cooldown_remaining: floa
 
 
 func _on_enemy_health_changed(current: float, maximum: float, enemy: Node) -> void:
-	enemy_panel.show()
-	enemy_label.text = str(enemy.get("display_name")) if is_instance_valid(enemy) else "Enemy"
-	enemy_bar.max_value = maximum
-	enemy_bar.value = current
-	if current <= 0.0:
+	if is_instance_valid(enemy) and _is_boss_enemy(enemy):
+		enemy_panel.show()
+		enemy_label.text = str(enemy.get("display_name"))
+		enemy_bar.max_value = maximum
+		enemy_bar.value = current
+		_apply_enemy_bar_style(str(enemy.get("enemy_kind")))
+	if current <= 0.0 or not is_instance_valid(enemy) or not _is_boss_enemy(enemy):
 		await get_tree().create_timer(0.35).timeout
 		_update_enemy_panel()
 
 
 func _update_enemy_panel() -> void:
-	var living := _enemies.filter(func(enemy: Node) -> bool: return is_instance_valid(enemy) and enemy.get("health") > 0.0)
+	var living := _enemies.filter(func(enemy: Node) -> bool: return is_instance_valid(enemy) and enemy.get("health") > 0.0 and _is_boss_enemy(enemy))
 	if living.is_empty():
 		enemy_panel.hide()
 		return
@@ -185,6 +188,13 @@ func _update_enemy_panel() -> void:
 	enemy_bar.max_value = target.get("max_health")
 	enemy_bar.value = target.get("health")
 	_apply_enemy_bar_style(str(target.get("enemy_kind")))
+
+
+func _is_boss_enemy(enemy: Node) -> bool:
+	if not is_instance_valid(enemy):
+		return false
+	var kind := str(enemy.get("enemy_kind"))
+	return kind == "bell_bearer" or kind == "ashen_judicator"
 
 
 func _apply_enemy_bar_style(enemy_kind: String) -> void:
@@ -218,21 +228,11 @@ func _build_backplates() -> void:
 	var root := $Root
 	var left := ColorRect.new()
 	left.name = "HudBackplate"
-	left.color = Color(0.025, 0.020, 0.018, 0.58)
+	left.color = Color(0.015, 0.013, 0.012, 0.72)
 	left.anchor_left = 0.018
 	left.anchor_top = 0.022
-	left.anchor_right = 0.34
-	left.anchor_bottom = 0.145
+	left.anchor_right = 0.315
+	left.anchor_bottom = 0.128
 	left.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(left)
 	root.move_child(left, 0)
-	var enemy := ColorRect.new()
-	enemy.name = "EnemyBackplate"
-	enemy.color = Color(0.025, 0.018, 0.017, 0.50)
-	enemy.anchor_left = 0.34
-	enemy.anchor_top = 0.03
-	enemy.anchor_right = 0.66
-	enemy.anchor_bottom = 0.105
-	enemy.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(enemy)
-	root.move_child(enemy, 1)
