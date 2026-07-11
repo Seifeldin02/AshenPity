@@ -203,10 +203,16 @@ func _draw_brand() -> void:
 	var ring_color := Color(1.0, 0.32, 0.12, 0.60 + pulse * 0.20)
 	if collect_ready:
 		ring_color = Color(1.0, 0.78, 0.30, 0.86)
-	draw_arc(Vector2.ZERO, 54.0 + pulse * 8.0, 0.0, TAU, 48, ring_color, 5.0)
-	for i in 6:
-		var angle := _time * 1.8 + float(i) * TAU / 6.0
-		_draw_texture(_effects.get("smoke"), Vector2.RIGHT.rotated(angle) * (43.0 + pulse * 7.0), Vector2(0.34, 0.34), ring_color, 0.0)
+	var y := -68.0 if enemy_kind != "hound" else -50.0
+	var mark := PackedVector2Array([
+		Vector2(0, y - 18.0 - pulse * 4.0),
+		Vector2(16.0 + pulse * 4.0, y),
+		Vector2(0, y + 18.0 + pulse * 4.0),
+		Vector2(-16.0 - pulse * 4.0, y),
+	])
+	draw_colored_polygon(mark, Color(0.08, 0.02, 0.01, 0.55))
+	draw_colored_polygon(PackedVector2Array([mark[0], mark[1], Vector2.ZERO + Vector2(0, y), mark[3]]), ring_color)
+	_draw_texture(_effects.get("flame"), Vector2(0, y), Vector2(0.32, 0.32), ring_color, _time * 2.0)
 
 
 func _draw_telegraph() -> void:
@@ -306,7 +312,10 @@ func _draw_spawn_arrival() -> void:
 		var angle := float(i) * TAU / 7.0 + _time * 1.5
 		var dir := Vector2.RIGHT.rotated(angle)
 		_draw_texture(_effects.get("smoke"), dir * (14.0 + t * 52.0), Vector2(0.42, 0.42), Color(0.66, 0.54, 0.42, alpha * 0.34), angle)
-	draw_arc(Vector2.ZERO, 46.0 + t * 34.0, _time, _time + PI * 1.6, 42, Color(1.0, 0.38, 0.12, alpha * 0.45), 5.0)
+	for i in 5:
+		var angle := float(i) * TAU / 5.0 + _time * 0.4
+		var dir := Vector2.RIGHT.rotated(angle)
+		_draw_ground_tear(dir * (22.0 + t * 34.0), dir, Color(1.0, 0.38, 0.12, alpha * 0.45))
 
 
 func _should_draw_local_health() -> bool:
@@ -322,7 +331,6 @@ func _draw_local_health_bar() -> void:
 	draw_rect(bg.grow(2.0), Color(0.015, 0.010, 0.008, 0.78))
 	draw_rect(bg, Color(0.06, 0.035, 0.032, 0.92))
 	draw_rect(Rect2(bg.position, Vector2(bg.size.x * health_ratio, bg.size.y)), Color(0.66, 0.035, 0.025, 0.96))
-	draw_line(bg.position + Vector2(0, bg.size.y + 2), bg.position + Vector2(bg.size.x, bg.size.y + 2), Color(0.92, 0.72, 0.45, 0.18), 1.0)
 
 
 func _draw_warning_lane(reach: float, width: float, tint: Color, direction_value: Vector2 = Vector2.ZERO) -> void:
@@ -378,18 +386,13 @@ func _draw_active_sweep(radius: float, reach: float, spread: float, tint: Color)
 
 
 func _draw_warning_burst(radius: float, tint: Color, points_count: int = 14) -> void:
-	draw_colored_polygon(_ellipse(Vector2.ZERO, radius * 0.84, radius * 0.34), Color(0.05, 0.012, 0.006, tint.a * 0.26))
-	for ring in 3:
-		var ring_radius := radius * (0.42 + float(ring) * 0.20)
-		var start := _time * 0.7 + float(ring) * 0.9
-		draw_arc(Vector2.ZERO, ring_radius, start, start + PI * 1.42, 42, Color(tint.r, tint.g, tint.b, tint.a * (0.72 - float(ring) * 0.16)), 4.0 - float(ring) * 0.7)
 	for i in min(points_count, 12):
 		var angle := TAU * float(i) / float(min(points_count, 12)) + _time * 0.16
 		var dir := Vector2.RIGHT.rotated(angle)
 		var pos := dir * radius * (0.44 + float(i % 3) * 0.09)
 		_draw_texture(_effects.get("flame"), pos, Vector2(0.28, 0.28), Color(1.0, 0.45, 0.16, tint.a * 0.46), angle)
-		if i % 2 == 0:
-			_draw_ground_tear(pos, dir, tint)
+		_draw_ground_tear(pos, dir, tint)
+	draw_colored_polygon(_jagged_patch(Vector2.ZERO, radius * 0.72, 14), Color(tint.r, tint.g * 0.72, tint.b * 0.50, tint.a * 0.20))
 
 
 func _draw_ground_tear(center: Vector2, dir: Vector2, tint: Color) -> void:
@@ -409,6 +412,15 @@ func _sector(center: Vector2, radius: float, start_angle: float, end_angle: floa
 		var t := float(i) / float(steps)
 		var angle := lerpf(start_angle, end_angle, t)
 		points.append(center + Vector2.RIGHT.rotated(angle) * radius)
+	return points
+
+
+func _jagged_patch(center: Vector2, radius: float, count: int) -> PackedVector2Array:
+	var points := PackedVector2Array()
+	for i in count:
+		var angle := TAU * float(i) / float(count)
+		var scale := 0.70 if i % 2 == 0 else 1.0
+		points.append(center + Vector2.RIGHT.rotated(angle) * radius * scale * Vector2(1.0, 0.36))
 	return points
 
 

@@ -35,13 +35,12 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	var glow := 0.38 + sin(_pulse * 4.0) * 0.08
 	draw_colored_polygon(_ellipse(Vector2(0, 18), 46.0, 15.0, 28), Color(0.02, 0.015, 0.014, 0.42))
-	draw_circle(Vector2.ZERO, 36.0, Color(0.72, 0.34, 0.12, glow * 0.18))
-	draw_circle(Vector2.ZERO, 25.0, Color(0.10, 0.075, 0.060, 0.92))
-	draw_arc(Vector2.ZERO, 29.0, _pulse * 1.4, _pulse * 1.4 + PI * 1.45, 30, Color(1.0, 0.58, 0.20, 0.78), 3.0)
-	draw_arc(Vector2.ZERO, 18.0, -_pulse * 1.9, -_pulse * 1.9 + PI * 1.2, 24, Color(0.86, 0.76, 0.56, 0.58), 2.0)
+	var pedestal := Rect2(Vector2(-26, -12), Vector2(52, 38))
+	draw_rect(pedestal.grow(8.0), Color(0.72, 0.34, 0.12, glow * 0.12))
+	draw_rect(pedestal, Color(0.10, 0.075, 0.060, 0.92))
+	draw_rect(pedestal.grow(-8.0), Color(1.0, 0.45, 0.16, glow * 0.20))
 	var sigil := _sigil_points()
 	draw_colored_polygon(sigil, Color(0.94, 0.55, 0.20, 0.88))
-	draw_polyline(sigil + PackedVector2Array([sigil[0]]), Color(1.0, 0.86, 0.48, 0.62), 2.0)
 	_draw_prompt()
 
 

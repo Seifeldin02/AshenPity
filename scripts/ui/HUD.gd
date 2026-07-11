@@ -225,14 +225,4 @@ func _on_replay_pressed() -> void:
 
 
 func _build_backplates() -> void:
-	var root := $Root
-	var left := ColorRect.new()
-	left.name = "HudBackplate"
-	left.color = Color(0.015, 0.013, 0.012, 0.72)
-	left.anchor_left = 0.018
-	left.anchor_top = 0.022
-	left.anchor_right = 0.315
-	left.anchor_bottom = 0.128
-	left.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(left)
-	root.move_child(left, 0)
+	pass

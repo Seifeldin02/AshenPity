@@ -11,8 +11,7 @@ const SPRITE_PATHS := {
 	"weapon": "res://assets/sprites/upgrade/player_weapon.png",
 }
 
-const BODY_SCALE := Vector2(0.86, 0.86)
-const WEAPON_SCALE := Vector2(0.54, 0.54)
+const BODY_SCALE := Vector2(0.84, 0.84)
 
 var facing := Vector2.RIGHT
 var state_name := "idle"
@@ -62,8 +61,6 @@ func _draw() -> void:
 	var body_scale := _body_scale()
 	draw_set_transform(Vector2(0, bob), body_rotation, Vector2(flip * body_scale.x, body_scale.y))
 	_draw_texture_centered(frame, Vector2(0, -24), BODY_SCALE, tint)
-	if state_name == "idle" or state_name == "move":
-		_draw_texture_centered(_sprites["weapon"], Vector2(29, -28), WEAPON_SCALE, Color.WHITE)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
@@ -85,39 +82,39 @@ func _select_frame() -> Texture2D:
 
 func _bob_offset() -> float:
 	if state_name == "move":
-		return sin(_time * 20.0) * 1.35
+		return sin(_time * 14.0) * 0.7
 	if state_name == "dodge":
-		return -1.5
+		return -0.8
 	if state_name.begins_with("collect"):
-		return -2.0
-	return sin(_time * 5.0) * 0.75
+		return -1.0
+	return sin(_time * 4.2) * 0.45
 
 
 func _body_rotation(flip: float) -> float:
 	if state_name == "move":
-		return sin(_time * 18.0) * 0.035 * flip
+		return sin(_time * 14.0) * 0.018 * flip
 	if state_name.ends_with("_windup"):
-		return -0.10 * flip
+		return -0.055 * flip
 	if state_name.ends_with("_active"):
-		return 0.08 * flip
+		return 0.045 * flip
 	if state_name.begins_with("collect"):
-		return 0.11 * flip
+		return 0.060 * flip
 	if state_name == "hurt":
-		return sin(_time * 46.0) * 0.06
+		return sin(_time * 32.0) * 0.035
 	return 0.0
 
 
 func _body_scale() -> Vector2:
 	if state_name == "move":
-		return Vector2(1.0 + abs(sin(_time * 18.0)) * 0.025, 1.0 - abs(sin(_time * 18.0)) * 0.018)
+		return Vector2(1.0 + abs(sin(_time * 14.0)) * 0.010, 1.0 - abs(sin(_time * 14.0)) * 0.008)
 	if state_name == "dodge":
-		return Vector2(1.12, 0.88)
+		return Vector2(1.06, 0.94)
 	if state_name.ends_with("_windup"):
-		return Vector2(0.96, 1.05)
+		return Vector2(0.98, 1.02)
 	if state_name.ends_with("_active"):
-		return Vector2(1.08, 0.96)
+		return Vector2(1.04, 0.98)
 	if state_name.begins_with("collect"):
-		return Vector2(1.13, 0.94)
+		return Vector2(1.07, 0.97)
 	return Vector2.ONE
 
 

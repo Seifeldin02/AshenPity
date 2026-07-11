@@ -66,7 +66,8 @@ func _draw_decals() -> void:
 		var point := _ash[i]
 		if PerformanceStats.lightweight_mode and int(point.x + point.y) % 2 == 0:
 			continue
-		draw_circle(point, 1.0 + float(i % 3) * 0.35, Color(0.78, 0.70, 0.58, 0.075))
+		var size := 1.5 + float(i % 3) * 0.4
+		draw_rect(Rect2(point - Vector2(size, size) * 0.5, Vector2(size, size)), Color(0.78, 0.70, 0.58, 0.065))
 	for torch_pos in Route.TORCHES:
 		_draw_light_pool(torch_pos, 145.0)
 
@@ -86,7 +87,6 @@ func _draw_shadows() -> void:
 
 func _draw_foreground() -> void:
 	draw_rect(Rect2(-500, Route.CAMERA_LIMIT_TOP - 36, 1000, 48), Color("#100e13"))
-	draw_line(Vector2(-440, Route.CAMERA_LIMIT_TOP + 12), Vector2(440, Route.CAMERA_LIMIT_TOP + 12), Color(0.52, 0.43, 0.35, 0.18), 4.0)
 
 
 func _draw_room_floor(room: Rect2) -> void:
@@ -148,9 +148,6 @@ func _draw_irregular_edges() -> void:
 	draw_colored_polygon(left_apron, Color("#25232a"))
 	draw_colored_polygon(right_apron, Color("#25232a"))
 	draw_colored_polygon(altar_apron, Color("#2b252b"))
-	draw_polyline(left_apron + PackedVector2Array([left_apron[0]]), Color(0.32, 0.29, 0.32, 0.22), 3.0)
-	draw_polyline(right_apron + PackedVector2Array([right_apron[0]]), Color(0.32, 0.29, 0.32, 0.22), 3.0)
-	draw_polyline(altar_apron + PackedVector2Array([altar_apron[0]]), Color(0.36, 0.31, 0.32, 0.22), 3.0)
 
 
 func _draw_route_runners() -> void:
@@ -158,7 +155,7 @@ func _draw_route_runners() -> void:
 	_draw_runner(Rect2(-650, -110, 1300, 220), Color(0.12, 0.095, 0.105, 0.28))
 	_draw_runner(Rect2(-345, -585, 690, 155), Color(0.17, 0.12, 0.11, 0.32))
 	for marker in [Vector2(0, 420), Vector2(0, -38), Vector2(0, -505)]:
-		_draw_floor_medallion(marker)
+		_draw_floor_marker(marker)
 
 
 func _draw_floor_cell_overlay() -> void:
@@ -177,18 +174,21 @@ func _draw_runner(rect: Rect2, tint: Color) -> void:
 	draw_rect(rect, Color(0.025, 0.020, 0.022, tint.a * 0.52))
 	_draw_tiled_texture(_textures.get("floor_warm"), rect.grow(-8.0), tint)
 	draw_rect(rect.grow(-8.0), Color(0.03, 0.018, 0.016, 0.12))
-	draw_line(rect.position + Vector2(10, 8), Vector2(rect.end.x - 10, rect.position.y + 8), Color(0.74, 0.50, 0.32, 0.10), 3.0)
-	draw_line(Vector2(rect.position.x + 10, rect.end.y - 8), rect.end - Vector2(10, 8), Color(0.02, 0.014, 0.012, 0.24), 4.0)
 
 
-func _draw_floor_medallion(center: Vector2) -> void:
-	draw_colored_polygon(_ellipse(center + Vector2(18, 20), 138.0, 38.0), Color(0.02, 0.014, 0.013, 0.30))
-	draw_arc(center, 82.0, 0.2, TAU - 0.2, 58, Color(0.72, 0.38, 0.18, 0.30), 8.0)
-	draw_arc(center, 52.0, -0.7, PI * 1.28, 42, Color(0.90, 0.58, 0.26, 0.22), 4.0)
-	var dir_a := Vector2.RIGHT.rotated(0.72)
-	var dir_b := Vector2.RIGHT.rotated(-0.72)
-	draw_line(center - dir_a * 70.0, center + dir_a * 70.0, Color(0.04, 0.025, 0.022, 0.44), 5.0)
-	draw_line(center - dir_b * 70.0, center + dir_b * 70.0, Color(0.04, 0.025, 0.022, 0.44), 5.0)
+func _draw_floor_marker(center: Vector2) -> void:
+	var base := Rect2(center - Vector2(105, 34), Vector2(210, 68))
+	draw_rect(Rect2(base.position + Vector2(16, 18), base.size), Color(0.02, 0.014, 0.013, 0.26))
+	draw_rect(base, Color(0.13, 0.075, 0.054, 0.24))
+	draw_rect(base.grow(-8.0), Color(0.03, 0.020, 0.018, 0.24))
+	var diamond := PackedVector2Array([
+		center + Vector2(0, -34),
+		center + Vector2(42, 0),
+		center + Vector2(0, 34),
+		center + Vector2(-42, 0),
+	])
+	draw_colored_polygon(diamond, Color(0.55, 0.25, 0.12, 0.24))
+	draw_colored_polygon(PackedVector2Array([diamond[0], diamond[1], center, diamond[3]]), Color(0.82, 0.48, 0.20, 0.18))
 
 
 func _draw_stairs() -> void:
@@ -202,14 +202,12 @@ func _draw_landmark() -> void:
 
 func _draw_boss_dais() -> void:
 	var center := Vector2(0, -365)
-	draw_colored_polygon(_ellipse(center + Vector2(26, 28), 260.0, 72.0), Color(0.015, 0.010, 0.009, 0.42))
-	draw_arc(center, 170.0, 0.02, TAU - 0.02, 72, Color(0.68, 0.24, 0.14, 0.34), 12.0)
-	draw_arc(center, 116.0, -0.5, PI * 1.35, 58, Color(1.0, 0.56, 0.24, 0.22), 5.0)
-	draw_colored_polygon(_ellipse(center, 120.0, 34.0), Color(0.10, 0.052, 0.040, 0.26))
-	for i in 6:
-		var angle := float(i) * TAU / 6.0 + 0.35
-		var dir := Vector2.RIGHT.rotated(angle)
-		draw_line(center + dir * 46.0, center + dir * 146.0, Color(0.05, 0.022, 0.017, 0.42), 4.0)
+	draw_rect(Rect2(center - Vector2(250, 64) + Vector2(24, 28), Vector2(500, 128)), Color(0.015, 0.010, 0.009, 0.36))
+	draw_rect(Rect2(center - Vector2(220, 54), Vector2(440, 108)), Color(0.14, 0.065, 0.048, 0.30))
+	draw_rect(Rect2(center - Vector2(170, 34), Vector2(340, 68)), Color(0.05, 0.026, 0.022, 0.34))
+	for i in 5:
+		var x := center.x - 160.0 + float(i) * 80.0
+		draw_rect(Rect2(Vector2(x - 14.0, center.y - 52.0), Vector2(28.0, 104.0)), Color(0.42, 0.18, 0.10, 0.20))
 
 
 func _draw_room_landmarks() -> void:
@@ -224,7 +222,15 @@ func _draw_room_landmarks() -> void:
 func _draw_light_pool(center: Vector2, radius: float) -> void:
 	for i in 5:
 		var t := float(i) / 7.0
-		draw_circle(center, radius * (1.0 - t * 0.12), Color(0.96, 0.42, 0.16, 0.020 * (1.0 - t)))
+		var w := radius * (1.35 - t * 0.16)
+		var h := radius * (0.62 - t * 0.06)
+		var alpha := 0.018 * (1.0 - t)
+		draw_colored_polygon(PackedVector2Array([
+			center + Vector2(0, -h),
+			center + Vector2(w, 0),
+			center + Vector2(0, h),
+			center + Vector2(-w, 0),
+		]), Color(0.96, 0.42, 0.16, alpha))
 
 
 func _build_marks() -> void:

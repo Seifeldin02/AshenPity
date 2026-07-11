@@ -115,24 +115,20 @@ func _draw_collect(alpha: float) -> void:
 
 
 func _draw_ash_burst(alpha: float) -> void:
-	for i in 3:
-		var radius := 68.0 + float(i) * 42.0 + (1.0 - alpha) * 36.0
-		draw_arc(Vector2.ZERO, radius, _age * 2.4 + float(i), _age * 2.4 + float(i) + PI * 1.55, 56, Color(1.0, 0.48, 0.16, alpha * (0.52 - float(i) * 0.10)), 8.0 - float(i) * 1.5)
 	for i in 12:
 		var angle := float(i) * TAU / 12.0 + _age * 2.0
 		var dir := Vector2.RIGHT.rotated(angle)
-		_draw_blade_cut(dir, 54.0 + (1.0 - alpha) * 52.0, 7.0, Color(1.0, 0.72, 0.28, alpha * 0.38))
+		_draw_blade_cut(dir, 54.0 + (1.0 - alpha) * 62.0, 8.0, Color(1.0, 0.72, 0.28, alpha * 0.42))
 		_draw_texture(_textures.get("smoke"), dir * (42.0 + float(i % 3) * 18.0), Vector2(0.48, 0.48), Color(0.58, 0.45, 0.34, alpha * 0.34), angle)
+	draw_colored_polygon(_burst(112.0 + (1.0 - alpha) * 40.0, 18), Color(0.90, 0.25, 0.08, alpha * 0.16))
 
 
 func _draw_boss_spawn(alpha: float) -> void:
 	var grow := 1.0 - alpha
-	for i in 4:
-		var radius := 62.0 + float(i) * 42.0 + grow * 56.0
-		draw_arc(Vector2.ZERO, radius, -_age * 2.2 + float(i) * 0.7, -_age * 2.2 + float(i) * 0.7 + PI * 1.75, 72, Color(1.0, 0.34, 0.10, alpha * (0.58 - float(i) * 0.09)), 8.0 - float(i))
 	for i in 14:
 		var angle := float(i) * TAU / 14.0 + _age * 1.4
 		var dir := Vector2.RIGHT.rotated(angle)
+		_draw_blade_cut(dir, 70.0 + grow * 92.0, 10.0, Color(1.0, 0.36, 0.10, alpha * 0.32))
 		_draw_texture(_textures.get("smoke"), dir * (34.0 + grow * 96.0 + float(i % 4) * 12.0), Vector2(0.68, 0.68), Color(0.50, 0.34, 0.25, alpha * 0.38), angle)
 	draw_colored_polygon(_burst(98.0 + grow * 88.0, 18), Color(0.70, 0.08, 0.03, alpha * 0.22))
 

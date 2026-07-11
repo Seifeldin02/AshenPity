@@ -28,9 +28,19 @@ func _process(_delta: float) -> void:
 
 func _draw() -> void:
 	var dir := direction.normalized() if direction.length() > 0.001 else Vector2.RIGHT
-	draw_line(-dir * 22.0, dir * 18.0, Color(0.94, 0.76, 0.46, 0.88), 5.0)
-	draw_line(-dir * 10.0, dir * 24.0, Color(0.36, 0.12, 0.08, 0.82), 2.0)
-	draw_circle(Vector2.ZERO, 5.0, Color(1.0, 0.42, 0.18, 0.68))
+	var side := dir.orthogonal()
+	draw_colored_polygon(PackedVector2Array([
+		dir * 25.0,
+		-dir * 10.0 + side * 7.0,
+		-dir * 22.0,
+		-dir * 10.0 - side * 7.0,
+	]), Color(0.92, 0.58, 0.22, 0.86))
+	draw_colored_polygon(PackedVector2Array([
+		dir * 15.0,
+		-dir * 5.0 + side * 3.0,
+		-dir * 12.0,
+		-dir * 5.0 - side * 3.0,
+	]), Color(1.0, 0.86, 0.48, 0.76))
 
 
 func _on_body_entered(body: Node) -> void:
