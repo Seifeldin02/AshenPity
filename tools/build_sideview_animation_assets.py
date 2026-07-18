@@ -16,12 +16,18 @@ TARGET_STANDING_HEIGHT = 320
 
 SHEETS = {
     "idle": ("wanderer_idle_alpha.png", 4),
-    "run": ("wanderer_run_alpha.png", 6),
-    "light": ("wanderer_light_alpha.png", 6),
-    "heavy": ("wanderer_heavy_alpha.png", 7),
-    "parry": ("wanderer_parry_alpha.png", 5),
+    "run": ("wanderer_run_alpha.png", 8),
+    "light": ("wanderer_light_alpha.png", 7),
+    "heavy": ("wanderer_heavy_alpha.png", 8),
+    "parry": ("wanderer_parry_alpha.png", 6),
     "skill": ("wanderer_skill_alpha.png", 8),
     "death": ("wanderer_death_alpha.png", 6),
+}
+
+# Visual-only vertical offsets preserve contact/compression/flight without moving the collider.
+BASELINE_OFFSETS = {
+    "idle": [0, 1, 0, -1],
+    "run": [0, 4, -3, -10, 0, 4, -3, -10],
 }
 
 
@@ -32,6 +38,28 @@ def split_cells(image: Image.Image, count: int) -> list[Image.Image]:
         right = round((index + 1) * image.width / count)
         cells.append(image.crop((left, 0, right, image.height)))
     return cells
+
+
+def split_character_poses(image: Image.Image, count: int) -> list[Image.Image]:
+    """Split at low-alpha valleys so wide capes never bleed into adjacent poses."""
+    alpha = image.getchannel("A")
+    column_ink = []
+    for x in range(image.width):
+        column = alpha.crop((x, 0, x + 1, image.height))
+        column_ink.append(sum(pixel > 96 for pixel in column.get_flattened_data()))
+
+    nominal_width = image.width / count
+    search_radius = max(48, round(nominal_width * 0.27))
+    cuts = [0]
+    for index in range(1, count):
+        nominal = round(index * nominal_width)
+        left = max(cuts[-1] + 32, nominal - search_radius)
+        right = min(image.width, nominal + search_radius + 1)
+        minimum_ink = min(column_ink[left:right])
+        candidates = [x for x in range(left, right) if column_ink[x] == minimum_ink]
+        cuts.append(min(candidates, key=lambda x: abs(x - nominal)))
+    cuts.append(image.width)
+    return [image.crop((cuts[index], 0, cuts[index + 1], image.height)) for index in range(count)]
 
 
 def alpha_bbox(image: Image.Image) -> tuple[int, int, int, int]:
@@ -57,7 +85,7 @@ def foot_anchor_x(image: Image.Image, bbox: tuple[int, int, int, int]) -> float:
 
 def normalize_character_sheet(name: str, source_name: str, count: int) -> None:
     source = Image.open(SOURCE_DIR / source_name).convert("RGBA")
-    cells = split_cells(source, count)
+    cells = split_character_poses(source, count)
     boxes = [alpha_bbox(cell) for cell in cells]
     standing_height = max(bottom - top for _, top, _, bottom in boxes)
     scale = TARGET_STANDING_HEIGHT / standing_height
@@ -75,7 +103,8 @@ def normalize_character_sheet(name: str, source_name: str, count: int) -> None:
         )
         anchor_in_crop = (anchor_x - left) * scale
         paste_x = round(FRAME_ROOT_X - anchor_in_crop)
-        paste_y = FRAME_BASELINE_Y - resized.height
+        frame_offsets = BASELINE_OFFSETS.get(name, [0] * count)
+        paste_y = FRAME_BASELINE_Y - resized.height + frame_offsets[index]
         frame = Image.new("RGBA", FRAME_CANVAS, (0, 0, 0, 0))
         frame.alpha_composite(resized, (paste_x, paste_y))
         frame.save(FRAME_DIR / f"{name}_{index:02d}.png", optimize=True)

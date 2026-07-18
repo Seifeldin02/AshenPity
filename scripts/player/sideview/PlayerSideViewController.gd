@@ -5,8 +5,13 @@ extends CharacterBody2D
 
 @onready var animation_controller: PlayerAnimationController = %AnimationController
 
+var _review_mode := false
+
 
 func _physics_process(delta: float) -> void:
+	if _review_mode:
+		velocity = Vector2.ZERO
+		return
 	_handle_actions()
 	var input_axis := _movement_axis()
 	if not animation_controller.is_action_locked() and not is_zero_approx(input_axis):
@@ -18,6 +23,12 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	global_position.x = clampf(global_position.x, tuning.world_min_x, tuning.world_max_x)
 	animation_controller.set_locomotion(absf(velocity.x) > 8.0)
+
+
+func set_animation_review_mode(enabled: bool) -> void:
+	_review_mode = enabled
+	velocity = Vector2.ZERO
+	animation_controller.set_review_mode(enabled)
 
 
 func _handle_actions() -> void:

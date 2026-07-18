@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/SideViewAnimationTest.gd" id="1_stage"]
 [ext_resource type="PackedScene" path="res://scenes/player/SideViewPlayer.tscn" id="2_player"]
+[ext_resource type="Script" path="res://scripts/player/sideview/AnimationReviewController.gd" id="3_review"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(5200, 120)
@@ -27,6 +28,28 @@ font_size = 20
 font_color = Color(0.86, 0.83, 0.78, 1)
 outline_size = 4
 outline_color = Color(0.02, 0.018, 0.024, 0.8)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_review"]
+bg_color = Color(0.035, 0.031, 0.043, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.58, 0.34, 0.18, 0.9)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 18.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_review"]
+font_size = 17
+font_color = Color(0.92, 0.88, 0.8, 1)
+outline_size = 3
+outline_color = Color(0.015, 0.012, 0.018, 0.9)
 
 [node name="SideViewAnimationTest" type="Node2D"]
 script = ExtResource("1_stage")
@@ -60,5 +83,23 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_controls")
 
 [node name="Controls" type="Label" parent="Instructions/Margin/Center/Panel"]
 layout_mode = 2
-text = "A / D  MOVE     LEFT CLICK  ATTACK     RIGHT CLICK  HEAVY     E  PARRY     R  ASH CROSS-CUT"
+text = "A / D  MOVE     LEFT CLICK  ATTACK     RIGHT CLICK  HEAVY     E  PARRY     R  ASH CROSS-CUT     F2  ANIMATION LAB"
 label_settings = SubResource("LabelSettings_controls")
+
+[node name="AnimationReview" type="CanvasLayer" parent="."]
+layer = 10
+script = ExtResource("3_review")
+player_path = NodePath("../SideViewPlayer")
+
+[node name="ReviewPanel" type="PanelContainer" parent="AnimationReview"]
+unique_name_in_owner = true
+offset_left = 28.0
+offset_top = 112.0
+offset_right = 760.0
+offset_bottom = 330.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_review")
+
+[node name="ReviewReadout" type="Label" parent="AnimationReview/ReviewPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+label_settings = SubResource("LabelSettings_review")

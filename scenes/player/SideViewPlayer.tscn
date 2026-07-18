@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/sideview/PlayerSideViewController.gd" id="1_controller"]
 [ext_resource type="Resource" path="res://resources/player/SideViewAnimationTuning.tres" id="2_tuning"]
@@ -6,6 +6,8 @@
 [ext_resource type="Script" path="res://scripts/player/sideview/PlayerAnimationController.gd" id="4_animation"]
 [ext_resource type="Script" path="res://scripts/player/sideview/WeaponSocket.gd" id="5_socket"]
 [ext_resource type="Script" path="res://scripts/player/sideview/WeaponVisual.gd" id="6_weapon"]
+[ext_resource type="Script" path="res://scripts/player/sideview/WeaponBladeTrail.gd" id="7_trail"]
+[ext_resource type="Texture2D" path="res://assets/effects/sideview/ash_crosscut/ash_crosscut_02.png" id="8_impact"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
 size = Vector2(68, 144)
@@ -18,7 +20,7 @@ tuning = ExtResource("2_tuning")
 position = Vector2(0, -72)
 shape = SubResource("RectangleShape2D_player")
 
-[node name="ActionState" type="Node" parent="."]
+[node name="AnimationStateController" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("3_state")
 
@@ -27,29 +29,47 @@ unique_name_in_owner = true
 script = ExtResource("4_animation")
 tuning = ExtResource("2_tuning")
 
-[node name="VisualRoot" type="Node2D" parent="."]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+root_node = NodePath("..")
+
+[node name="CharacterVisual" type="Node2D" parent="."]
 unique_name_in_owner = true
 
-[node name="SkillEffect" type="AnimatedSprite2D" parent="VisualRoot"]
-unique_name_in_owner = true
-texture_filter = 4
-position = Vector2(92, -184)
-z_index = 0
-visible = false
-
-[node name="Body" type="AnimatedSprite2D" parent="VisualRoot"]
+[node name="Body" type="AnimatedSprite2D" parent="CharacterVisual"]
 unique_name_in_owner = true
 texture_filter = 4
 position = Vector2(0, -192)
 z_index = 1
 
-[node name="WeaponSocket" type="Node2D" parent="VisualRoot"]
+[node name="BladeTrail" type="Line2D" parent="CharacterVisual"]
+unique_name_in_owner = true
+z_index = 2
+script = ExtResource("7_trail")
+blade_tip_path = NodePath("../WeaponSocket/WeaponPivot/BladeTip")
+
+[node name="WeaponSocket" type="Node2D" parent="CharacterVisual"]
 unique_name_in_owner = true
 script = ExtResource("5_socket")
 
-[node name="WeaponVisual" type="Sprite2D" parent="VisualRoot/WeaponSocket"]
+[node name="WeaponPivot" type="Node2D" parent="CharacterVisual/WeaponSocket"]
+unique_name_in_owner = true
+
+[node name="WeaponVisual" type="Sprite2D" parent="CharacterVisual/WeaponSocket/WeaponPivot"]
 unique_name_in_owner = true
 script = ExtResource("6_weapon")
+
+[node name="BladeTip" type="Marker2D" parent="CharacterVisual/WeaponSocket/WeaponPivot"]
+position = Vector2(0, -152)
+
+[node name="SkillImpact" type="Sprite2D" parent="CharacterVisual"]
+unique_name_in_owner = true
+texture_filter = 4
+position = Vector2(96, -174)
+scale = Vector2(0.48, 0.48)
+texture = ExtResource("8_impact")
+z_index = 4
+visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(0, -240)
