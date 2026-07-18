@@ -2,16 +2,27 @@ extends Node2D
 
 const SPRITE_PATHS := {
 	"idle": "res://assets/sprites/upgrade/player_idle.png",
+	"idle_2": "res://assets/sprites/upgrade/player_idle_2.png",
 	"run_1": "res://assets/sprites/upgrade/player_run_1.png",
 	"run_2": "res://assets/sprites/upgrade/player_run_2.png",
-	"attack": "res://assets/sprites/upgrade/player_attack.png",
+	"run_3": "res://assets/sprites/upgrade/player_run_3.png",
+	"run_4": "res://assets/sprites/upgrade/player_run_4.png",
+	"attack": "res://assets/sprites/upgrade/player_light_1.png",
+	"light_1": "res://assets/sprites/upgrade/player_light_1.png",
+	"light_2": "res://assets/sprites/upgrade/player_light_2.png",
+	"light_3": "res://assets/sprites/upgrade/player_light_3.png",
+	"heavy": "res://assets/sprites/upgrade/player_heavy.png",
+	"collect": "res://assets/sprites/upgrade/player_collect.png",
 	"dodge": "res://assets/sprites/upgrade/player_dodge.png",
+	"parry": "res://assets/sprites/upgrade/player_parry.png",
+	"heal": "res://assets/sprites/upgrade/player_heal.png",
 	"hurt": "res://assets/sprites/upgrade/player_hurt.png",
 	"dead": "res://assets/sprites/upgrade/player_death.png",
 	"weapon": "res://assets/sprites/upgrade/player_weapon.png",
 }
 
-const BODY_SCALE := Vector2(0.84, 0.84)
+const BODY_SCALE := Vector2.ONE
+const SPRITE_OFFSET := Vector2(0, -22)
 
 var facing := Vector2.RIGHT
 var state_name := "idle"
@@ -20,6 +31,7 @@ var attack_alpha := 0.0
 var attack_name := ""
 
 var _time := 0.0
+var _state_time := 0.0
 var _sprites := {}
 
 func _ready() -> void:
@@ -29,6 +41,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
+	_state_time += delta
 	flash = maxf(flash - delta * 7.5, 0.0)
 	queue_redraw()
 
@@ -36,6 +49,8 @@ func _process(delta: float) -> void:
 func set_pose(new_facing: Vector2, new_state: String, new_attack_alpha: float, new_attack_name: String = "") -> void:
 	if new_facing.length() > 0.01:
 		facing = new_facing.normalized()
+	if state_name != new_state:
+		_state_time = 0.0
 	state_name = new_state
 	attack_alpha = new_attack_alpha
 	attack_name = new_attack_name
@@ -50,7 +65,7 @@ func _draw() -> void:
 	var bob := _bob_offset()
 	var flip := -1.0 if facing.x < -0.12 else 1.0
 	var tint := Color.WHITE.lerp(Color(1.0, 0.34, 0.24), flash)
-	draw_colored_polygon(_ellipse(Vector2(0, 25), 34.0, 9.5), Color(0.02, 0.018, 0.022, 0.54))
+	draw_colored_polygon(_ellipse(Vector2(0, 23), 28.0, 7.0), Color(0.02, 0.018, 0.022, 0.38))
 	if state_name == "dodge":
 		_draw_dodge_afterimages(flip, tint)
 	if attack_alpha > 0.0:
@@ -60,7 +75,7 @@ func _draw() -> void:
 	var body_rotation := _body_rotation(flip)
 	var body_scale := _body_scale()
 	draw_set_transform(Vector2(0, bob), body_rotation, Vector2(flip * body_scale.x, body_scale.y))
-	_draw_texture_centered(frame, Vector2(0, -24), BODY_SCALE, tint)
+	_draw_texture_centered(frame, SPRITE_OFFSET, BODY_SCALE, tint)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
@@ -70,14 +85,33 @@ func _select_frame() -> Texture2D:
 	if state_name == "hurt":
 		return _sprites["hurt"]
 	if state_name == "parry" or state_name == "parry_recovery":
-		return _sprites["attack"]
+		return _sprites["parry"]
+	if state_name == "heal":
+		return _sprites["heal"]
 	if state_name == "dodge":
 		return _sprites["dodge"]
 	if state_name.begins_with("light") or state_name.begins_with("heavy") or state_name.begins_with("collect"):
-		return _sprites["attack"]
+		return _attack_frame()
 	if state_name == "move":
-		return _sprites["run_1"] if int(_time * 10.0) % 2 == 0 else _sprites["run_2"]
-	return _sprites["idle"]
+		return _run_frame()
+	return _sprites["idle"] if int(_time * 2.0) % 2 == 0 else _sprites["idle_2"]
+
+
+func _run_frame() -> Texture2D:
+	var frames := [_sprites["run_1"], _sprites["run_2"], _sprites["run_3"], _sprites["run_4"]]
+	return frames[int(_state_time * 14.0) % frames.size()]
+
+
+func _attack_frame() -> Texture2D:
+	if state_name.begins_with("collect"):
+		return _sprites["collect"]
+	if attack_name == "heavy" or state_name.begins_with("heavy"):
+		return _sprites["heavy"]
+	if attack_name == "light_2" or state_name.begins_with("light_2"):
+		return _sprites["light_2"]
+	if attack_name == "light_3" or state_name.begins_with("light_3"):
+		return _sprites["light_3"]
+	return _sprites["light_1"]
 
 
 func _bob_offset() -> float:
@@ -173,7 +207,7 @@ func _draw_dodge_afterimages(flip: float, tint: Color) -> void:
 		var offset := -facing * float(i + 1) * 22.0
 		var alpha := 0.20 - float(i) * 0.045
 		draw_set_transform(offset + Vector2(0, 3), 0.0, Vector2(flip, 1.0) * (1.0 - float(i) * 0.08))
-		_draw_texture_centered(_sprites["dodge"], Vector2(0, -24), BODY_SCALE, Color(tint.r, tint.g, tint.b, alpha))
+		_draw_texture_centered(_sprites["dodge"], SPRITE_OFFSET, BODY_SCALE, Color(tint.r, tint.g, tint.b, alpha))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 

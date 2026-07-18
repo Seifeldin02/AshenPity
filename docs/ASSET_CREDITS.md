@@ -8,6 +8,10 @@ This build uses curated public/free game-dev assets for the runtime sprites, til
 
 The current player, Guardian, Hound, Archer, Bell-Bearer, and Judicator runtime sprites in `assets/sprites/ashen_runtime/` are original prototype sprites generated inside this repository for Ashen Pity. They replaced the previous public-source crops because those crops looked malformed and inconsistent in motion.
 
+## Player Wanderer Sprite Update
+
+The player wanderer frames in `assets/sprites/upgrade/player_*.png` are derived from a user-provided hooded armored sprite for Ashen Pity. The derivative idle, run, attack, dodge, parry, heal, hurt, and death frames are generated locally by `tools/generate_player_animation_set.py` so the character keeps a consistent foot pivot, scale, and silhouette in-game.
+
 ## Shrine Pixel Art Source Material
 
 Source: Simple Souls Set by Elvies
