@@ -1,0 +1,64 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/SideViewAnimationTest.gd" id="1_stage"]
+[ext_resource type="PackedScene" path="res://scenes/player/SideViewPlayer.tscn" id="2_player"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
+size = Vector2(5200, 120)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_controls"]
+bg_color = Color(0.045, 0.041, 0.052, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.36, 0.31, 0.8)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 22.0
+content_margin_top = 12.0
+content_margin_right = 22.0
+content_margin_bottom = 12.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_controls"]
+font_size = 20
+font_color = Color(0.86, 0.83, 0.78, 1)
+outline_size = 4
+outline_color = Color(0.02, 0.018, 0.024, 0.8)
+
+[node name="SideViewAnimationTest" type="Node2D"]
+script = ExtResource("1_stage")
+
+[node name="Ground" type="StaticBody2D" parent="."]
+position = Vector2(0, 840)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="SideViewPlayer" parent="." instance=ExtResource("2_player")]
+position = Vector2(0, 780)
+
+[node name="Instructions" type="CanvasLayer" parent="."]
+
+[node name="Margin" type="MarginContainer" parent="Instructions"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 30.0
+offset_bottom = 92.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_right = 30
+
+[node name="Center" type="CenterContainer" parent="Instructions/Margin"]
+layout_mode = 2
+
+[node name="Panel" type="PanelContainer" parent="Instructions/Margin/Center"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_controls")
+
+[node name="Controls" type="Label" parent="Instructions/Margin/Center/Panel"]
+layout_mode = 2
+text = "A / D  MOVE     LEFT CLICK  ATTACK     RIGHT CLICK  HEAVY     E  PARRY     R  ASH CROSS-CUT"
+label_settings = SubResource("LabelSettings_controls")
